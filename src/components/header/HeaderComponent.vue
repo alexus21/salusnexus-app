@@ -33,13 +33,15 @@
                     </ul>
 
                     <!-- Botón con Material Icon -->
-                    <button class="btn btn-outline-light" id="btnRegister" @click="handleClick">
-                        <span class="material-icons">person_add</span>
-                        <Transition name="bounce">
-                            <p v-if="show" style="text-align: center;">
-                                Hello here is some bouncy text!
-                            </p>
-                        </Transition>
+                    <button class="btn btn-light text-center" id="btnRegister" @click="handleLoginClick"
+                            style="display: flex; flex-wrap: nowrap; justify-content: center; text-align: center">
+                        <span class="material-icons">login</span> Inciar sesión
+                    </button>
+
+                    <!-- Botón con Material Icon -->
+                    <button class="btn btn-light text-center ms-3" id="btnRegister" @click="handleRegisterClick"
+                            style="display: flex; flex-wrap: nowrap; justify-content: center; text-align: center">
+                        <span class="material-icons">person_add</span> Registrarme
                     </button>
                 </div>
             </div>
@@ -51,13 +53,18 @@
 export default {
     name: 'HeaderComponent',
     methods: {
-        handleClick() {
+        handleRegisterClick() {
             this.$emit('open-register-component');
         },
+        handleLoginClick() {
+            this.$emit('open-login-component');
+        }
     },
     data() {
         return {
-            showRegisterComponent: false
+            showRegisterComponent: false,
+            showLoginComponent: false,
+            show: false,
         }
     }
 };
@@ -72,4 +79,5 @@ export default {
     vertical-align: middle;
     margin-right: 5px;
 }
+
 </style>

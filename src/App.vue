@@ -1,28 +1,35 @@
 <template>
-    <HeaderComponent @open-register-component="showRegisterModal"></HeaderComponent>
+    <HeaderComponent @open-register-component="showRegisterModal" @open-login-component="showLoginModal"></HeaderComponent>
     <RegisterComponent v-if="showRegisterComponent" @close="showRegisterComponent = false"></RegisterComponent>
+    <LoginComponent v-if="showLoginComponent" @close="showLoginComponent = false"></LoginComponent>
 </template>
 
 <script>
 
 import HeaderComponent from "@/components/header/HeaderComponent.vue";
 import RegisterComponent from "@/components/register/RegisterComponent.vue";
+import LoginComponent from "@/components/login/LoginComponent.vue";
 
 export default {
     name: 'App',
     components: {
         HeaderComponent,
-        RegisterComponent
+        RegisterComponent,
+        LoginComponent
     },
     data(){
         return {
-            showRegisterComponent: false
+            showRegisterComponent: false,
+            showLoginComponent: false
         }
     },
     methods: {
         showRegisterModal() {
             this.showRegisterComponent = true;
         },
+        showLoginModal() {
+            this.showLoginComponent = true;
+        }
     }
 }
 </script>
@@ -34,6 +41,5 @@ export default {
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
-    margin-top: 60px;
 }
 </style>
