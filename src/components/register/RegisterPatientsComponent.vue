@@ -21,8 +21,14 @@
                                     <!-- Primera columna -->
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="full_name" class="form-label">Nombre completo</label>
-                                            <input type="text" id="full_name" v-model="patient_form.full_name"
+                                            <label for="first_name" class="form-label">Nombre</label>
+                                            <input type="text" id="first_name" v-model="patient_form.first_name"
+                                                   class="form-control" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="last_name" class="form-label">Apellido</label>
+                                            <input type="text" id="last_name" v-model="patient_form.last_name"
                                                    class="form-control" required>
                                         </div>
 
@@ -128,8 +134,10 @@
 
                                     <div class="col-md-4">
                                         <div class="mb-3">
-                                            <label for="confirm_password" class="form-label">Confirmar Contraseña</label>
-                                            <input type="password" id="confirm_password" v-model="patient_form.confirm_password"
+                                            <label for="confirm_password" class="form-label">Confirmar
+                                                Contraseña</label>
+                                            <input type="password" id="confirm_password"
+                                                   v-model="patient_form.confirm_password"
                                                    class="form-control" required>
                                         </div>
                                     </div>
@@ -163,10 +171,10 @@ Al registrarse en nuestro sistema, usted acepta estos términos y condiciones en
 5. Comunicaciones
 Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos.
                                     </textarea>
-                                    <div class="form-check mt-3">
+                                    <div class="form-check mt-3 d-flex justify-content-start">
                                         <input class="form-check-input" type="checkbox" id="terms"
                                                v-model="patient_form.accept_terms" required>
-                                        <label class="form-check-label" for="terms">Acepto los términos</label>
+                                        <label class="form-check-label ms-2" for="terms">Acepto los términos</label>
                                     </div>
                                 </div>
                             </div>
@@ -174,21 +182,22 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
 
                         <!-- Botones de navegación -->
                         <div class="carousel-navigation d-flex justify-content-center gap-3 mt-4">
-                            <button type="button" class="btn btn-secondary" @click="$emit('close')">
-                                Cancelar
+                            <button title="Cancelar" type="button" class="btn btn-secondary" @click="$emit('close')">
+                                <span class="material-icons">close</span>
                             </button>
-                            <button class="btn btn-primary" type="button"
+                            <button title="Anterior" class="btn btn-primary" type="button"
                                     @click="prevStep" v-show="currentStep > 1">
-                                Anterior
+                                <span class="material-icons">arrow_back</span>
                             </button>
-                            <button class="btn btn-primary" type="button"
-                                    @click="nextStep" v-show="currentStep < totalSteps">
-                                Siguiente
+                            <button title="Siguiente" class="btn btn-primary" type="button"
+                                    @click="nextStep" v-show="currentStep < totalSteps"
+                                    :disabled="validateFirstStep()">
+                                <span class="material-icons">arrow_forward</span>
                             </button>
-                            <button type="submit" class="btn btn-success"
+                            <button title="Registrar" type="submit" class="btn btn-success"
                                     v-show="currentStep === totalSteps"
-                                    :disabled="!patient_form.accept_terms">
-                                Registrar
+                                    :disabled="!patient_form.accept_terms || patient_form.password !== patient_form.confirm_password">
+                                <span class="material-icons">assignment_turned_in</span>
                             </button>
                         </div>
                     </div>
@@ -199,6 +208,8 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
 </template>
 
 <script>
+// import swal from "sweetalert2";
+
 export default {
     data() {
         return {
@@ -206,7 +217,8 @@ export default {
             totalSteps: 5,
             patient_form: {
                 photo: '',
-                full_name: '',
+                first_name: '',
+                last_name: '',
                 phone: '',
                 email: '',
                 date_of_birth: '',
@@ -215,6 +227,8 @@ export default {
                 address2: '',
                 emergency_contact: '',
                 emergency_phone: '',
+                password: '',
+                confirm_password: '',
                 accept_terms: false
             }
         };
@@ -240,6 +254,22 @@ export default {
         },
         prevStep() {
             if (this.currentStep > 1) this.currentStep--;
+        },
+        validateFirstStep() {
+            const requiredFields = [
+                'first_name',
+                'last_name',
+                'date_of_birth',
+                'gender',
+                'phone',
+                'emergency_contact',
+                'emergency_phone'
+            ];
+
+            return !requiredFields.every(field => {
+                const value = this.patient_form[field];
+                return value && value !== '' && value !== 'Seleccione un género';
+            });
         }
     }
 };
