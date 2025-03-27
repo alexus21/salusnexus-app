@@ -7,14 +7,14 @@
 <script>
 
 import HeaderComponent from "@/components/header/HeaderComponent.vue";
-import RegisterComponent from "@/components/register/RegisterComponent.vue";
+import RegisterPatientsComponent from "@/components/register/RegisterPatientsComponent.vue";
 import LoginComponent from "@/components/login/LoginComponent.vue";
 
 export default {
     name: 'App',
     components: {
         HeaderComponent,
-        RegisterComponent,
+        RegisterComponent: RegisterPatientsComponent,
         LoginComponent
     },
     data(){

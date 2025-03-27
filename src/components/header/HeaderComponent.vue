@@ -35,7 +35,7 @@
                     <!-- Botón con Material Icon -->
                     <button class="btn btn-light text-center" id="btnRegister" @click="handleLoginClick"
                             style="display: flex; flex-wrap: nowrap; justify-content: center; text-align: center">
-                        <span class="material-icons">login</span> Inciar sesión
+                        <span class="material-icons">login</span> Iniciar sesión
                     </button>
 
                     <!-- Botón con Material Icon -->
