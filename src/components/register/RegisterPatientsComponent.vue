@@ -274,7 +274,7 @@ export default {
     },
     methods: {
         register() {
-            alert("Registro enviado");
+            console.log(this.patient_form);
         },
         handlePhotoUpload(event) {
             const reader = new FileReader();
