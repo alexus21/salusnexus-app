@@ -58,18 +58,18 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="emergency_contact" class="form-label">Contacto de
+                                            <label for="emergency_contact_name" class="form-label">Contacto de
                                                 Emergencia</label>
-                                            <input type="text" id="emergency_contact"
-                                                   v-model="patient_form.emergency_contact"
+                                            <input type="text" id="emergency_contact_name"
+                                                   v-model="patient_form.emergency_contact_name"
                                                    class="form-control" required>
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="emergency_phone" class="form-label">Teléfono de
+                                            <label for="emergency_contact_phone" class="form-label">Teléfono de
                                                 Emergencia</label>
-                                            <input type="number" id="emergency_phone"
-                                                   v-model="patient_form.emergency_phone"
+                                            <input type="number" id="emergency_contact_phone"
+                                                   v-model="patient_form.emergency_contact_phone"
                                                    class="form-control" required>
                                         </div>
                                     </div>
@@ -165,36 +165,30 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="address1" class="form-label">Dirección Principal</label>
+                                        <label for="home_address_1" class="form-label">Dirección Principal</label>
                                         <div class="input-group">
-                                            <input type="text" id="address1" v-model="patient_form.address1"
+                                            <input type="text" id="home_address_1" v-model="patient_form.home_address_1"
                                                    class="form-control" required readonly>
                                             <button type="button" class="btn btn-primary"
-                                                    @click="openLocationPicker('address1')">
+                                                    @click="openLocationPicker('home_address_1')">
                                                 <span class="material-icons">location_on</span>
                                             </button>
                                         </div>
-                                        <small class="text-muted" v-if="patient_form.address1_coords">
-                                            Lat: {{ patient_form.address1_coords.lat }},
-                                            Lng: {{ patient_form.address1_coords.lng }}
+                                        <small class="text-muted"
+                                               v-if="patient_form.home_latitude && patient_form.home_longitude">
+                                            Lat: {{ patient_form.home_latitude }}, Lng: {{
+                                                patient_form.home_longitude
+                                            }}
                                         </small>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="address2" class="form-label">Dirección Secundaria</label>
-                                        <div class="input-group">
-                                            <input type="text" id="address2" v-model="patient_form.address2"
-                                                   class="form-control" readonly>
-                                            <button type="button" class="btn btn-primary"
-                                                    @click="openLocationPicker('address2')">
-                                                <span class="material-icons">location_on</span>
-                                            </button>
-                                        </div>
-                                        <small class="text-muted" v-if="patient_form.address2_coords">
-                                            Lat: {{ patient_form.address2_coords.lat }},
-                                            Lng: {{ patient_form.address2_coords.lng }}
-                                        </small>
+                                        <label for="home_address_reference" class="form-label">Dirección Secundaria
+                                            (referencia)</label>
+                                        <input type="text" id="home_address_reference"
+                                               v-model="patient_form.home_address_reference"
+                                               class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -207,7 +201,8 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
                         <!-- Botones de navegación -->
                         <div class="navigation-footer">
                             <div class="navigation-buttons">
-                                <button title="Cancelar" type="button" class="btn btn-secondary" @click="$emit('close')">
+                                <button title="Cancelar" type="button" class="btn btn-secondary"
+                                        @click="$emit('close')">
                                     <span class="material-icons">close</span>
                                 </button>
                                 <button title="Anterior" class="btn btn-primary" type="button"
@@ -216,7 +211,9 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
                                 </button>
                                 <button title="Siguiente" class="btn btn-primary" type="button"
                                         @click="nextStep" v-show="currentStep < totalSteps"
-                                        :disabled="validateFirstStep()">
+                                        :disabled="validateFirstStep() || (currentStep === 2 && !patient_form.accept_terms)
+                                        || (currentStep === 4 && patient_form.email === '' || patient_form.password !== patient_form.confirm_password) ||
+                                            (currentStep === 5 && !patient_form.home_address_1)">
                                     <span class="material-icons">arrow_forward</span>
                                 </button>
                                 <button title="Registrar" type="submit" class="btn btn-success"
@@ -234,8 +231,10 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
 </template>
 
 <script>
-// import swal from "sweetalert2";
+import swal from "sweetalert2";
 import LocationPickerComponent from "@/components/locationpicker/LocationPickerComponent.vue";
+
+const API_URL = 'http://localhost:8000/api';
 
 export default {
     components: {
@@ -255,16 +254,18 @@ export default {
                 email: '',
                 date_of_birth: '',
                 gender: '',
-                address1: '',
-                address1_coords: null,
-                address2: '',
-                address2_coords: null,
-                emergency_contact: '',
-                emergency_phone: '',
+                home_address_1: '',
+                home_latitude: '',
+                home_longitude: '',
+                home_address_reference: '',
+                emergency_contact_name: '',
+                emergency_contact_phone: '',
                 password: '',
                 confirm_password: '',
-                accept_terms: false
-            }
+                accept_terms: false,
+                user_rol: 'paciente'
+            },
+            errors: {}
         };
     },
     computed: {
@@ -274,7 +275,49 @@ export default {
     },
     methods: {
         register() {
-            console.log(this.patient_form);
+            fetch(API_URL + '/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(this.patient_form)
+            })
+                .then(response => response.json())
+                .then(responseData => {
+                    console.log(responseData);
+                    if (!responseData.status) {
+                        if (responseData.errors) {
+                            this.errors = responseData.errors;
+                            const errorMessage = Object.values(responseData.errors).join('\n');
+                            swal.fire({
+                                icon: 'error',
+                                title: '¡Error!',
+                                text: errorMessage
+                            });
+                            return;
+                        }
+
+                        swal.fire({
+                            icon: 'error',
+                            title: '¡Error!',
+                            text: 'Ocurrió un error al registrar el paciente'
+                        });
+                        return;
+                    }
+
+                    swal.fire({
+                        icon: 'success',
+                        title: '¡Registro exitoso!',
+                        text: 'El paciente ha sido registrado correctamente'
+                    }).then(() => {
+                        // Acceder al access_token dentro del objeto data
+                        localStorage.setItem("token", responseData.data.access_token);
+                        this.$emit('close');
+                    });
+                })
+                .catch(error => {
+                    console.error(error);
+                });
         },
         handlePhotoUpload(event) {
             const reader = new FileReader();
@@ -296,8 +339,8 @@ export default {
                 'date_of_birth',
                 'gender',
                 'phone',
-                'emergency_contact',
-                'emergency_phone'
+                'emergency_contact_name',
+                'emergency_contact_phone',
             ];
 
             return !requiredFields.every(field => {
@@ -313,10 +356,8 @@ export default {
         handleLocationSelected(location) {
             const field = this.activeAddressField;
             this.patient_form[field] = location.address;
-            this.patient_form[`${field}_coords`] = {
-                lat: location.lat,
-                lng: location.lng
-            };
+            this.patient_form.home_latitude = location.lat;
+            this.patient_form.home_longitude = location.lng;
             this.showLocationPicker = false;
         }
     }
