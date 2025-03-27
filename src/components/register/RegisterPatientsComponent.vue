@@ -5,14 +5,24 @@
                 <h2 class="form-title">Registro de pacientes</h2>
                 <form @submit.prevent="register">
                     <div id="carouselExample" class="carousel slide">
+                        <!-- Barra de progreso -->
+                        <div class="progress mb-4">
+                            <div class="progress-bar" role="progressbar"
+                                 :style="{ width: progressWidth + '%' }"
+                                 aria-valuemin="0" aria-valuemax="100">
+                                Paso {{ currentStep }} de {{ totalSteps }}
+                            </div>
+                        </div>
+
                         <div class="carousel-inner">
-                            <div class="carousel-item active">
+                            <!-- Paso 1 -->
+                            <div class="carousel-item" :class="{ active: currentStep === 1 }">
                                 <div class="row">
                                     <!-- Primera columna -->
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="first_name" class="form-label">Nombre completo</label>
-                                            <input type="text" id="first_name" v-model="patient_form.full_name"
+                                            <label for="full_name" class="form-label">Nombre completo</label>
+                                            <input type="text" id="full_name" v-model="patient_form.full_name"
                                                    class="form-control" required>
                                         </div>
 
@@ -59,127 +69,77 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="carousel-item">
+
+                            <!-- Paso 2 -->
+                            <div class="carousel-item" :class="{ active: currentStep === 2 }">
                                 <div class="row">
-                                    <!-- Primera columna -->
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="address1" class="form-label">Dirección Principal</label>
                                             <input type="text" id="address1" v-model="patient_form.address1"
-                                                   class="form-control"
-                                                   required>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="city" class="form-label">Ciudad</label>
-                                            <select id="city" v-model="patient_form.city" class="form-select" required>
-                                                <option value="">Seleccione una ciudad</option>
-                                                <option v-for="city in cities" :key="city.id" :value="city.id">
-                                                    {{ city.name }}
-                                                </option>
-                                            </select>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="department" class="form-label">Departamento</label>
-                                            <select id="department" v-model="patient_form.department"
-                                                    class="form-select" required
-                                                    @change="loadCities">
-                                                <option value="">Seleccione un departamento</option>
-                                                <option v-for="dept in departments" :key="dept.id" :value="dept.id">
-                                                    {{ dept.name }}
-                                                </option>
-                                            </select>
+                                                   class="form-control" required>
                                         </div>
                                     </div>
-
-                                    <!-- Segunda columna -->
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="address1" class="form-label">Dirección secundaria</label>
-                                            <input type="text" id="address1" v-model="patient_form.address2"
-                                                   class="form-control"
-                                                   required>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="city" class="form-label">Ciudad</label>
-                                            <select id="city" v-model="patient_form.city" class="form-select" required>
-                                                <option value="">Seleccione una ciudad</option>
-                                                <option v-for="city in cities" :key="city.id" :value="city.id">
-                                                    {{ city.name }}
-                                                </option>
-                                            </select>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="department" class="form-label">Departamento</label>
-                                            <select id="department" v-model="patient_form.department"
-                                                    class="form-select" required
-                                                    @change="loadCities">
-                                                <option value="">Seleccione un departamento</option>
-                                                <option v-for="dept in departments" :key="dept.id" :value="dept.id">
-                                                    {{ dept.name }}
-                                                </option>
-                                            </select>
+                                            <label for="address2" class="form-label">Dirección Secundaria</label>
+                                            <input type="text" id="address2" v-model="patient_form.address2"
+                                                   class="form-control">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="carousel-item">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <button class="btn btn-primary">Ubicación 1</button>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <button class="btn btn-primary">Ubicación 2</button>
-                                    </div>
-                                </div>
 
-                            </div>
-                            <div class="carousel-item">
-                                <!-- Profile Photo Area -->
+                            <!-- Paso 3 -->
+                            <div class="carousel-item" :class="{ active: currentStep === 3 }">
                                 <div class="text-center mb-4">
                                     <div class="profile-photo-container">
                                         <div class="profile-photo">
-                                        <span v-if="!patient_form.photo"
-                                              class="material-icons photo-placeholder">add_a_photo</span>
-                                            <img v-else :src="patient_form.photo" alt="Profile photo">
+                                            <span v-if="!patient_form.photo" class="material-icons photo-placeholder">
+                                                add_a_photo
+                                            </span>
+                                            <img v-else :src="patient_form.photo" alt="Foto de perfil">
                                         </div>
                                         <input type="file" id="photo" @change="handlePhotoUpload" accept="image/*"
                                                class="d-none">
                                         <label for="photo" class="btn btn-sm btn-primary mt-2">Subir foto</label>
-                                        <span class="text-secondary mt-3">Opcional</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="carousel-item">
+
+                            <!-- Paso 4 -->
+                            <div class="carousel-item" :class="{ active: currentStep === 4 }">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="mb-3">
                                             <label for="email" class="form-label">Correo Electrónico</label>
                                             <input type="email" id="email" v-model="patient_form.email"
-                                                   class="form-control"
-                                                   required>
+                                                   class="form-control" required>
                                         </div>
+                                    </div>
 
+                                    <div class="col-md-4">
                                         <div class="mb-3">
                                             <label for="password" class="form-label">Contraseña</label>
                                             <input type="password" id="password" v-model="patient_form.password"
                                                    class="form-control" required>
                                         </div>
+                                    </div>
 
+                                    <div class="col-md-4">
                                         <div class="mb-3">
-                                            <label for="confirm_password" class="form-label">Confirmar
-                                                Contraseña</label>
-                                            <input type="password" id="confirm_password"
-                                                   v-model="patient_form.confirm_password"
+                                            <label for="confirm_password" class="form-label">Confirmar Contraseña</label>
+                                            <input type="password" id="confirm_password" v-model="patient_form.confirm_password"
                                                    class="form-control" required>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <textarea class="form-control" rows="6" readonly
-                                                  style="resize: none; background-color: #f8f9fa; text-align: left; white-space: pre-wrap; padding: 1rem;">
+                                </div>
+                            </div>
+
+                            <!-- Paso 5 -->
+                            <div class="carousel-item" :class="{ active: currentStep === 5 }">
+                                <div class="text-center">
+                                    <textarea class="form-control" rows="6" readonly>
 TÉRMINOS Y CONDICIONES DE USO
 
 1. Aceptación de Términos
@@ -202,50 +162,34 @@ Al registrarse en nuestro sistema, usted acepta estos términos y condiciones en
 
 5. Comunicaciones
 Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos.
-                                        </textarea>
-
-                                        <div class="form-check mt-3">
-                                            <input class="form-check-input" type="checkbox" id="terms"
-                                                   v-model="patient_form.accept_terms" required>
-                                            <label class="form-check-label" for="terms">Acepto los términos y
-                                                condiciones</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-buttons mt-4">
-                                    <div class="row"></div>
-                                    <div class="row">
-                                        <div class="col">
-                                            <button type="submit" class="btn btn-primary ms-3"
-                                                    :disabled="!patient_form.accept_terms">
-                                                Registrarse
-                                            </button>
-                                        </div>
+                                    </textarea>
+                                    <div class="form-check mt-3">
+                                        <input class="form-check-input" type="checkbox" id="terms"
+                                               v-model="patient_form.accept_terms" required>
+                                        <label class="form-check-label" for="terms">Acepto los términos</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample"
-                                data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
 
-                    </div>
-
-                    <div class="form-buttons mt-4">
-                        <div class="row"></div>
-                        <div class="row">
-                            <div class="col">
-                                <button type="button" class="btn btn-secondary" @click="$emit('close')">
-                                    Cancelar
-                                </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample"
-                                        data-bs-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Next</span>
-                                </button>
-                            </div>
+                        <!-- Botones de navegación -->
+                        <div class="carousel-navigation d-flex justify-content-center gap-3 mt-4">
+                            <button type="button" class="btn btn-secondary" @click="$emit('close')">
+                                Cancelar
+                            </button>
+                            <button class="btn btn-primary" type="button"
+                                    @click="prevStep" v-show="currentStep > 1">
+                                Anterior
+                            </button>
+                            <button class="btn btn-primary" type="button"
+                                    @click="nextStep" v-show="currentStep < totalSteps">
+                                Siguiente
+                            </button>
+                            <button type="submit" class="btn btn-success"
+                                    v-show="currentStep === totalSteps"
+                                    :disabled="!patient_form.accept_terms">
+                                Registrar
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -256,45 +200,51 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
 
 <script>
 export default {
-    name: 'RegisterComponent',
     data() {
         return {
+            currentStep: 1,
+            totalSteps: 5,
             patient_form: {
                 photo: '',
                 full_name: '',
                 phone: '',
                 email: '',
-                password: '',
-                confirm_password: '',
                 date_of_birth: '',
                 gender: '',
                 address1: '',
                 address2: '',
-                city: '',
-                latitude: null,
-                longitude: null,
                 emergency_contact: '',
                 emergency_phone: '',
                 accept_terms: false
             }
         };
     },
+    computed: {
+        progressWidth() {
+            return ((this.currentStep - 1) / (this.totalSteps - 1)) * 100;
+        }
+    },
     methods: {
         register() {
-            console.log("Datos enviados:", this.patient_form);
             alert("Registro enviado");
         },
         handlePhotoUpload(event) {
-            const file = event.target.files[0];
             const reader = new FileReader();
             reader.onload = () => {
                 this.patient_form.photo = reader.result;
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(event.target.files[0]);
+        },
+        nextStep() {
+            if (this.currentStep < this.totalSteps) this.currentStep++;
+        },
+        prevStep() {
+            if (this.currentStep > 1) this.currentStep--;
         }
     }
 };
 </script>
+
 
 <style scoped>
 .profile-photo-container {
@@ -359,5 +309,22 @@ export default {
     justify-content: space-between;
     margin-top: 30px;
     padding: 0 20px;
+}
+
+.carousel-inner {
+    margin: 0 auto;
+    max-width: 900px;
+}
+
+.carousel-navigation {
+    margin: 2rem auto;
+    max-width: 900px;
+}
+
+.progress {
+    height: 20px;
+    border-radius: 10px;
+    margin: 0 auto 2rem;
+    max-width: 900px;
 }
 </style>
