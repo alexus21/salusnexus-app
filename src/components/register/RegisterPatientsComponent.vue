@@ -78,74 +78,6 @@
 
                             <!-- Paso 2 -->
                             <div class="carousel-item" :class="{ active: currentStep === 2 }">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="address1" class="form-label">Dirección Principal</label>
-                                            <input type="text" id="address1" v-model="patient_form.address1"
-                                                   class="form-control" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="address2" class="form-label">Dirección Secundaria</label>
-                                            <input type="text" id="address2" v-model="patient_form.address2"
-                                                   class="form-control">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Paso 3 -->
-                            <div class="carousel-item" :class="{ active: currentStep === 3 }">
-                                <div class="text-center mb-4">
-                                    <div class="profile-photo-container">
-                                        <div class="profile-photo">
-                                            <span v-if="!patient_form.photo" class="material-icons photo-placeholder">
-                                                add_a_photo
-                                            </span>
-                                            <img v-else :src="patient_form.photo" alt="Foto de perfil">
-                                        </div>
-                                        <input type="file" id="photo" @change="handlePhotoUpload" accept="image/*"
-                                               class="d-none">
-                                        <label for="photo" class="btn btn-sm btn-primary mt-2">Subir foto</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Paso 4 -->
-                            <div class="carousel-item" :class="{ active: currentStep === 4 }">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="mb-3">
-                                            <label for="email" class="form-label">Correo Electrónico</label>
-                                            <input type="email" id="email" v-model="patient_form.email"
-                                                   class="form-control" required>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4">
-                                        <div class="mb-3">
-                                            <label for="password" class="form-label">Contraseña</label>
-                                            <input type="password" id="password" v-model="patient_form.password"
-                                                   class="form-control" required>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4">
-                                        <div class="mb-3">
-                                            <label for="confirm_password" class="form-label">Confirmar
-                                                Contraseña</label>
-                                            <input type="password" id="confirm_password"
-                                                   v-model="patient_form.confirm_password"
-                                                   class="form-control" required>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Paso 5 -->
-                            <div class="carousel-item" :class="{ active: currentStep === 5 }">
                                 <div class="text-center">
                                     <textarea class="form-control" rows="6" readonly>
 TÉRMINOS Y CONDICIONES DE USO
@@ -180,25 +112,119 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
                             </div>
                         </div>
 
+                        <!-- Paso 3 -->
+                        <div class="carousel-item" :class="{ active: currentStep === 3 }">
+                            <div class="text-center mb-4">
+                                <div class="profile-photo-container">
+                                    <div class="profile-photo">
+                                            <span v-if="!patient_form.photo" class="material-icons photo-placeholder">
+                                                add_a_photo
+                                            </span>
+                                        <img v-else :src="patient_form.photo" alt="Foto de perfil">
+                                    </div>
+                                    <input type="file" id="photo" @change="handlePhotoUpload" accept="image/*"
+                                           class="d-none">
+                                    <label for="photo" class="btn btn-sm btn-primary mt-2">Subir foto</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 4 -->
+                        <div class="carousel-item" :class="{ active: currentStep === 4 }">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Correo Electrónico</label>
+                                        <input type="email" id="email" v-model="patient_form.email"
+                                               class="form-control" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Contraseña</label>
+                                        <input type="password" id="password" v-model="patient_form.password"
+                                               class="form-control" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="confirm_password" class="form-label">Confirmar
+                                            Contraseña</label>
+                                        <input type="password" id="confirm_password"
+                                               v-model="patient_form.confirm_password"
+                                               class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 5 -->
+                        <div class="carousel-item" :class="{ active: currentStep === 5 }">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="address1" class="form-label">Dirección Principal</label>
+                                        <div class="input-group">
+                                            <input type="text" id="address1" v-model="patient_form.address1"
+                                                   class="form-control" required readonly>
+                                            <button type="button" class="btn btn-primary"
+                                                    @click="openLocationPicker('address1')">
+                                                <span class="material-icons">location_on</span>
+                                            </button>
+                                        </div>
+                                        <small class="text-muted" v-if="patient_form.address1_coords">
+                                            Lat: {{ patient_form.address1_coords.lat }},
+                                            Lng: {{ patient_form.address1_coords.lng }}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="address2" class="form-label">Dirección Secundaria</label>
+                                        <div class="input-group">
+                                            <input type="text" id="address2" v-model="patient_form.address2"
+                                                   class="form-control" readonly>
+                                            <button type="button" class="btn btn-primary"
+                                                    @click="openLocationPicker('address2')">
+                                                <span class="material-icons">location_on</span>
+                                            </button>
+                                        </div>
+                                        <small class="text-muted" v-if="patient_form.address2_coords">
+                                            Lat: {{ patient_form.address2_coords.lat }},
+                                            Lng: {{ patient_form.address2_coords.lng }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <LocationPickerComponent v-if="showLocationPicker"
+                                                     @location-selected="handleLocationSelected"
+                                                     @close="showLocationPicker = false"/>
+                        </div>
+
                         <!-- Botones de navegación -->
-                        <div class="carousel-navigation d-flex justify-content-center gap-3 mt-4">
-                            <button title="Cancelar" type="button" class="btn btn-secondary" @click="$emit('close')">
-                                <span class="material-icons">close</span>
-                            </button>
-                            <button title="Anterior" class="btn btn-primary" type="button"
-                                    @click="prevStep" v-show="currentStep > 1">
-                                <span class="material-icons">arrow_back</span>
-                            </button>
-                            <button title="Siguiente" class="btn btn-primary" type="button"
-                                    @click="nextStep" v-show="currentStep < totalSteps"
-                                    :disabled="validateFirstStep()">
-                                <span class="material-icons">arrow_forward</span>
-                            </button>
-                            <button title="Registrar" type="submit" class="btn btn-success"
-                                    v-show="currentStep === totalSteps"
-                                    :disabled="!patient_form.accept_terms || patient_form.password !== patient_form.confirm_password">
-                                <span class="material-icons">assignment_turned_in</span>
-                            </button>
+                        <div class="navigation-footer">
+                            <div class="navigation-buttons">
+                                <button title="Cancelar" type="button" class="btn btn-secondary" @click="$emit('close')">
+                                    <span class="material-icons">close</span>
+                                </button>
+                                <button title="Anterior" class="btn btn-primary" type="button"
+                                        @click="prevStep" v-show="currentStep > 1">
+                                    <span class="material-icons">arrow_back</span>
+                                </button>
+                                <button title="Siguiente" class="btn btn-primary" type="button"
+                                        @click="nextStep" v-show="currentStep < totalSteps"
+                                        :disabled="validateFirstStep()">
+                                    <span class="material-icons">arrow_forward</span>
+                                </button>
+                                <button title="Registrar" type="submit" class="btn btn-success"
+                                        v-show="currentStep === totalSteps"
+                                        :disabled="!patient_form.accept_terms || patient_form.password !== patient_form.confirm_password">
+                                    <span class="material-icons">assignment_turned_in</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -209,12 +235,18 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
 
 <script>
 // import swal from "sweetalert2";
+import LocationPickerComponent from "@/components/locationpicker/LocationPickerComponent.vue";
 
 export default {
+    components: {
+        LocationPickerComponent
+    },
     data() {
         return {
             currentStep: 1,
             totalSteps: 5,
+            showLocationPicker: false,
+            activeAddressField: null,
             patient_form: {
                 photo: '',
                 first_name: '',
@@ -224,7 +256,9 @@ export default {
                 date_of_birth: '',
                 gender: '',
                 address1: '',
+                address1_coords: null,
                 address2: '',
+                address2_coords: null,
                 emergency_contact: '',
                 emergency_phone: '',
                 password: '',
@@ -270,6 +304,20 @@ export default {
                 const value = this.patient_form[field];
                 return value && value !== '' && value !== 'Seleccione un género';
             });
+        },
+        openLocationPicker(field) {
+            this.activeAddressField = field;
+            this.showLocationPicker = true;
+        },
+
+        handleLocationSelected(location) {
+            const field = this.activeAddressField;
+            this.patient_form[field] = location.address;
+            this.patient_form[`${field}_coords`] = {
+                lat: location.lat,
+                lng: location.lng
+            };
+            this.showLocationPicker = false;
         }
     }
 };
@@ -334,21 +382,38 @@ export default {
     font-size: 2rem;
 }
 
-.form-buttons {
+.navigation-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    padding: 1rem;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.navigation-buttons {
     display: flex;
-    justify-content: space-between;
-    margin-top: 30px;
-    padding: 0 20px;
-}
-
-.carousel-inner {
+    justify-content: center;
+    gap: 1rem;
+    max-width: 900px;
     margin: 0 auto;
-    max-width: 900px;
 }
 
+.form-container {
+    background: white;
+    padding: 40px 40px 100px; /* Added padding bottom for fixed footer */
+    border-radius: 15px;
+    width: 95%;
+    max-width: 1200px;
+    overflow-y: auto;
+    max-height: 90vh;
+}
+
+/* Remove old navigation styles */
 .carousel-navigation {
-    margin: 2rem auto;
-    max-width: 900px;
+    display: none;
 }
 
 .progress {
