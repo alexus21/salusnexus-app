@@ -28,7 +28,7 @@
                             <a href="#" @click="forgotPassword" class="text-muted">¿Olvidaste tu contraseña?</a>
                         </div>
                         <div class="col-auto">
-                            <div class="d-flex gap-2">
+                            <div class="d-flex gap-2 justify-content-center align-items-center">
                                 <button type="submit"
                                         title="Iniciar Sesión"
                                         class="btn btn-primary">
@@ -36,7 +36,7 @@
                                 </button>
                                 <button type="button"
                                         title="Cancelar"
-                                        class="btn btn-secondary"
+                                        class="btn btn-secondary justify-content-center align-items-center"
                                         @click="cancelLogin">
                                     <span class="material-icons">close</span>
                                 </button>

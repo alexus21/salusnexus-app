@@ -1,9 +1,10 @@
 <template>
-    <HeaderComponent v-if="false" @open-register-component="showRegisterModal" @open-login-component="showLoginModal"></HeaderComponent>
+    <HeaderComponent @open-register-component="showRegisterModal" @open-login-component="showLoginModal"></HeaderComponent>
     <RegisterComponent v-if="showRegisterComponent" @close="showRegisterComponent = false"></RegisterComponent>
     <LoginComponent v-if="showLoginComponent" @close="showLoginComponent = false"></LoginComponent>
-    <HomeComponent v-if="false"></HomeComponent>
-    <DashboardLayout></DashboardLayout>
+<!--    <HomeComponent v-if="false"></HomeComponent>-->
+<!--    <DashboardLayout></DashboardLayout>-->
+    <router-view></router-view>
 </template>
 
 <script>
@@ -11,14 +12,14 @@
 import HeaderComponent from "@/components/header/HeaderComponent.vue";
 import RegisterPatientsComponent from "@/components/register/RegisterPatientsComponent.vue";
 import LoginComponent from "@/components/login/LoginComponent.vue";
-import HomeComponent from "@/components/home/HomeComponent.vue";
-import DashboardLayout from "@/components/main/healthcareProfessionals/DashboardLayout.vue";
+// import HomeComponent from "@/components/home/HomeComponent.vue";
+// import DashboardLayout from "@/components/main/healthcareProfessionals/DashboardLayout.vue";
 
 export default {
     name: 'App',
     components: {
-        DashboardLayout,
-        HomeComponent,
+        // DashboardLayout,
+        // HomeComponent,
         HeaderComponent,
         RegisterComponent: RegisterPatientsComponent,
         LoginComponent

@@ -31,7 +31,7 @@
             <div class="col-md-6" style="display: flex; justify-content: center; align-items: center; margin-top: 15%;">
                 <div class="row justify-content-center w-100">
                     <div class="col-10">
-                        <img src="/logo.jpg"
+                        <img src="/home-picture.jpg"
                              alt="salusnexus-logo"
                              class="img-fluid"
                              style="max-width: 100%; object-fit: contain;">
@@ -42,8 +42,10 @@
     </div>
 </template>
 
-<script setup>
-
+<script>
+export default {
+    name: "HomeComponent",
+}
 </script>
 
 <style scoped>
