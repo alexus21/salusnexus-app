@@ -11,6 +11,12 @@
                        @keyup.enter="searchLocation">
                 <button type="button"
                         class="btn btn-primary"
+                        @click="searchLocation"
+                        title="Buscar ubicación">
+                    <span class="material-icons">search</span>
+                </button>
+                <button type="button"
+                        class="btn btn-primary"
                         @click="getCurrentLocation"
                         title="Usar mi ubicación actual">
                     <span class="material-icons">my_location</span>
@@ -51,11 +57,13 @@ export default {
             map: null,
             marker: null,
             searchQuery: '',
-            selectedLocation: null
+            selectedLocation: null,
+            isLoading: false
         };
     },
     mounted() {
         this.initMap();
+        this.getCurrentLocation(); // Detectar ubicación actual al inicio
     },
     methods: {
         initMap() {
