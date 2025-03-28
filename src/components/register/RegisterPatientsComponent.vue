@@ -201,19 +201,22 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
                         <!-- Botones de navegación -->
                         <div class="navigation-footer">
                             <div class="navigation-buttons">
-                                <button title="Cancelar" type="button" class="btn btn-secondary"
-                                        @click="$emit('close')">
+                                <button title="Cancelar"
+                                        type="button"
+                                        class="btn btn-secondary"
+                                        @click="handleClose">
                                     <span class="material-icons">close</span>
                                 </button>
                                 <button title="Anterior" class="btn btn-primary" type="button"
                                         @click="prevStep" v-show="currentStep > 1">
                                     <span class="material-icons">arrow_back</span>
                                 </button>
-                                <button title="Siguiente" class="btn btn-primary" type="button"
-                                        @click="nextStep" v-show="currentStep < totalSteps"
-                                        :disabled="validateFirstStep() || (currentStep === 2 && !patient_form.accept_terms)
-                                        || (currentStep === 4 && patient_form.email === '' || patient_form.password !== patient_form.confirm_password) ||
-                                            (currentStep === 5 && !patient_form.home_address_1)">
+                                <button title="Siguiente"
+                                        class="btn btn-primary"
+                                        type="button"
+                                        @click="nextStep"
+                                        v-show="currentStep < totalSteps"
+                                        :disabled="isNextStepDisabled">
                                     <span class="material-icons">arrow_forward</span>
                                 </button>
                                 <button title="Registrar" type="submit" class="btn btn-success"
@@ -271,6 +274,24 @@ export default {
     computed: {
         progressWidth() {
             return ((this.currentStep - 1) / (this.totalSteps - 1)) * 100;
+        },
+        isNextStepDisabled() {
+            switch (this.currentStep) {
+                case 1:
+                    return this.validateFirstStep();
+                case 2:
+                    return !this.patient_form.accept_terms;
+                case 3:
+                    return false;
+                case 4:
+                    return !this.patient_form.email ||
+                        !this.patient_form.password ||
+                        this.patient_form.password !== this.patient_form.confirm_password;
+                case 5:
+                    return !this.patient_form.home_address_1 || !this.patient_form.home_address_reference;
+                default:
+                    return false;
+            }
         }
     },
     methods: {
@@ -305,6 +326,7 @@ export default {
                         return;
                     }
 
+                    this.clearSavedData();
                     swal.fire({
                         icon: 'success',
                         title: '¡Registro exitoso!',
@@ -352,18 +374,75 @@ export default {
             this.activeAddressField = field;
             this.showLocationPicker = true;
         },
-
         handleLocationSelected(location) {
             const field = this.activeAddressField;
             this.patient_form[field] = location.address;
             this.patient_form.home_latitude = location.lat;
             this.patient_form.home_longitude = location.lng;
             this.showLocationPicker = false;
+        },
+        loadSavedData() {
+
+
+            // Load form data
+            Object.keys(this.patient_form).forEach(key => {
+                const savedValue = localStorage.getItem(key);
+                if (savedValue) {
+                    if (savedValue === 'true' || savedValue === 'false') {
+                        this.patient_form[key] = savedValue === 'true';
+                    } else {
+                        this.patient_form[key] = savedValue;
+                    }
+                }
+            });
+
+            // Load and set current step
+            const savedStep = localStorage.getItem('currentStep');
+
+            if (savedStep) {
+                this.currentStep = parseInt(savedStep, 10);
+
+                this.$nextTick(() => {
+                    this.currentStep = parseInt(savedStep, 10);
+                });
+            }
+        },
+        clearSavedData() {
+            // Clear all form data
+            Object.keys(this.patient_form).forEach(key => {
+                localStorage.removeItem(key);
+            });
+
+            // Clear current step
+            localStorage.removeItem('currentStep');
+        },
+        handleClose() {
+            this.clearSavedData();
+            this.$emit('close');
         }
+    },
+    mounted() {
+        // Load saved data when component mounts
+        this.loadSavedData();
+
+        this.beforeUnloadHandler = () => {
+            // Save all form data
+            Object.entries(this.patient_form).forEach(([key, value]) => {
+                if (value) {
+                    localStorage.setItem(key, typeof value === 'boolean' ? value.toString() : value);
+                }
+            });
+
+            // Save current step
+            localStorage.setItem('currentStep', this.currentStep.toString());
+        };
+        window.addEventListener('beforeunload', this.beforeUnloadHandler);
+    },
+    beforeUnmount() {
+        window.removeEventListener('beforeunload', this.beforeUnloadHandler);
     }
 };
 </script>
-
 
 <style scoped>
 .profile-photo-container {

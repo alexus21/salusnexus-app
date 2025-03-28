@@ -3,12 +3,18 @@
         <div class="modal-content">
             <h4>Seleccionar Ubicación</h4>
 
-            <div class="search-box mb-3">
+            <div class="d-flex gap-2 mb-3">
                 <input type="text"
                        class="form-control"
                        v-model="searchQuery"
                        placeholder="Buscar ubicación..."
                        @keyup.enter="searchLocation">
+                <button type="button"
+                        class="btn btn-primary"
+                        @click="getCurrentLocation"
+                        title="Usar mi ubicación actual">
+                    <span class="material-icons">my_location</span>
+                </button>
             </div>
 
             <div id="map" ref="mapContainer"></div>
@@ -123,13 +129,66 @@ export default {
             if (this.selectedLocation) {
                 this.$emit('location-selected', this.selectedLocation);
             }
-        }
+        },
+        getCurrentLocation() {
+            if (!navigator.geolocation) {
+                alert('Geolocalización no está soportada por su navegador');
+                return;
+            }
+
+            // Show loading state
+            this.isLoading = true;
+
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 10000, // Increased timeout to 10 seconds
+                maximumAge: 0
+            };
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    this.isLoading = false;
+                    const latlng = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    this.map.setView(latlng, 16);
+                    this.handleMapClick(latlng);
+                },
+                (error) => {
+                    this.isLoading = false;
+                    console.error('Geolocation error:', {
+                        code: error.code,
+                        message: error.message,
+                        error: error
+                    });
+
+                    let message;
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            message = 'Por favor habilite los permisos de ubicación en su navegador';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            message = 'No se pudo detectar su ubicación. Intente nuevamente o seleccione manualmente';
+                            break;
+                        case error.TIMEOUT:
+                            message = 'Tiempo de espera agotado. Por favor intente nuevamente';
+                            break;
+                        default:
+                            message = 'Error al obtener la ubicación. Por favor intente nuevamente';
+                    }
+                    alert(message);
+                },
+                options
+            );
+        },
     },
     beforeUnmount() {
         if (this.map) {
             this.map.remove();
         }
-    }
+    },
 };
 </script>
 
@@ -170,5 +229,10 @@ export default {
 /* Fix Leaflet marker icon */
 .leaflet-default-icon-path {
     background-image: url("https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png");
+}
+
+.material-icons {
+    font-size: 20px;
+    line-height: 1;
 }
 </style>
