@@ -5,23 +5,43 @@
                 <h2 class="form-title">Iniciar Sesión</h2>
 
                 <form @submit.prevent="login">
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Correo Electrónico</label>
-                        <input type="email" id="email" v-model="form.email" class="form-control" required>
+                    <div class="row">
+                        <div class="col text-start">
+                            <label for="email" class="form-label">Correo Electrónico</label>
+                        </div>
+                        <div class="col">
+                            <input type="email" id="email" v-model="form.email" class="form-control"
+                                   placeholder="Ingresa tu correo electrónico" required>
+                        </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Contraseña</label>
-                        <input type="password" id="password" v-model="form.password" class="form-control" required>
+                    <div class="row mt-3">
+                        <div class="col text-start">
+                            <label for="password" class="form-label">Contraseña</label>
+                        </div>
+                        <div class="col">
+                            <input type="password" id="password" v-model="form.password"
+                                   class="form-control" placeholder="Ingresa tu contraseña" required>
+                        </div>
                     </div>
-
-                    <div class="d-flex justify-content-between align-items-center">
-                        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-                        <button type="button" class="btn btn-secondary" @click="cancelLogin">Cancelar</button>
-                    </div>
-
-                    <div class="text-center mt-3">
-                        <a href="#" @click="forgotPassword" class="text-muted">¿Olvidaste tu contraseña?</a>
+                    <div class="row mt-3 d-flex align-items-center">
+                        <div class="col">
+                            <a href="#" @click="forgotPassword" class="text-muted">¿Olvidaste tu contraseña?</a>
+                        </div>
+                        <div class="col-auto">
+                            <div class="d-flex gap-2">
+                                <button type="submit"
+                                        title="Iniciar Sesión"
+                                        class="btn btn-primary">
+                                    <span class="material-icons">login</span>
+                                </button>
+                                <button type="button"
+                                        title="Cancelar"
+                                        class="btn btn-secondary"
+                                        @click="cancelLogin">
+                                    <span class="material-icons">close</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -31,6 +51,7 @@
 
 <script>
 import swal from 'sweetalert2';
+
 const API_URL = 'http://localhost:8000/api';
 
 export default {
@@ -56,8 +77,8 @@ export default {
                 .then(response => response.json())
                 .then(responseData => {
                     console.log(responseData);
-                    if(!responseData.status){
-                        if(responseData.errors){
+                    if (!responseData.status) {
+                        if (responseData.errors) {
                             this.errors = responseData.errors;
                             const errorMessages = Object.values(responseData.errors).join('\n');
                             swal.fire({
@@ -117,7 +138,7 @@ export default {
     padding: 30px;
     border-radius: 10px;
     width: 90%;
-    max-width: 500px;
+    max-width: 600px;
     min-width: 400px;
 }
 
