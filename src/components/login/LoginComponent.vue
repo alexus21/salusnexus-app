@@ -30,6 +30,9 @@
 </template>
 
 <script>
+import swal from 'sweetalert2';
+const API_URL = 'http://localhost:8000/api';
+
 export default {
     name: 'LoginComponent',
     data() {
@@ -37,21 +40,59 @@ export default {
             form: {
                 email: '',
                 password: ''
-            }
+            },
+            errors: {}
         };
     },
     methods: {
         login() {
-            console.log("Datos de inicio de sesión:", this.form);
-            alert("Inicio de sesión realizado");
+            fetch(API_URL + '/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(this.form)
+            })
+                .then(response => response.json())
+                .then(responseData => {
+                    console.log(responseData);
+                    if(!responseData.status){
+                        if(responseData.errors){
+                            this.errors = responseData.errors;
+                            const errorMessages = Object.values(responseData.errors).join('\n');
+                            swal.fire({
+                                icon: 'error',
+                                title: '¡Error!',
+                                text: errorMessages,
+                            });
+                            return;
+                        }
+
+                        swal.fire({
+                            icon: 'error',
+                            title: '¡Error!',
+                            text: responseData.message,
+                        });
+                    }
+
+                    swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: responseData.message,
+                    }).then(() => {
+                        localStorage.setItem('token', responseData.data.access_token);
+                        this.$emit('close');
+                    })
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         },
         forgotPassword() {
             alert("Redirigir a la página de recuperación de contraseña.");
         },
         cancelLogin() {
-            // Redirige a la página principal o cierra el formulario
-            console.log("Login cancelado");
-            this.$emit('close'); // Si quieres cerrar el formulario desde el componente padre
+            this.$emit('close');
         }
     }
 };

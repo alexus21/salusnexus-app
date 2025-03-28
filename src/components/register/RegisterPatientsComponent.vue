@@ -305,7 +305,6 @@ export default {
             })
                 .then(response => response.json())
                 .then(responseData => {
-                    console.log(responseData);
                     if (!responseData.status) {
                         if (responseData.errors) {
                             this.errors = responseData.errors;
