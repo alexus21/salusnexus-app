@@ -22,7 +22,7 @@
                         </button>
                     </div>
                     <div class="col">
-                        <button type="button" class="btn btn-outline-light border text-black"
+                        <button type="button" class="btn btn-outline-light border border-black border-1 text-black"
                                 style="width: 250px; height: 50px">Más Información
                         </button>
                     </div>
