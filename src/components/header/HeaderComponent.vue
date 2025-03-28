@@ -1,6 +1,6 @@
 <template>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
                 <!-- Logo o marca -->
                 <a class="navbar-brand" href="#">Mi App</a>
@@ -33,15 +33,17 @@
                     </ul>
 
                     <!-- Botón con Material Icon -->
-                    <button class="btn btn-light text-center" id="btnRegister" @click="handleLoginClick"
-                            style="display: flex; flex-wrap: nowrap; justify-content: center; text-align: center">
-                        <span class="material-icons">login</span> Iniciar sesión
+                    <button class="btn btn-outline-light border border-black border-1 text-black"
+                            id="btnRegister"
+                            @click="handleRegisterClick">
+                        <span class="material-icons">person_add</span> Registrarme
                     </button>
 
                     <!-- Botón con Material Icon -->
-                    <button class="btn btn-light text-center ms-3" id="btnRegister" @click="handleRegisterClick"
-                            style="display: flex; flex-wrap: nowrap; justify-content: center; text-align: center">
-                        <span class="material-icons">person_add</span> Registrarme
+                    <button class="btn btn-primary text-center"
+                            id="btnLogin"
+                            @click="handleLoginClick">
+                        <span class="material-icons">login</span> Iniciar sesión
                     </button>
                 </div>
             </div>
@@ -78,6 +80,27 @@ export default {
 .material-icons {
     vertical-align: middle;
     margin-right: 5px;
+}
+
+#btnRegister {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 200px;
+    height: 50px;
+}
+
+#btnLogin {
+    margin-left: 15px;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 200px;
+    height: 50px;
 }
 
 </style>
