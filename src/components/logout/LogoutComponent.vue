@@ -1,7 +1,7 @@
 <script>
 import swal from "sweetalert2";
 
-const API_URL = "http://localhost:8000/api";
+const API_URL = process.env.VUE_APP_API_URL;
 
 export default {
     name: "LogoutComponent",

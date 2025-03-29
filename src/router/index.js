@@ -1,6 +1,8 @@
 import {createRouter, createWebHistory} from "vue-router";
 import HomeComponent from "@/components/home/HomeComponent.vue";
 import DashboardLayout from "@/components/main/healthcareProfessionals/DashboardLayout.vue";
+import UserProfileComponent from "@/components/userprofile/UserProfileComponent.vue";
+
 import {validateAuth} from "@/utils/auth";
 
 const routes = [
@@ -21,6 +23,15 @@ const routes = [
             requiresAuth: true
         },
     },
+    {
+        path: '/userprofile',
+        name: 'UserProfile',
+        component: UserProfileComponent,
+        meta: {
+            requiresAuth: true
+        },
+    },
+
     {
         path: '/:pathMatch(.*)*',
         redirect: '/'

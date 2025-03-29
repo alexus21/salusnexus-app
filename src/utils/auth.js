@@ -1,7 +1,7 @@
 export async function validateAuth() {
     const API_URL = process.env.VUE_APP_API_URL;
     try {
-        const response = await fetch(`${API_URL}/api/validate`, {
+        const response = await fetch(`${API_URL}/validate`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

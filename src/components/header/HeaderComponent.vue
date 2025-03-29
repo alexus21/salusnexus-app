@@ -49,6 +49,7 @@
 
                     <button class="btn btn-outline-light border border-black border-1 text-black"
                             id="btnProfile"
+                            @click="handleProfileClick"
                             v-if="isLogged">
                         <span class="material-icons">person</span> Mi perfil
                     </button>
@@ -69,7 +70,7 @@
 import swal from "sweetalert2";
 import {validateAuth} from "@/utils/auth";
 
-const API_URL = "http://localhost:8000/api";
+const API_URL = process.env.VUE_APP_API_URL;
 
 export default {
     name: 'HeaderComponent',
@@ -81,7 +82,7 @@ export default {
             this.$emit('open-login-component');
         },
         handleProfileClick() {
-            this.$emit('open-profile-component');
+            window.location.href = "/userprofile";
         },
         handleLogout() {
             swal.fire({

@@ -237,7 +237,7 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
 import swal from "sweetalert2";
 import LocationPickerComponent from "@/components/locationpicker/LocationPickerComponent.vue";
 
-const API_URL = 'http://localhost:8000/api';
+const API_URL = process.env.VUE_APP_API_URL;
 
 export default {
     components: {
