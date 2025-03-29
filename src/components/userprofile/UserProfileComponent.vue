@@ -1,49 +1,76 @@
 <template>
     <div class="row m-5">
         <div class="col-md-4">
-            <div class="row">
-                <div class="card" style="width: 18rem;">
-                    <img src="/logo.jpg" class="card-img-top" alt="profile picture">
-                    <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
-                    </div>
+            <div class="row d-flex justify-content-center">
+                <div class="row d-flex justify-content-center">
+                    <img src="logo.jpg" alt="profile picture" class="img-fluid">
+                </div>
+                <div class="row d-flex justify-content-center mt-3">
+                    <p class="p-name text-primary">{{
+                            user ? user.first_name.split(' ')[0] + ' ' + user.last_name.split(' ')[0] : 'Cargando...'
+                        }}</p>
+                </div>
+                <div class="col d-flex justify-content-center mt-3">
+                    <button class="btn btn-outline-light border border-black border-1 text-black" id="btnCancelar">
+                        Cancelar
+                    </button>
+                    <button class="btn btn-primary" id="btnEditar">Editar</button>
                 </div>
             </div>
-            <div class="row">
-                <div class="card" style="width: 18rem;">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">An item</li>
-                        <li class="list-group-item">A second item</li>
-                        <li class="list-group-item">A third item</li>
-                    </ul>
-                </div>
+            <div class="row d-flex justify-content-center mt-5 text-start">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex align-items-center">
+                        <span class="material-icons text-primary me-3">person </span>
+                        {{ user ? user.first_name + ' ' + user.last_name : 'Cargando...' }}
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <span class="material-icons text-primary me-3">email </span>
+                        {{ user ? user.email : 'Cargando...' }}
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <span class="material-icons text-primary me-3">phone </span>
+                        {{ user ? user.phone : 'Cargando...' }}
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <span class="material-icons text-primary me-3">home </span>
+                        {{ user ? user.home_address_1 : 'Cargando...' }}
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <span class="material-icons text-primary me-3">emergency </span>
+                        {{ user ? user.emergency_contact_name : 'Cargando...' }}
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <span class="material-icons text-primary me-3">contact_emergency </span>
+                        {{ user ? user.emergency_contact_phone : 'Cargando...' }}
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <span class="material-icons text-primary me-3">calendar_month</span>
+                        {{
+                            user ? new Date(user.date_of_birth + 'T00:00:00Z').toLocaleDateString('es-ES', {timeZone: 'UTC'}) : 'Cargando...'
+                        }}
+                    </li>
+                </ul>
             </div>
         </div>
+
         <div class="col-md-8">
-            <div class="row">
-                <div class="card" style="width: 18rem;">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">An item</li>
-                        <li class="list-group-item">A second item</li>
-                        <li class="list-group-item">A third item</li>
-                    </ul>
-                    <div class="card-footer">
-                        Card footer
-                    </div>
-                </div>
+            <div class="row d-flex justify-content-center ms-5 text-start">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Nombre completo:
+                        {{ user ? user.first_name + ' ' + user.last_name : 'Cargando...' }}
+                    </li>
+                    <li class="list-group-item">Correo electrónico: {{ user ? user.email : 'Cargando...' }}</li>
+                    <li class="list-group-item">Teléfono: {{ user ? user.phone : 'Cargando...' }}</li>
+                    <li class="list-group-item">Dirección: {{ user ? user.home_address_1 : 'Cargando...' }}</li>
+                </ul>
             </div>
-            <div class="row">
+            <div class="row d-flex justify-content-center mt-5">
                 <div class="card" style="width: 18rem;">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">An item</li>
                         <li class="list-group-item">A second item</li>
                         <li class="list-group-item">A third item</li>
                     </ul>
-                    <div class="card-footer">
-                        Card footer
-                    </div>
                 </div>
             </div>
         </div>
@@ -51,9 +78,6 @@
 </template>
 
 <script>
-
-// import swal from "sweetalert2";
-
 const API_URL = process.env.VUE_APP_API_URL;
 
 export default {
@@ -70,23 +94,20 @@ export default {
     methods: {
         async fetchUserData() {
             try {
-                fetch(API_URL + '/userprofile', {
+                const response = await fetch(API_URL + '/userprofile', {
                     method: "GET",
                     headers: {
                         'Authorization': 'Bearer ' + localStorage.getItem('token'),
                     }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log(data);
-                        if (!data.status) {
-                            console.error('Error fetching user data:', data.message);
-                        } else {
-                            this.user = data.user;
-                            console.log(data.user);
-                        }
-                    })
-                    .catch(error => console.error(error));
+                });
+                const data = await response.json();
+                console.log(data);
+                if (!data.status) {
+                    console.error('Error fetching user data:', data.message);
+                } else {
+                    this.user = data.data;
+                    console.log(data.data);
+                }
             } catch (error) {
                 console.error('Error fetching user data:', error);
             } finally {
@@ -95,9 +116,41 @@ export default {
         }
     }
 }
-
 </script>
 
 <style scoped>
+img {
+    border-radius: 50%;
+    width: 300px; /* Ajusta el tamaño según sea necesario */
+    height: 250px; /* Ajusta el tamaño según sea necesario */
+    object-fit: cover; /* Asegura que la imagen se recorte para llenar el contenedor */
+}
+
+.p-name {
+    font-size: 35px;
+    font-weight: bold;
+    font-family: 'Arial Black', sans-serif, 'Comic Sans MS', cursive;
+}
+
+#btnCancelar {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 200px;
+    height: 50px;
+}
+
+#btnEditar {
+    margin-left: 15px;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 200px;
+    height: 50px;
+}
 
 </style>
