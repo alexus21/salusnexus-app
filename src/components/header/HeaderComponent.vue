@@ -32,18 +32,32 @@
                         </li>
                     </ul>
 
-                    <!-- Botón con Material Icon -->
                     <button class="btn btn-outline-light border border-black border-1 text-black"
                             id="btnRegister"
-                            @click="handleRegisterClick">
+                            @click="handleRegisterClick"
+                            v-if="!isLogged">
                         <span class="material-icons">person_add</span> Registrarme
                     </button>
 
-                    <!-- Botón con Material Icon -->
+
                     <button class="btn btn-primary text-center"
                             id="btnLogin"
-                            @click="handleLoginClick">
+                            @click="handleLoginClick"
+                            v-if="!isLogged">
                         <span class="material-icons">login</span> Iniciar sesión
+                    </button>
+
+                    <button class="btn btn-outline-light border border-black border-1 text-black"
+                            id="btnProfile"
+                            v-if="isLogged">
+                        <span class="material-icons">person</span> Mi perfil
+                    </button>
+
+                    <button class="btn btn-primary text-center"
+                            id="btnLogout"
+                            @click="handleLogout"
+                            v-if="isLogged">
+                        <span class="material-icons">logout</span> Cerrar sesión
                     </button>
                 </div>
             </div>
@@ -52,6 +66,11 @@
 </template>
 
 <script>
+import swal from "sweetalert2";
+import {validateAuth} from "@/utils/auth";
+
+const API_URL = "http://localhost:8000/api";
+
 export default {
     name: 'HeaderComponent',
     methods: {
@@ -60,14 +79,57 @@ export default {
         },
         handleLoginClick() {
             this.$emit('open-login-component');
-        }
+        },
+        handleProfileClick() {
+            this.$emit('open-profile-component');
+        },
+        handleLogout() {
+            swal.fire({
+                title: "¿Estás seguro?",
+                text: "¿Quieres cerrar sesión?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Sí, cerrar sesión",
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(API_URL + "/logout", {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            "Content-Type": "application/json",
+                        },
+                    })
+                        .then((response) => response.json())
+                        .then((responseData) => {
+                            if (responseData.status) {
+                                localStorage.removeItem("token");
+                                this.isLogged = false;
+                                window.location.reload();
+                            } else {
+                                swal.fire({
+                                    icon: "error",
+                                    title: "¡Error!",
+                                    text: responseData.message,
+                                });
+                            }
+                        });
+                }
+            })
+        },
     },
     data() {
         return {
             showRegisterComponent: false,
             showLoginComponent: false,
             show: false,
+            isLogged: false,
         }
+    },
+    async mounted() {
+        this.isLogged = await validateAuth();
     }
 };
 </script>
@@ -82,7 +144,7 @@ export default {
     margin-right: 5px;
 }
 
-#btnRegister {
+#btnRegister, #btnProfile {
     display: flex;
     flex-wrap: nowrap;
     justify-content: center;
@@ -92,7 +154,7 @@ export default {
     height: 50px;
 }
 
-#btnLogin {
+#btnLogin, #btnLogout {
     margin-left: 15px;
     display: flex;
     flex-wrap: nowrap;

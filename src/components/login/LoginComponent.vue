@@ -102,7 +102,7 @@ export default {
                         text: responseData.message,
                     }).then(() => {
                         localStorage.setItem('token', responseData.data.access_token);
-                        this.$emit('close');
+                        window.location.href = '/';
                     })
                 })
                 .catch(error => {

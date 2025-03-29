@@ -333,7 +333,7 @@ export default {
                     }).then(() => {
                         // Acceder al access_token dentro del objeto data
                         localStorage.setItem("token", responseData.data.access_token);
-                        this.$emit('close');
+                        window.location.href = '/';
                     });
                 })
                 .catch(error => {
