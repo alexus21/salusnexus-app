@@ -17,8 +17,11 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                        <button type="button" class="btn btn-primary" style="width: 250px; height: 50px">Comienza
-                            Ahora
+                        <button type="button"
+                                class="btn btn-primary"
+                                style="width: 250px; height: 50px"
+                                @click="handleStartNowClick">
+                            Comienza Ahora
                         </button>
                     </div>
                     <div class="col">
@@ -45,6 +48,14 @@
 <script>
 export default {
     name: "HomeComponent",
+    methods: {
+        handleMoreInfoClick() {
+            console.log('More Info button clicked');
+        },
+        handleStartNowClick() {
+            window.location.href = '/plans/patients';
+        }
+    }
 }
 </script>
 
