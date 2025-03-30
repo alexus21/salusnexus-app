@@ -57,4 +57,13 @@ export default {
 .home-image, img.home-image {
     z-index: 1 !important;
 }
+
+/* Asegurar que SweetAlert2 siempre sea visible */
+.swal2-container {
+    z-index: 10000 !important;
+}
+
+.swal2-popup {
+    z-index: 10001 !important;
+}
 </style>

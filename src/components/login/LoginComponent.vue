@@ -94,16 +94,27 @@ export default {
                             title: '¡Error!',
                             text: responseData.message,
                         });
+                        return;
                     }
 
-                    swal.fire({
-                        icon: 'success',
-                        title: '¡Éxito!',
-                        text: responseData.message,
-                    }).then(() => {
-                        localStorage.setItem('token', responseData.data.access_token);
-                        window.location.href = '/';
-                    })
+                    // Guardamos los datos de respuesta
+                    const token = responseData.data.access_token;
+                    const message = responseData.message;
+                    
+                    // Cerramos el modal de login primero
+                    this.$emit('close');
+                    
+                    // Luego mostramos la alerta de éxito
+                    setTimeout(() => {
+                        swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: message,
+                        }).then(() => {
+                            localStorage.setItem('token', token);
+                            window.location.href = '/';
+                        });
+                    }, 100);
                 })
                 .catch(error => {
                     console.error('Error:', error);
