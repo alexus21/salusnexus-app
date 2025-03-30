@@ -7,10 +7,10 @@
         </button>
     </div>
     <div class="row d-flex justify-content-center">
-        <div class="col-md-auto p-5 m-5 text-start" id="basicPlanInfo">
+        <div class="col-md-auto p-3 m-3 text-start subscription-card" id="basicPlanInfo">
             <div class="row d-flex justify-content-start ms-1">
                 <p class="btn btn-light text-black border-1 border-dark-subtle"
-                   style="width: auto; font-size: 20px; font-weight: bold;">
+                   style="width: auto; font-size: 18px; font-weight: bold;">
                     FREE
                 </p>
             </div>
@@ -19,52 +19,35 @@
             </div>
             <hr>
             <div class="row d-flex justify-content-start align-items-center">
-                <p style="font-family: 'Arial Black', sans-serif, 'Comic Sans MS', cursive; font-size: 70px">$0</p>
+                <p class="price">$0</p>
             </div>
             <div class="row d-flex justify-content-start align-items-center">
                 <p class="fw-bold">Por miembro</p>
             </div>
             <hr>
             <div class="row d-flex justify-content-start align-items-center">
-                <ul>
-                    <li class="d-flex align-items-center mt-3">
-                        <span class="material-icons me-1">check_circle</span>
-                        Creación de perfil básico
-                    </li>
-                    <li class="d-flex align-items-center mt-3">
-                        <span class="material-icons me-1">check_circle</span>
-                        Acceso completo al directorio de profesionales
-                    </li>
-                    <li class="d-flex align-items-center mt-3">
-                        <span class="material-icons me-1">check_circle</span>
-                        Publicar reseñas y calificar establecimientos
-                    </li>
-                    <li class="d-flex align-items-center mt-3">
-                        <span class="material-icons me-1">check_circle</span>
-                        Agendar citas
-                    </li>
-                    <li class="d-flex align-items-center mt-3">
-                        <span class="material-icons me-1">check_circle</span>
-                        Solicitar servicios a domicilio
-                    </li>
+                <ul class="features-list">
+                   <SubscriptionFeatureItem
+                       v-for="(feature, index) in basicPlanFeatures"
+                       :key="`basic-${index}`"
+                       :feature-text="feature"
+                   />
                 </ul>
             </div>
-            <div class="row d-flex justify-content-center align-items-center">
-                <button class="btn btn-dark text-white border-1 border-black"
-                        style="width: 100%;">
+            <div class="row d-flex justify-content-center align-items-center mt-auto pt-3">
+                <button class="btn btn-dark text-white border-1 border-black w-100">
                     Comenzar gratis
                 </button>
             </div>
             <div class="row d-flex justify-content-center align-items-center text-center mt-2">
-                <p>No se requiere tarjeta de débito/crédito</p>
+                <p class="small">No se requiere tarjeta de débito/crédito</p>
             </div>
         </div>
 
-        <!--                -->
-        <div class="col-md-auto p-5 m-5 text-start" id="advancedPlanInfo">
+        <div class="col-md-auto p-3 m-3 text-start subscription-card" id="advancedPlanInfo">
             <div class="row d-flex justify-content-start ms-1">
                 <p class="btn btn-light text-black border-1 border-dark-subtle"
-                   style="width: auto; font-size: 20px; font-weight: bold;">
+                   style="width: auto; font-size: 18px; font-weight: bold;">
                     ADVANCED
                 </p>
             </div>
@@ -73,56 +56,28 @@
             </div>
             <hr>
             <div class="row d-flex justify-content-start align-items-center">
-                <p style="font-family: 'Arial Black', sans-serif, 'Comic Sans MS', cursive; font-size: 70px">$5.99</p>
+                <p class="price">$5.99</p>
             </div>
             <div class="row d-flex justify-content-start align-items-center">
                 <p class="fw-bold">Por miembro</p>
             </div>
             <hr>
             <div class="row d-flex justify-content-start align-items-center">
-                <ul>
-                    <li class="d-flex align-items-center mt-3">
-                        <span class="material-icons me-1">check_circle</span>
-                        Todas las ventajas del plan básico
-                    </li>
-                    <li class="d-flex align-items-center mt-3">
-                        <span class="material-icons me-1">check_circle</span>
-                        Acceso a reseñas públicas de otros pacientes
-                    </li>
-                    <li class="d-flex align-items-center mt-3">
-                        <span class="material-icons me-1">check_circle</span>
-                        Historial de citas
-                    </li>
-                    <li class="d-flex align-items-center mt-3">
-                        <span class="material-icons me-1">check_circle</span>
-                        Soporte prioritario para la gestión de citas
-                    </li>
-                    <li class="d-flex align-items-center mt-3">
-                        <span class="material-icons me-1">check_circle</span>
-                        Consejos de salud personalizados según perfil
-                    </li>
-                    <li class="d-flex align-items-center mt-3">
-                        <span class="material-icons me-1">check_circle</span>
-                        Detalles de medicamentos recetados
-                    </li>
-                    <li class="d-flex align-items-center mt-3">
-                        <span class="material-icons me-1">check_circle</span>
-                        Notificaciones de citas futuras
-                    </li>
-                    <li class="d-flex align-items-center mt-3">
-                        <span class="material-icons me-1">check_circle</span>
-                        Recordatorios personalizados para ti
-                    </li>
+                <ul class="features-list">
+                    <SubscriptionFeatureItem
+                        v-for="(feature, index) in advancedPlanFeatures"
+                        :key="`advanced-${index}`"
+                        :feature-text="feature"
+                    />
                 </ul>
             </div>
-            <div class="row d-flex justify-content-center align-items-center">
-                <button class="btn btn-dark text-white border-1 border-black"
-                        style="width: 100%;">
+            <div class="row d-flex justify-content-center align-items-center mt-auto pt-3">
+                <button class="btn btn-dark text-white border-1 border-black w-100">
                     Comenzar prueba gratuita de 14 días
                 </button>
             </div>
             <div class="row d-flex justify-content-center align-items-center text-center mt-2">
-                <p>Se requiere tarjeta de débito/crédito</p>
+                <p class="small">Se requiere tarjeta de débito/crédito</p>
             </div>
         </div>
     </div>
@@ -145,8 +100,34 @@
 </template>
 
 <script>
+import SubscriptionFeatureItem from '@/components/subscriptionplan/SubscriptionFeatureItem.vue';
+
 export default {
     name: 'PatientSubscriptionPlansComponent',
+    components: {
+        SubscriptionFeatureItem
+    },
+    data() {
+        return {
+            basicPlanFeatures: [
+                'Creación de perfil básico',
+                'Acceso completo al directorio de profesionales',
+                'Publicar reseñas y calificar establecimientos',
+                'Agendar citas',
+                'Solicitar servicios a domicilio'
+            ],
+            advancedPlanFeatures: [
+                'Todas las ventajas del plan básico',
+                'Acceso a reseñas públicas de otros pacientes',
+                'Historial de citas',
+                'Soporte prioritario para la gestión de citas',
+                'Consejos de salud personalizados según perfil',
+                'Detalles de medicamentos recetados',
+                'Notificaciones de citas futuras',
+                'Recordatorios personalizados para ti'
+            ]
+        }
+    }
 }
 
 </script>
@@ -190,17 +171,38 @@ body {
     padding: 3px; /* Adjust as needed */
 }
 
-#basicPlanInfo {
-    border: 3px solid #4f3df8;
+.subscription-card {
     border-radius: 10px;
-    margin: 0; /* Adjust as needed */
-    padding: 0; /* Adjust as needed */
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    min-height: 450px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra base sutil */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transición suave */
+}
+
+.subscription-card:hover {
+    transform: scale(1.03); /* Escalar ligeramente al pasar el ratón */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
+}
+
+.subscription-card .price {
+    font-family: 'Arial Black', sans-serif, 'Comic Sans MS', cursive;
+    font-size: 50px;
+    margin-bottom: 0;
+}
+
+.subscription-card .features-list {
+    padding-left: 0;
+    list-style: none;
+    font-size: 0.9rem;
+}
+
+#basicPlanInfo {
+    border: 2px solid #4f3df8;
 }
 
 #advancedPlanInfo {
-    border: 3px solid #1b007d;
-    border-radius: 10px;
-    margin: 0; /* Adjust as needed */
-    padding: 0; /* Adjust as needed */
+    border: 2px solid #1b007d;
 }
 </style>
