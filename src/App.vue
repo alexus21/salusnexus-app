@@ -43,4 +43,18 @@ export default {
     text-align: center;
     color: #2c3e50;
 }
+
+/* Estilos globales para modales */
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+
+.modal {
+    z-index: 1050 !important;
+}
+
+/* Asegurar que las imágenes principales tengan un z-index bajo */
+.home-image, img.home-image {
+    z-index: 1 !important;
+}
 </style>

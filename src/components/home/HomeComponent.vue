@@ -78,6 +78,8 @@ body {
     max-width: 90%;
     height: auto;
     filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.08));
+    position: relative;
+    z-index: 0;
 }
 
 .btn {
@@ -175,5 +177,9 @@ body {
     .mt-4 {
         margin-top: 1rem !important;
     }
+}
+
+:deep(.modal), :deep(.modal-backdrop) {
+    z-index: 1050 !important;
 }
 </style>
