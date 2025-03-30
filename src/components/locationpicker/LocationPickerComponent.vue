@@ -49,7 +49,7 @@
 </template>
 
 <script>
-/* global google */
+// /* global google */
 export default {
     name: 'LocationPickerComponent',
     data() {
