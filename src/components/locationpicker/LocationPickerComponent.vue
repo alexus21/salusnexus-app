@@ -6,24 +6,26 @@
             <div class="d-flex gap-2 mb-3">
                 <input type="text"
                        class="form-control"
-                       v-model="searchQuery"
-                       placeholder="Buscar ubicación..."
-                       @keyup.enter="searchLocation">
-                <button type="button"
-                        class="btn btn-primary"
-                        @click="searchLocation"
-                        title="Buscar ubicación">
-                    <span class="material-icons">search</span>
-                </button>
+                       ref="searchInputRef"
+                       placeholder="Buscar ubicación...">
                 <button type="button"
                         class="btn btn-primary"
                         @click="getCurrentLocation"
-                        title="Usar mi ubicación actual">
-                    <span class="material-icons">my_location</span>
+                        title="Usar mi ubicación actual"
+                        :disabled="isLoading">
+                    <span v-if="!isLoading" class="material-icons">my_location</span>
+                    <span v-else class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                 </button>
             </div>
 
-            <div id="map" ref="mapContainer"></div>
+            <div v-if="!mapLoaded" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="mt-2">Cargando el mapa...</p>
+            </div>
+
+            <div id="map" ref="mapContainer" v-show="mapLoaded"></div>
 
             <div class="selected-location mt-2" v-if="selectedLocation">
                 <p class="mb-2">Ubicación seleccionada:</p>
@@ -47,156 +49,327 @@
 </template>
 
 <script>
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-
+/* global google */
 export default {
     name: 'LocationPickerComponent',
     data() {
         return {
             map: null,
             marker: null,
+            geocoder: null,
+            autocomplete: null,
             searchQuery: '',
             selectedLocation: null,
-            isLoading: false
+            isLoading: false,
+            mapLoaded: false,
+            googleMapApiKey: process.env.VUE_APP_GOOGLE_MAPS_API_KEY || ''
         };
     },
     mounted() {
-        this.initMap();
-        this.getCurrentLocation(); // Detectar ubicación actual al inicio
+        // Cargar el script de Google Maps de manera síncrona
+        this.loadGoogleMapsScript();
     },
     methods: {
-        initMap() {
-            // Create map
-            this.map = L.map(this.$refs.mapContainer).setView([13.6929, -89.2182], 13);
-
-            // Add OpenStreetMap tiles
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(this.map);
-
-            // Handle map clicks
-            this.map.on('click', (e) => {
-                this.handleMapClick(e.latlng);
-            });
-        },
-
-        async handleMapClick(latlng) {
-            // Remove existing marker
-            if (this.marker) {
-                this.map.removeLayer(this.marker);
-            }
-
-            // Add new marker
-            this.marker = L.marker(latlng).addTo(this.map);
-
-            // Get address using reverse geocoding
-            try {
-                const response = await fetch(
-                    `https://nominatim.openstreetmap.org/reverse?lat=${latlng.lat}&lon=${latlng.lng}&format=json`
-                );
-                const data = await response.json();
-
-                this.selectedLocation = {
-                    lat: latlng.lat,
-                    lng: latlng.lng,
-                    address: data.display_name
-                };
-            } catch (error) {
-                console.error('Error getting address:', error);
-                this.selectedLocation = {
-                    lat: latlng.lat,
-                    lng: latlng.lng,
-                    address: 'Dirección no encontrada'
-                };
-            }
-        },
-
-        async searchLocation() {
-            if (!this.searchQuery) return;
-
-            try {
-                const response = await fetch(
-                    `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(this.searchQuery)}&format=json`
-                );
-                const data = await response.json();
-
-                if (data.length > 0) {
-                    const location = data[0];
-                    const latlng = {lat: parseFloat(location.lat), lng: parseFloat(location.lon)};
-
-                    this.map.setView(latlng, 16);
-                    this.handleMapClick(latlng);
-                }
-            } catch (error) {
-                console.error('Error searching location:', error);
-            }
-        },
-
-        confirmLocation() {
-            if (this.selectedLocation) {
-                this.$emit('location-selected', this.selectedLocation);
-            }
-        },
-        getCurrentLocation() {
-            if (!navigator.geolocation) {
-                alert('Geolocalización no está soportada por su navegador');
+        loadGoogleMapsScript() {
+            // Primero, verificamos si Google Maps ya está cargado
+            if (typeof google !== 'undefined' && google.maps) {
+                this.initializeMap();
                 return;
             }
 
-            // Show loading state
-            this.isLoading = true;
+            // URL de la API de Google Maps
+            const googleMapsUrl = `https://maps.googleapis.com/maps/api/js?key=${this.googleMapApiKey}&libraries=places`;
+            
+            // Verificar si el script ya existe en la página
+            const existingScript = document.getElementById('google-maps-api');
+            if (existingScript) {
+                // Si ya existe el script, esperamos a que se cargue
+                this.waitForGoogleMaps();
+                return;
+            }
 
-            const options = {
-                enableHighAccuracy: true,
-                timeout: 10000, // Increased timeout to 10 seconds
-                maximumAge: 0
+            // Crear el script y agregarlo al documento
+            const script = document.createElement('script');
+            script.id = 'google-maps-api';
+            script.src = googleMapsUrl;
+            script.async = true;
+            script.defer = true;
+            
+            // Cuando el script se carga, verificamos periódicamente si Google Maps está disponible
+            script.onload = () => {
+                this.waitForGoogleMaps();
             };
-
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    this.isLoading = false;
-                    const latlng = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
-
-                    this.map.setView(latlng, 16);
-                    this.handleMapClick(latlng);
-                },
-                (error) => {
-                    this.isLoading = false;
-                    console.error('Geolocation error:', {
-                        code: error.code,
-                        message: error.message,
-                        error: error
-                    });
-
-                    let message;
-                    switch (error.code) {
-                        case error.PERMISSION_DENIED:
-                            message = 'Por favor habilite los permisos de ubicación en su navegador';
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            message = 'No se pudo detectar su ubicación. Intente nuevamente o seleccione manualmente';
-                            break;
-                        case error.TIMEOUT:
-                            message = 'Tiempo de espera agotado. Por favor intente nuevamente';
-                            break;
-                        default:
-                            message = 'Error al obtener la ubicación. Por favor intente nuevamente';
-                    }
-                    alert(message);
-                },
-                options
-            );
+            
+            // En caso de error
+            script.onerror = () => {
+                console.error('Error al cargar la API de Google Maps');
+            };
+            
+            // Insertar el script en el documento
+            document.head.appendChild(script);
         },
-    },
-    beforeUnmount() {
-        if (this.map) {
-            this.map.remove();
+
+        // Método para esperar a que Google Maps esté disponible
+        waitForGoogleMaps() {
+            const checkGoogleMaps = () => {
+                // Verificar si Google Maps está disponible
+                if (typeof google !== 'undefined' && google.maps) {
+                    // Google Maps está disponible, inicializar el mapa
+                    clearInterval(interval);
+                    this.initializeMap();
+                }
+            };
+            
+            // Verificar cada 100ms
+            const interval = setInterval(checkGoogleMaps, 100);
+            
+            // Establecer un tiempo límite de 10 segundos
+            setTimeout(() => {
+                clearInterval(interval);
+                if (!this.mapLoaded) {
+                    console.error('No se pudo cargar Google Maps después de 10 segundos');
+                }
+            }, 10000);
+        },
+
+        // Inicializar el mapa una vez que Google Maps está disponible
+        initializeMap() {
+            // Posición predeterminada (San Salvador, El Salvador)
+            const defaultPosition = { lat: 13.6929, lng: -89.2182 };
+            
+            try {
+                // Crear el mapa
+                this.map = new google.maps.Map(this.$refs.mapContainer, {
+                    center: defaultPosition,
+                    zoom: 13,
+                    mapTypeControl: true,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    streetViewControl: false,
+                    fullscreenControl: true,
+                    zoomControl: true
+                });
+                
+                // Inicializar el geocoder
+                this.geocoder = new google.maps.Geocoder();
+                
+                // Crear el marcador
+                this.marker = new google.maps.Marker({
+                    map: this.map,
+                    draggable: true,
+                    animation: google.maps.Animation.DROP,
+                    visible: false
+                });
+                
+                // Configurar eventos
+                this.setupMapEvents();
+                
+                // Configurar el autocompletado de búsqueda
+                this.setupAutocomplete();
+                
+                // Marcar el mapa como cargado
+                this.mapLoaded = true;
+            } catch (error) {
+                console.error('Error al inicializar el mapa:', error);
+            }
+        },
+
+        // Configurar el autocompletado de Places
+        setupAutocomplete() {
+            if (!this.$refs.searchInputRef) return;
+            
+            // Crear el autocompletado
+            this.autocomplete = new google.maps.places.Autocomplete(this.$refs.searchInputRef, {
+                types: ['geocode']
+            });
+            
+            // Asociar el autocompletado al mapa actual
+            this.autocomplete.bindTo('bounds', this.map);
+            
+            // Manejar cambios en la selección
+            this.autocomplete.addListener('place_changed', () => {
+                const place = this.autocomplete.getPlace();
+                
+                if (!place.geometry) {
+                    alert('No se encontró información para esta ubicación');
+                    return;
+                }
+                
+                // Si el lugar tiene una geometría, mostrarla en el mapa
+                if (place.geometry.viewport) {
+                    this.map.fitBounds(place.geometry.viewport);
+                } else {
+                    this.map.setCenter(place.geometry.location);
+                    this.map.setZoom(16);
+                }
+                
+                // Actualizar el marcador
+                const latlng = {
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng()
+                };
+                
+                this.handleMapClick(latlng);
+                
+                // Actualizar la ubicación seleccionada directamente
+                this.selectedLocation = {
+                    lat: latlng.lat,
+                    lng: latlng.lng,
+                    address: place.formatted_address || 'Dirección desconocida'
+                };
+            });
+        },
+
+        // Configurar los eventos del mapa
+        setupMapEvents() {
+            if (!this.map || !this.marker) return;
+            
+            // Manejar clics en el mapa
+            this.map.addListener('click', (e) => {
+                const latlng = {
+                    lat: e.latLng.lat(),
+                    lng: e.latLng.lng()
+                };
+                this.handleMapClick(latlng);
+            });
+            
+            // Manejar arrastre del marcador
+            this.marker.addListener('dragend', () => {
+                const latlng = {
+                    lat: this.marker.getPosition().lat(),
+                    lng: this.marker.getPosition().lng()
+                };
+                this.reverseGeocode(latlng);
+            });
+        },
+
+        // Manejar clic en el mapa
+        handleMapClick(latlng) {
+            if (!this.map || !this.marker) return;
+            
+            // Actualizar la posición del marcador
+            this.marker.setPosition(new google.maps.LatLng(latlng.lat, latlng.lng));
+            this.marker.setVisible(true);
+            
+            // Obtener la dirección
+            this.reverseGeocode(latlng);
+        },
+
+        // Geocodificación inversa (coordenadas a dirección)
+        reverseGeocode(latlng) {
+            if (!this.geocoder) return;
+            
+            this.geocoder.geocode({ location: latlng }, (results, status) => {
+                if (status === 'OK' && results[0]) {
+                    this.selectedLocation = {
+                        lat: latlng.lat,
+                        lng: latlng.lng,
+                        address: results[0].formatted_address
+                    };
+                } else {
+                    this.selectedLocation = {
+                        lat: latlng.lat,
+                        lng: latlng.lng,
+                        address: 'Dirección no encontrada'
+                    };
+                }
+            });
+        },
+
+        // Confirmar la ubicación seleccionada
+        confirmLocation() {
+            if (this.selectedLocation) {
+                this.$emit('location-selected', this.selectedLocation);
+                this.$emit('close');
+            }
+        },
+
+        // Obtener la ubicación actual del usuario
+        getCurrentLocation() {
+            if (!navigator.geolocation) {
+                alert('La geolocalización no está soportada por su navegador');
+                return;
+            }
+            
+            // Marcar como cargando
+            this.isLoading = true;
+            
+            try {
+                // Intentar obtener la posición
+                navigator.geolocation.getCurrentPosition(
+                    // Éxito
+                    (position) => {
+                        // Ya no está cargando
+                        this.isLoading = false;
+                        
+                        // Verificar que el mapa esté inicializado
+                        if (!this.map) {
+                            console.error('El mapa no está inicializado');
+                            return;
+                        }
+                        
+                        const latlng = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        
+                        // Centrar el mapa y mostrar el marcador
+                        this.map.setCenter(latlng);
+                        this.map.setZoom(16);
+                        
+                        // Actualizar el marcador y buscar la dirección
+                        this.handleMapClick(latlng);
+                    },
+                    // Error
+                    (error) => {
+                        // Ya no está cargando
+                        this.isLoading = false;
+                        
+                        let message;
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED:
+                                message = 'Permiso denegado. Por favor, habilite los permisos de ubicación en su navegador y vuelva a intentarlo.';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                message = 'La información de ubicación no está disponible. Intente seleccionar manualmente una ubicación en el mapa.';
+                                break;
+                            case error.TIMEOUT:
+                                message = 'Se agotó el tiempo de espera para obtener su ubicación. Verifique su conexión y permisos, luego intente nuevamente.';
+                                break;
+                            default:
+                                message = `Error desconocido al obtener la ubicación. Código: ${error.code}. Mensaje: ${error.message}`;
+                        }
+                        
+                        console.error('Error de geolocalización:', error);
+                        alert(message);
+                    },
+                    // Opciones
+                    {
+                        enableHighAccuracy: false, // Cambiar a false para mayor compatibilidad
+                        timeout: 20000, // Aumentar a 20 segundos
+                        maximumAge: 30000 // Permitir ubicaciones de hasta 30 segundos de antigüedad
+                    }
+                );
+            } catch (e) {
+                this.isLoading = false;
+                console.error('Error al intentar obtener la ubicación:', e);
+                alert('Ocurrió un error al intentar obtener su ubicación. Por favor, inténtelo de nuevo o seleccione manualmente una ubicación.');
+            }
         }
     },
+    beforeUnmount() {
+        // Limpiar los listeners para evitar memory leaks
+        if (this.map && typeof google !== 'undefined' && google.maps) {
+            google.maps.event.clearInstanceListeners(this.map);
+        }
+        
+        if (this.marker && typeof google !== 'undefined' && google.maps) {
+            google.maps.event.clearInstanceListeners(this.marker);
+        }
+        
+        if (this.autocomplete && typeof google !== 'undefined' && google.maps) {
+            google.maps.event.clearInstanceListeners(this.autocomplete);
+        }
+    }
 };
 </script>
 
@@ -234,13 +407,13 @@ export default {
     border-radius: 4px;
 }
 
-/* Fix Leaflet marker icon */
-.leaflet-default-icon-path {
-    background-image: url("https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png");
-}
-
 .material-icons {
     font-size: 20px;
     line-height: 1;
+}
+
+/* Estilos para mejorar el autocompletado */
+.pac-container {
+    z-index: 1200 !important;
 }
 </style>
