@@ -1,5 +1,5 @@
 <template>
-    <aside class="sidebar">
+    <aside :class="['sidebar', { 'is-open': isOpen }]">
         <div class="sidebar-logo">Mi Salud Pro</div>
         <nav class="sidebar-nav">
             <ul>
@@ -40,6 +40,10 @@ export default {
             type: String,
             default: 'Inicio', // Item activo por defecto
         },
+        isOpen: { // Nueva prop para controlar la visibilidad
+            type: Boolean,
+            default: false
+        }
     },
     data() {
         return {
@@ -64,8 +68,19 @@ export default {
     methods: {
         navigate(itemName) {
             console.log(`Navegando a: ${itemName}`);
+            // Si estamos en móvil y se hace clic en un enlace, podríamos querer cerrar el sidebar
+            if (this.isOpen && window.innerWidth < 768) {
+                this.$emit('close-sidebar');
+            }
+
+            // Emitir eventos originales
             this.$emit('update:activeItem', itemName);
             this.$emit('navigate', itemName);
+
+             // Manejo especial para Logout
+             if (itemName === 'Logout') {
+                this.$emit('logout-request');
+             }
         },
     },
 };
@@ -82,6 +97,26 @@ export default {
     border-right: 1px solid #E5E7EB;
     box-shadow: 2px 0 5px rgba(0,0,0,0.05);
     overflow-y: auto;
+    position: fixed; /* Cambiado para superponer en móvil */
+    left: 0;
+    top: 0;
+    transform: translateX(-100%); /* Oculto por defecto en móvil */
+    transition: transform 0.3s ease-in-out;
+    z-index: 1000; /* Asegurar que esté por encima del contenido */
+}
+
+.sidebar.is-open {
+    transform: translateX(0); /* Mostrar sidebar */
+}
+
+/* Estilos para pantallas más grandes */
+@media (min-width: 768px) {
+    .sidebar {
+        position: static; /* Volver a posición estática en el layout */
+        transform: translateX(0); /* Siempre visible */
+        z-index: auto;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.05); /* Sombra original */
+    }
 }
 
 .sidebar-logo {
