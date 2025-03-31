@@ -44,6 +44,9 @@ export default {
                                     icon: "success",
                                     title: "¡Éxito!",
                                     text: responseData.message,
+                                }).then(() => {
+                                    localStorage.clear();
+                                    window.location.href = '/';
                                 });
                             } else {
                                 swal.fire({

@@ -7,7 +7,16 @@
                 <input type="text"
                        class="form-control"
                        ref="searchInputRef"
+                       name="searchQuery"
                        placeholder="Buscar ubicación...">
+                <button type="button"
+                        class="btn btn-primary"
+                        @click="searchLocation"
+                        title="Usar mi ubicación actual"
+                        :disabled="isLoading">
+                    <span v-if="!isLoading" class="material-icons">search</span>
+                    <span v-else class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                </button>
                 <button type="button"
                         class="btn btn-primary"
                         @click="getCurrentLocation"
@@ -354,6 +363,34 @@ export default {
                 console.error('Error al intentar obtener la ubicación:', e);
                 alert('Ocurrió un error al intentar obtener su ubicación. Por favor, inténtelo de nuevo o seleccione manualmente una ubicación.');
             }
+        },
+        searchLocation() {
+            this.searchQuery = this.$refs.searchInputRef.value;
+
+            if (!this.searchQuery) {
+                alert('Por favor, ingrese una ubicación para buscar.');
+                return;
+            }
+            this.isLoading = true;
+            this.geocoder.geocode({ address: this.searchQuery }, (results, status) => {
+                this.isLoading = false;
+                if (status === 'OK' && results[0]) {
+                    const latlng = {
+                        lat: results[0].geometry.location.lat(),
+                        lng: results[0].geometry.location.lng()
+                    };
+                    this.map.setCenter(latlng);
+                    this.map.setZoom(16);
+                    this.handleMapClick(latlng);
+                    this.selectedLocation = {
+                        lat: latlng.lat,
+                        lng: latlng.lng,
+                        address: results[0].formatted_address
+                    };
+                } else {
+                    alert('No se encontró información para esta ubicación.');
+                }
+            });
         }
     },
     beforeUnmount() {

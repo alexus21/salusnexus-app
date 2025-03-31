@@ -54,7 +54,7 @@
                                         <div class="mb-3 d-flex align-items-center">
                                             <span class="material-icons">phone</span>
                                             <input type="number" id="phone" v-model="patient_form.phone"
-                                                   class="form-control" required placeholder="Teléfono">
+                                                   class="form-control" required placeholder="Teléfono" maxlength="20">
                                         </div>
 
                                         <div class="mb-3 d-flex align-items-center">
@@ -68,7 +68,7 @@
                                             <span class="material-icons">phone_in_talk</span>
                                             <input type="number" id="emergency_contact_phone"
                                                    v-model="patient_form.emergency_contact_phone"
-                                                   class="form-control" required placeholder="Teléfono de Emergencia">
+                                                   class="form-control" required placeholder="Teléfono de Emergencia" maxlength="20">
                                         </div>
                                     </div>
                                 </div>
@@ -171,13 +171,13 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
                                                 <span class="material-icons">location_on</span>
                                             </button>
                                         </div>
-                                        <small class="text-muted"
-                                               v-if="patient_form.home_latitude && patient_form.home_longitude">
-                                            Lat: {{ patient_form.home_latitude }}, Lng: {{
-                                                patient_form.home_longitude
-                                            }}
-                                        </small>
                                     </div>
+                                    <small class="text-muted"
+                                           v-if="patient_form.home_latitude && patient_form.home_longitude">
+                                        Lat: {{ patient_form.home_latitude }}, Lng: {{
+                                            patient_form.home_longitude
+                                        }}
+                                    </small>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3 d-flex align-items-center">
@@ -321,13 +321,14 @@ export default {
                         return;
                     }
 
-                    this.clearSavedData();
                     swal.fire({
                         icon: 'success',
                         title: '¡Registro exitoso!',
                         text: 'El paciente ha sido registrado correctamente'
                     }).then(() => {
                         // Acceder al access_token dentro del objeto data
+                        localStorage.clear();
+
                         localStorage.setItem("token", responseData.data.access_token);
                         window.location.href = '/';
                     });
@@ -377,8 +378,6 @@ export default {
             this.showLocationPicker = false;
         },
         loadSavedData() {
-
-
             // Load form data
             Object.keys(this.patient_form).forEach(key => {
                 const savedValue = localStorage.getItem(key);
