@@ -160,8 +160,10 @@ export default {
                     zoomControl: true
                 });
                 
-                // Inicializar el geocoder
-                this.geocoder = new google.maps.Geocoder();
+                // Inicializar el geocoder con opciones específicas
+                this.geocoder = new google.maps.Geocoder({
+                    region: 'SV' // Especificar la región para El Salvador
+                });
                 
                 // Crear el marcador
                 this.marker = new google.maps.Marker({
@@ -188,20 +190,25 @@ export default {
         setupAutocomplete() {
             if (!this.$refs.searchInputRef) return;
             
-            // Crear el autocompletado
+            // Crear el autocompletado con configuración simplificada
             this.autocomplete = new google.maps.places.Autocomplete(this.$refs.searchInputRef, {
-                types: ['geocode']
+                componentRestrictions: { country: 'sv' }, // Restringir a El Salvador
+                fields: ['geometry', 'formatted_address', 'name'],
+                types: ['address', 'establishment', 'geocode', 'regions'],
+                strictBounds: false
             });
             
-            // Asociar el autocompletado al mapa actual
+            // Vincular al mapa para que incluya los lugares cercanos a la vista actual
             this.autocomplete.bindTo('bounds', this.map);
             
             // Manejar cambios en la selección
             this.autocomplete.addListener('place_changed', () => {
                 const place = this.autocomplete.getPlace();
                 
-                if (!place.geometry) {
-                    alert('No se encontró información para esta ubicación');
+                if (!place.geometry || !place.geometry.location) {
+                    // Si no hay geometría, probablemente el usuario presionó enter antes de seleccionar
+                    // una sugerencia del autocompletado. Usamos el geocoder para buscar manualmente.
+                    this.searchLocation();
                     return;
                 }
                 
@@ -225,8 +232,17 @@ export default {
                 this.selectedLocation = {
                     lat: latlng.lat,
                     lng: latlng.lng,
-                    address: place.formatted_address || 'Dirección desconocida'
+                    address: place.formatted_address || place.name || 'Dirección desconocida'
                 };
+            });
+
+            // Manejar el evento keydown para evitar el envío del formulario
+            this.$refs.searchInputRef.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    // Si no hay lugar seleccionado, realizar búsqueda manual
+                    this.searchLocation();
+                }
             });
         },
 
@@ -367,9 +383,10 @@ export default {
             }
         },
         searchLocation() {
-            this.searchQuery = this.$refs.searchInputRef.value;
+            // Obtener el valor del input usando la referencia
+            const searchValue = this.$refs.searchInputRef.value;
 
-            if (!this.searchQuery) {
+            if (!searchValue) {
                 swal.fire({
                     icon: 'warning',
                     title: '¡Advertencia!',
@@ -377,24 +394,43 @@ export default {
                 });
                 return;
             }
+
             this.isLoading = true;
-            this.geocoder.geocode({ address: this.searchQuery }, (results, status) => {
+            
+            // Usar el geocoder para buscar la ubicación con opciones específicas
+            this.geocoder.geocode({
+                address: searchValue,
+                region: 'SV', // Especificar la región para El Salvador
+                componentRestrictions: { country: 'sv' } // Restringir búsqueda a El Salvador
+            }, (results, status) => {
                 this.isLoading = false;
-                if (status === 'OK' && results[0]) {
+                
+                if (status === 'OK' && results && results.length > 0) {
                     const latlng = {
                         lat: results[0].geometry.location.lat(),
                         lng: results[0].geometry.location.lng()
                     };
+                    
+                    // Centrar el mapa en la ubicación encontrada
                     this.map.setCenter(latlng);
                     this.map.setZoom(16);
+                    
+                    // Actualizar el marcador y la ubicación seleccionada
                     this.handleMapClick(latlng);
+                    
+                    // Actualizar la ubicación seleccionada
                     this.selectedLocation = {
                         lat: latlng.lat,
                         lng: latlng.lng,
                         address: results[0].formatted_address
                     };
                 } else {
-                    alert('No se encontró información para esta ubicación.');
+                    console.error('Error en la búsqueda:', status);
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se encontró información para esta ubicación. Intente con una dirección más específica.',
+                    });
                 }
             });
         }
@@ -458,5 +494,40 @@ export default {
 /* Estilos para mejorar el autocompletado */
 .pac-container {
     z-index: 1200 !important;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    margin-top: 4px;
+}
+
+.pac-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.pac-item:hover {
+    background-color: #f8f9fa;
+}
+
+.pac-item-selected {
+    background-color: #e9ecef;
+}
+
+.pac-matched {
+    font-weight: bold;
+}
+
+.pac-item-query {
+    font-size: 14px;
+    padding-right: 3px;
+    color: #000;
+}
+
+.pac-icon {
+    margin-right: 8px;
+}
+
+.pac-logo:after {
+    display: none;
 }
 </style>
