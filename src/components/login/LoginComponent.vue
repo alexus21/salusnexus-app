@@ -6,39 +6,37 @@
 
                 <form @submit.prevent="login">
                     <div class="row">
-                        <div class="col text-start">
-                            <label for="email" class="form-label">Correo Electrónico</label>
-                        </div>
-                        <div class="col">
+                        <div class="mb-3 d-flex align-items-center">
+                            <span class="material-icons">email</span>
                             <input type="email" id="email" v-model="form.email" class="form-control"
                                    placeholder="Ingresa tu correo electrónico" required>
                         </div>
                     </div>
-                    <div class="row mt-3">
-                        <div class="col text-start">
-                            <label for="password" class="form-label">Contraseña</label>
-                        </div>
-                        <div class="col">
+                    <div class="row">
+                        <div class="mb-3 d-flex align-items-center">
+                            <span class="material-icons">lock</span>
                             <input type="password" id="password" v-model="form.password"
                                    class="form-control" placeholder="Ingresa tu contraseña" required>
                         </div>
                     </div>
-                    <div class="row mt-3 d-flex align-items-center">
+                    <div class="row">
                         <div class="col">
                             <a href="#" @click="forgotPassword" class="text-muted">¿Olvidaste tu contraseña?</a>
                         </div>
+                    </div>
+                    <div class="row mt-3 d-flex align-items-center justify-content-end">
                         <div class="col-auto">
                             <div class="d-flex gap-2 justify-content-center align-items-center">
                                 <button type="submit"
                                         title="Iniciar Sesión"
-                                        class="btn btn-primary">
+                                        class="btn btn-primary d-flex align-items-center justify-content-center">
                                     <span class="material-icons">login</span>
                                 </button>
                                 <button type="button"
                                         title="Cancelar"
-                                        class="btn btn-secondary justify-content-center align-items-center"
+                                        class="btn btn-secondary d-flex align-items-center justify-content-center"
                                         @click="cancelLogin">
-                                    <span class="material-icons">close</span>
+                                    <span class="material-icons">cancel</span>
                                 </button>
                             </div>
                         </div>
@@ -100,10 +98,10 @@ export default {
                     // Guardamos los datos de respuesta
                     const token = responseData.data.access_token;
                     const message = responseData.message;
-                    
+
                     // Cerramos el modal de login primero
                     this.$emit('close');
-                    
+
                     // Luego mostramos la alerta de éxito
                     setTimeout(() => {
                         swal.fire({
@@ -180,5 +178,13 @@ a:hover {
 
 .mt-3 {
     margin-top: 1rem;
+}
+
+input[type=text], input[type=password], input[type=email], input[type=date], input[type=number], select {
+    box-sizing: border-box;
+    border: none;
+    border-bottom: 2px solid #434ed1;
+    border-radius: 0;
+    padding: 10px;
 }
 </style>
