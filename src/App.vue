@@ -1,5 +1,5 @@
 <template>
-    <HeaderComponent @open-register-component="showRegisterModal" @open-login-component="showLoginModal"></HeaderComponent>
+    <HeaderComponent v-if="!hideHeader" @open-register-component="showRegisterModal" @open-login-component="showLoginModal"></HeaderComponent>
     <RegisterComponent v-if="showRegisterComponent" @close="showRegisterComponent = false"></RegisterComponent>
     <LoginComponent v-if="showLoginComponent" @close="showLoginComponent = false"></LoginComponent>
     <router-view></router-view>
@@ -24,12 +24,17 @@ export default {
             showLoginComponent: false
         }
     },
+    computed: {
+        hideHeader() {
+            return this.$route.meta.hideHeader || false;
+        }
+    },
     methods: {
         showRegisterModal() {
             this.showRegisterComponent = true;
         },
         showLoginModal() {
-            this.showLoginComponent = true;
+            this.$router.push('/login');
         },
     }
 }

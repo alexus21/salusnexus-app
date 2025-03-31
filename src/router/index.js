@@ -4,6 +4,7 @@ import DashboardLayout from "@/components/main/healthcareProfessionals/Dashboard
 import UserProfileComponent from "@/components/userprofile/UserProfileComponent.vue";
 import PatientSusbcriptionPlansComponent
     from "@/components/subscriptionplan/patients/PatientSusbcriptionPlansComponent.vue";
+import LoginPage from "@/components/login/LoginPage.vue";
 
 import {validateAuth} from "@/utils/auth";
 
@@ -16,6 +17,14 @@ const routes = [
     {
         path: '/home',
         redirect: '/'
+    },
+    {
+        path: '/login',
+        name: 'Login',
+        component: LoginPage,
+        meta: {
+            hideHeader: true
+        }
     },
     {
         path: '/dashboard',

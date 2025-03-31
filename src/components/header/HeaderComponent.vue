@@ -103,7 +103,7 @@ export default {
             this.$emit('open-register-component');
         },
         handleLoginClick() {
-            this.$emit('open-login-component');
+            this.$router.push('/login');
         },
         handleProfileClick() {
             window.location.href = "/userprofile";
