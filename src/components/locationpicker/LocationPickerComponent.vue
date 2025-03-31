@@ -59,6 +59,8 @@
 
 <script>
 // /* global google */
+import swal from "sweetalert2";
+
 export default {
     name: 'LocationPickerComponent',
     data() {
@@ -368,7 +370,11 @@ export default {
             this.searchQuery = this.$refs.searchInputRef.value;
 
             if (!this.searchQuery) {
-                alert('Por favor, ingrese una ubicación para buscar.');
+                swal.fire({
+                    icon: 'warning',
+                    title: '¡Advertencia!',
+                    text: 'Por favor, ingrese una ubicación para buscar.',
+                });
                 return;
             }
             this.isLoading = true;
