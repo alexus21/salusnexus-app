@@ -1,12 +1,12 @@
 <template>
-    <div class="row d-flex justify-content-center">
+    <div class="row d-flex justify-content-center m-3 gap-lg-3">
         <button id="btnMonthlyPayment">Mensual</button>
         <button id="btnYearlyPayment" class="d-flex align-items-center justify-content-center">
             Anual <p id="saving">
             Ahorre 20%</p>
         </button>
     </div>
-    <div class="row d-flex justify-content-center">
+    <div class="row d-flex justify-content-center m-3">
         <div class="col-md-auto p-3 m-3 text-start subscription-card" id="basicPlanInfo">
             <div class="row d-flex justify-content-start ms-1">
                 <p class="btn btn-light text-black border-1 border-dark-subtle"
@@ -34,7 +34,7 @@
                    />
                 </ul>
             </div>
-            <div class="row d-flex justify-content-center align-items-center mt-auto pt-3">
+            <div class="row d-flex justify-content-center align-items-center mt-auto pt-3 m-1">
                 <button class="btn btn-dark text-white border-1 border-black w-100">
                     Comenzar gratis
                 </button>
@@ -71,7 +71,7 @@
                     />
                 </ul>
             </div>
-            <div class="row d-flex justify-content-center align-items-center mt-auto pt-3">
+            <div class="row d-flex justify-content-center align-items-center mt-auto pt-3 m-1">
                 <button class="btn btn-dark text-white border-1 border-black w-100">
                     Comenzar prueba gratuita de 14 días
                 </button>
@@ -81,7 +81,7 @@
             </div>
         </div>
     </div>
-    <div class="col">
+    <div class="col m-3">
         <div class="row d-flex justify-content-center">
             <p style="font-size: 25px; font-family: 'Arial', sans-serif, 'Comic Sans MS', cursive">Métodos de pago</p>
         </div>
@@ -145,7 +145,7 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    width: 200px;
+    width: 250px;
     height: 50px;
     border-radius: 5px;
 }
