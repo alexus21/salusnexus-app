@@ -20,26 +20,26 @@
                                 <div class="row">
                                     <!-- Primera columna -->
                                     <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="first_name" class="form-label">Nombre</label>
+                                        <div class="mb-3 d-flex align-items-center">
+                                            <span class="material-icons me-2">person</span>
                                             <input type="text" id="first_name" v-model="patient_form.first_name"
-                                                   class="form-control" required>
+                                                   class="form-control" required placeholder="Nombre">
                                         </div>
 
-                                        <div class="mb-3">
-                                            <label for="last_name" class="form-label">Apellido</label>
+                                        <div class="mb-3 d-flex align-items-center">
+                                            <span class="material-icons">badge</span>
                                             <input type="text" id="last_name" v-model="patient_form.last_name"
-                                                   class="form-control" required>
+                                                   class="form-control" required placeholder="Apellidos">
                                         </div>
 
-                                        <div class="mb-3">
-                                            <label for="date_of_birth" class="form-label">Fecha de Nacimiento</label>
+                                        <div class="mb-3 d-flex align-items-center">
+                                            <span class="material-icons">cake</span>
                                             <input type="date" id="date_of_birth" v-model="patient_form.date_of_birth"
-                                                   class="form-control" required>
+                                                   class="form-control" required placeholder="Fecha de Nacimiento">
                                         </div>
 
-                                        <div class="mb-3">
-                                            <label for="gender" class="form-label">Género</label>
+                                        <div class="mb-3 d-flex align-items-center">
+                                            <span class="material-icons">wc</span>
                                             <select id="gender" v-model="patient_form.gender" class="form-select"
                                                     required>
                                                 <option value="">Seleccione un género</option>
@@ -51,26 +51,24 @@
 
                                     <!-- Segunda columna -->
                                     <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="phone" class="form-label">Teléfono principal</label>
+                                        <div class="mb-3 d-flex align-items-center">
+                                            <span class="material-icons">phone</span>
                                             <input type="number" id="phone" v-model="patient_form.phone"
-                                                   class="form-control" required>
+                                                   class="form-control" required placeholder="Teléfono">
                                         </div>
 
-                                        <div class="mb-3">
-                                            <label for="emergency_contact_name" class="form-label">Contacto de
-                                                Emergencia</label>
+                                        <div class="mb-3 d-flex align-items-center">
+                                            <span class="material-icons">contact_emergency</span>
                                             <input type="text" id="emergency_contact_name"
                                                    v-model="patient_form.emergency_contact_name"
-                                                   class="form-control" required>
+                                                   class="form-control" required placeholder="Contacto de Emergencia">
                                         </div>
 
-                                        <div class="mb-3">
-                                            <label for="emergency_contact_phone" class="form-label">Teléfono de
-                                                Emergencia</label>
+                                        <div class="mb-3 d-flex align-items-center">
+                                            <span class="material-icons">phone_in_talk</span>
                                             <input type="number" id="emergency_contact_phone"
                                                    v-model="patient_form.emergency_contact_phone"
-                                                   class="form-control" required>
+                                                   class="form-control" required placeholder="Teléfono de Emergencia">
                                         </div>
                                     </div>
                                 </div>
@@ -79,7 +77,7 @@
                             <!-- Paso 2 -->
                             <div class="carousel-item" :class="{ active: currentStep === 2 }">
                                 <div class="text-center">
-                                    <textarea class="form-control" rows="6" readonly>
+                                    <textarea class="form-control" rows="6" style="height: 50vh;" readonly>
 TÉRMINOS Y CONDICIONES DE USO
 
 1. Aceptación de Términos
@@ -133,28 +131,27 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
                         <div class="carousel-item" :class="{ active: currentStep === 4 }">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Correo Electrónico</label>
+                                    <div class="mb-3 d-flex align-items-center">
+                                        <span class="material-icons">email</span>
                                         <input type="email" id="email" v-model="patient_form.email"
-                                               class="form-control" required>
+                                               class="form-control" required placeholder="Correo electrónico">
                                     </div>
                                 </div>
 
                                 <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="password" class="form-label">Contraseña</label>
+                                    <div class="mb-3 d-flex align-items-center">
+                                        <span class="material-icons">lock</span>
                                         <input type="password" id="password" v-model="patient_form.password"
-                                               class="form-control" required>
+                                               class="form-control" required placeholder="Contraseña">
                                     </div>
                                 </div>
 
                                 <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="confirm_password" class="form-label">Confirmar
-                                            Contraseña</label>
+                                    <div class="mb-3 d-flex align-items-center">
+                                        <span class="material-icons">lock_open</span>
                                         <input type="password" id="confirm_password"
                                                v-model="patient_form.confirm_password"
-                                               class="form-control" required>
+                                               class="form-control" required placeholder="Repita su contraseña">
                                     </div>
                                 </div>
                             </div>
@@ -164,11 +161,11 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
                         <div class="carousel-item" :class="{ active: currentStep === 5 }">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="home_address_1" class="form-label">Dirección Principal</label>
+                                    <div class="mb-3 d-flex align-items-center">
+                                        <span class="material-icons">home</span>
                                         <div class="input-group">
                                             <input type="text" id="home_address_1" v-model="patient_form.home_address_1"
-                                                   class="form-control" required readonly>
+                                                   class="form-control" required readonly placeholder="Dirección de residencia">
                                             <button type="button" class="btn btn-primary"
                                                     @click="openLocationPicker('home_address_1')">
                                                 <span class="material-icons">location_on</span>
@@ -183,12 +180,11 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="home_address_reference" class="form-label">Dirección Secundaria
-                                            (referencia)</label>
+                                    <div class="mb-3 d-flex align-items-center">
+                                        <span class="material-icons">location_city</span>
                                         <input type="text" id="home_address_reference"
                                                v-model="patient_form.home_address_reference"
-                                               class="form-control" required>
+                                               class="form-control" required placeholder="Dirección de referencia">
                                     </div>
                                 </div>
                             </div>
@@ -541,5 +537,13 @@ export default {
     border-radius: 10px;
     margin: 0 auto 2rem;
     max-width: 900px;
+}
+
+input[type=text], input[type=password], input[type=email], input[type=date],input[type=number], select {
+    box-sizing: border-box;
+    border: none;
+    border-bottom: 2px solid #434ed1;
+    border-radius: 0;
+    padding: 10px;
 }
 </style>

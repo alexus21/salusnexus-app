@@ -116,8 +116,8 @@ export default {
                 showCancelButton: true,
                 confirmButtonText: "Sí, cerrar sesión",
                 cancelButtonText: "Cancelar",
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
+                confirmButtonColor: "#434ed1",
+                cancelButtonColor: "#d1434e",
             }).then((result) => {
                 if (result.isConfirmed) {
                     fetch(API_URL + "/logout", {
