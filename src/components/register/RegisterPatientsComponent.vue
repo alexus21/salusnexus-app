@@ -164,10 +164,10 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
                                     <div class="mb-3 d-flex align-items-center">
                                         <span class="material-icons">home</span>
                                         <div class="input-group">
-                                            <input type="text" id="home_address_1" v-model="patient_form.home_address_1"
+                                            <input type="text" id="home_address" name="home_address" v-model="patient_form.home_address"
                                                    class="form-control" required readonly placeholder="Dirección de residencia">
                                             <button type="button" class="btn btn-primary"
-                                                    @click="openLocationPicker('home_address_1')">
+                                                    @click="openLocationPicker('home_address')">
                                                 <span class="material-icons">location_on</span>
                                             </button>
                                         </div>
@@ -253,7 +253,7 @@ export default {
                 email: '',
                 date_of_birth: '',
                 gender: '',
-                home_address_1: '',
+                home_address: '',
                 home_latitude: '',
                 home_longitude: '',
                 home_address_reference: '',
@@ -284,7 +284,7 @@ export default {
                         !this.patient_form.password ||
                         this.patient_form.password !== this.patient_form.confirm_password;
                 case 5:
-                    return !this.patient_form.home_address_1 || !this.patient_form.home_address_reference;
+                    return !this.patient_form.home_address || !this.patient_form.home_address_reference;
                 default:
                     return false;
             }

@@ -33,7 +33,7 @@
                     </li>
                     <li class="list-group-item d-flex align-items-center">
                         <span class="material-icons text-primary me-3">home </span>
-                        {{ user ? user.home_address_1 : 'Cargando...' }}
+                        {{ user ? user.home_address : 'Cargando...' }}
                     </li>
                     <li class="list-group-item d-flex align-items-center">
                         <span class="material-icons text-primary me-3">emergency </span>
