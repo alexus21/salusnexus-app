@@ -21,7 +21,7 @@
                         <span class="fw-bold">Simplificada</span>
                     </h1>
                 </div>
-                <div class="mb-md-5 mb-3">
+                <div class="mb-md-5 mb-4">
                     <p class="home-description lead">
                         <i class="feature-icon fas fa-check-circle"></i> Una plataforma diseñada para que los profesionales
                         en el área de la salud gestionen sus citas, pacientes y
@@ -44,7 +44,7 @@
                 </div>
                 <div class="d-grid gap-3 d-md-flex justify-content-md-start justify-content-center">
                     <button type="button"
-                            class="btn btn-primary-custom btn-lg px-4 me-md-2"
+                            class="btn btn-primary-custom btn-lg px-4 me-md-2 mb-2 mb-md-0"
                             @click="handleStartNowClick">
                         <i class="fas fa-play-circle me-2"></i>Comienza Ahora
                     </button>
@@ -54,8 +54,8 @@
                         <i class="fas fa-info-circle me-2"></i>Más Información
                     </button>
                 </div>
-                <div class="trusted-by mt-4">
-                    <p class="text-muted small mb-2">Utilizado por profesionales de:</p>
+                <div class="trusted-by mt-4 mb-md-0 mb-5">
+                    <p class="text-muted-darker small mb-2">Utilizado por profesionales de:</p>
                     <div class="trusted-logos">
                         <div class="trusted-logo">Hospital A</div>
                         <div class="trusted-logo">Clínica B</div>
@@ -65,9 +65,11 @@
             </div>
             <div class="col-md-6 mt-md-0 mt-4">
                 <div class="text-center home-image-container">
-                    <img src="/home-picture.svg"
-                         alt="Ilustración SalusNexus"
-                         class="img-fluid home-image"/>
+                    <div class="image-frame">
+                        <img src="/home-picture.svg"
+                             alt="Ilustración SalusNexus"
+                             class="img-fluid home-image"/>
+                    </div>
                     <div class="floating-bubble bubble-1">
                         <i class="fas fa-calendar"></i>
                     </div>
@@ -81,11 +83,14 @@
             </div>
         </div>
         
-        <!-- Indicador de scroll -->
-        <div class="scroll-indicator">
-            <a href="#benefits" class="scroll-down">
-                <i class="fas fa-chevron-down"></i>
-            </a>
+        <!-- Indicador de scroll mejorado -->
+        <div class="scroll-indicator-wrapper">
+            <div class="scroll-text">Descubre más</div>
+            <div class="scroll-indicator">
+                <a href="#benefits" class="scroll-down">
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+            </div>
         </div>
         
         <!-- Nueva sección de beneficios para llenar el espacio vacío -->
@@ -219,7 +224,7 @@ body {
 
 /* Descripción con más espaciado y elementos de feature */
 .home-description {
-    color: #555;
+    color: #444;
     line-height: 1.6;
     margin-bottom: 1.2rem;
     animation: fadeInUp 1s;
@@ -267,9 +272,9 @@ body {
 }
 
 .trusted-logo {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    color: #666;
+    color: #444;
 }
 
 /* Blobs mejorados detrás de la ilustración */
@@ -362,37 +367,78 @@ body {
     animation-delay: 3s;
 }
 
-/* Imagen principal con sombra mejorada */
+/* Imagen principal con sombra más sutil */
 .home-image {
     max-width: 90%;
     height: auto;
-    filter: drop-shadow(0 25px 25px rgba(208, 208, 208, 0.18));
+    filter: drop-shadow(0 10px 15px rgba(208, 208, 208, 0.12));
     position: relative;
     z-index: 1;
     transition: transform 0.5s ease;
 }
 
 .home-image:hover {
-    transform: translateY(-5px);
+    transform: translateY(-2px);
 }
 
-/* Indicador de scroll */
+/* Indicador de scroll mejorado */
+.scroll-indicator-wrapper {
+    position: relative;
+    text-align: center;
+    margin-top: 2rem;
+    margin-bottom: -2rem;
+    padding-top: 1.5rem;
+    z-index: 10;
+}
+
+.scroll-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #0d6efd;
+    margin-bottom: 0.5rem;
+    opacity: 0.9;
+}
+
 .scroll-indicator {
-    position: absolute;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    animation: bounce 2s infinite;
+    position: relative;
+    display: inline-block;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background-color: rgba(13, 110, 253, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    animation: pulseIndicator 2s infinite;
 }
 
 .scroll-down {
     color: #0d6efd;
-    opacity: 0.7;
+    opacity: 1;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 
 .scroll-down:hover {
-    opacity: 1;
+    background-color: rgba(13, 110, 253, 0.2);
+}
+
+.scroll-down i {
+    animation: bounce 2s infinite;
+}
+
+@keyframes pulseIndicator {
+    0% {
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(13, 110, 253, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+    }
 }
 
 /* Estilos de botones mejorados */
@@ -508,13 +554,13 @@ body {
 
 @keyframes bounce {
     0%, 20%, 50%, 80%, 100% {
-        transform: translateX(-50%) translateY(0);
+        transform: translateY(0);
     }
     40% {
-        transform: translateX(-50%) translateY(-10px);
+        transform: translateY(-8px);
     }
     60% {
-        transform: translateX(-50%) translateY(-5px);
+        transform: translateY(-4px);
     }
 }
 
@@ -522,42 +568,73 @@ body {
 @media (max-width: 767px) {
     .container {
         padding-top: 1.5rem;
-        padding-bottom: 1.5rem;
+        padding-bottom: 3rem;
         max-width: 100%;
     }
     
     .feature-list {
         justify-content: center;
+        margin-top: 1.2rem;
+        gap: 0.8rem;
+    }
+    
+    .feature-item {
+        padding: 0.6rem 1.2rem;
     }
     
     .trusted-logos {
         justify-content: center;
+        flex-wrap: wrap;
     }
     
     .home-title {
         font-size: 2.2rem;
         line-height: 1.1;
-        margin-bottom: 0.5rem;
-    }
-    
-    .display-4 {
-        font-size: calc(1.25rem + 1.5vw);
+        margin-bottom: 0.8rem;
     }
     
     .lead {
-        font-size: 0.95rem;
-        line-height: 1.4;
-        margin-bottom: 1rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        margin-bottom: 1.2rem;
+    }
+    
+    .home-image-container {
+        margin-bottom: 4rem;
+        overflow: visible;
+        position: relative;
+    }
+    
+    .image-frame {
+        padding: 8px;
+        max-width: 85%;
     }
     
     .home-image {
-        max-width: 80%;
-        margin-top: 1rem;
+        max-width: 100%;
+        margin: 0;
     }
     
     .floating-bubble {
-        width: 40px;
-        height: 40px;
+        width: 45px;
+        height: 45px;
+        position: absolute;
+        z-index: 2;
+    }
+    
+    .bubble-1 {
+        top: 15%;
+        right: 18%;
+    }
+    
+    .bubble-2 {
+        top: 45%;
+        right: 8%;
+    }
+    
+    .bubble-3 {
+        top: 70%;
+        right: 22%;
     }
     
     .d-grid {
@@ -565,89 +642,49 @@ body {
         max-width: 300px;
         margin-left: auto;
         margin-right: auto;
-        gap: 0.75rem !important;
+        gap: 1rem !important;
     }
     
     .d-grid .btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
         width: 100%;
+        margin-bottom: 0.5rem;
     }
     
     .btn-lg {
-        padding: 0.5rem 1rem !important;
-        font-size: 0.9rem !important;
+        padding: 0.6rem 1.2rem !important;
+        font-size: 1rem !important;
     }
     
-    .d-grid .me-md-2 {
-        margin-right: 0 !important;
-    }
-    
-    .mb-3 {
-        margin-bottom: 0.75rem !important;
-    }
-    
-    .mt-4 {
-        margin-top: 1rem !important;
-    }
-    
-    .decorative-element {
-        opacity: 0.1;
-    }
-    
-    .home-image-container {
-        margin-bottom: 3rem;
-        overflow: visible;
-        position: relative;
-    }
-    
-    .floating-bubble {
-        width: 40px;
-        height: 40px;
-        position: absolute;
-        z-index: 2;
-    }
-    
-    .bubble-1 {
-        top: 10%;
-        right: 20%;
-    }
-    
-    .bubble-2 {
-        top: 40%;
-        right: 10%;
-    }
-    
-    .bubble-3 {
-        top: 60%;
-        right: 25%;
-    }
-    
-    .scroll-indicator {
-        bottom: -50px;
+    .scroll-indicator-wrapper {
+        margin-top: 0.5rem;
+        margin-bottom: -1rem;
     }
     
     .benefit-card {
-        padding: 1.5rem;
-        margin-bottom: 1rem;
+        padding: 1.8rem;
+        margin-bottom: 1.5rem;
     }
     
     .benefit-icon {
-        width: 60px;
-        height: 60px;
-        margin-bottom: 1rem;
+        width: 65px;
+        height: 65px;
+        margin-bottom: 1.2rem;
     }
     
     .benefit-icon i {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
     }
     
     .section-title {
-        font-size: 1.75rem;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
     }
     
     .section-subtitle {
-        font-size: 1rem;
+        font-size: 1.05rem;
+        padding: 0 1rem;
     }
 }
 
@@ -674,10 +711,11 @@ body {
 }
 
 .section-subtitle {
-    color: #666;
+    color: #444;
     font-size: 1.1rem;
     max-width: 700px;
     margin: 0 auto;
+    font-weight: 400;
 }
 
 .benefit-card {
@@ -738,8 +776,29 @@ body {
 }
 
 .benefit-description {
-    color: #555;
+    color: #444;
     font-size: 0.95rem;
     line-height: 1.6;
+}
+
+/* Mejora del marco de imagen - simplificado sin efectos fuertes */
+.image-frame {
+    position: relative;
+    padding: 5px;
+    border-radius: 12px;
+    background: transparent;
+    z-index: 1;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.image-frame:hover {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Textos mejorados de contraste */
+.text-muted-darker {
+    color: #666 !important;
 }
 </style>
