@@ -54,7 +54,7 @@
                         <i class="fas fa-info-circle me-2"></i>Más Información
                     </button>
                 </div>
-                <div class="trusted-by mt-4 mb-md-0 mb-5">
+                <div class="trusted-by mt-4">
                     <p class="text-muted-darker small mb-2">Utilizado por profesionales de:</p>
                     <div class="trusted-logos">
                         <div class="trusted-logo">Hospital A</div>
@@ -63,7 +63,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 mt-md-0 mt-4">
+            <div class="col-md-6 mt-md-0 d-none d-md-block">
                 <div class="text-center home-image-container">
                     <div class="image-frame">
                         <img src="/home-picture.svg"
@@ -82,6 +82,9 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Versión móvil de la imagen como fondo (solo visible en móvil) -->
+        <div class="mobile-background-image d-md-none"></div>
         
         <!-- Indicador de scroll mejorado -->
         <div class="scroll-indicator-wrapper">
@@ -570,6 +573,7 @@ body {
         padding-top: 1.5rem;
         padding-bottom: 3rem;
         max-width: 100%;
+        position: relative;
     }
     
     .feature-list {
@@ -599,44 +603,6 @@ body {
         margin-bottom: 1.2rem;
     }
     
-    .home-image-container {
-        margin-bottom: 4rem;
-        overflow: visible;
-        position: relative;
-    }
-    
-    .image-frame {
-        padding: 8px;
-        max-width: 85%;
-    }
-    
-    .home-image {
-        max-width: 100%;
-        margin: 0;
-    }
-    
-    .floating-bubble {
-        width: 45px;
-        height: 45px;
-        position: absolute;
-        z-index: 2;
-    }
-    
-    .bubble-1 {
-        top: 15%;
-        right: 18%;
-    }
-    
-    .bubble-2 {
-        top: 45%;
-        right: 8%;
-    }
-    
-    .bubble-3 {
-        top: 70%;
-        right: 22%;
-    }
-    
     .d-grid {
         width: 100%;
         max-width: 300px;
@@ -658,7 +624,7 @@ body {
     }
     
     .scroll-indicator-wrapper {
-        margin-top: 0.5rem;
+        margin-top: 2rem;
         margin-bottom: -1rem;
     }
     
@@ -800,5 +766,23 @@ body {
 /* Textos mejorados de contraste */
 .text-muted-darker {
     color: #666 !important;
+}
+
+/* Imagen de fondo para móviles */
+.mobile-background-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Comentado para resolver el error de ruta - se necesita ajustar la ruta correcta */
+    /* background-image: url('/home-picture.svg'); */
+    background-color: rgba(208, 235, 255, 0.1); /* Fondo alternativo sutil */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
 }
 </style>
