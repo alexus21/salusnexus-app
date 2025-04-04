@@ -259,7 +259,7 @@ export default {
                 last_name: '',
                 phone: '',
                 email: '',
-                date_of_birth: new Date().toISOString().split('T')[0], // Inicializar con la fecha actual
+                date_of_birth: new Date().toISOString().split('T')[0],
                 gender: '',
                 emergency_contact_name: '',
                 emergency_contact_phone: '',
@@ -411,8 +411,16 @@ export default {
             this.$emit('close');
         },
         handleDayClick(day) {
-            this.patient_form.date_of_birth = day.date.toISOString().split('T')[0];
-            console.log(this.patient_form.date_of_birth);
+            const selectedDate = day.date.toISOString().split('T')[0];
+            const today = new Date().toISOString().split('T')[0];
+
+            if (selectedDate <= today) {
+                this.patient_form.date_of_birth = selectedDate;
+                console.log(this.patient_form.date_of_birth);
+            } else {
+                console.log('Selected date is in the future and not allowed.');
+            }
+
             this.hideDatePicker();
         },
         showDatePicker() {
