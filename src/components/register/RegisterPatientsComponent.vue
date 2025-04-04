@@ -34,9 +34,31 @@
 
                                         <div class="mb-3 d-flex align-items-center">
                                             <span class="material-icons">cake</span>
-                                            <input type="date" id="date_of_birth" v-model="patient_form.date_of_birth"
-                                                   class="form-control" required placeholder="Fecha de Nacimiento">
+                                            <input
+                                                    id="date_of_birth"
+                                                    type="date"
+                                                    v-model="patient_form.date_of_birth"
+                                                    class="form-control"
+                                                    readonly
+                                                    placeholder="Fecha de Nacimiento"
+                                                    @click="showDatePicker"
+                                            />
                                         </div>
+                                        <DatePicker
+                                            class="form-control d-none"
+                                            id="datePicker"
+                                            expanded
+                                            title-position="right"
+                                            v-model="patient_form.date_of_birth"
+                                            mode="date"
+                                            :max-date="maxDate"
+                                            :min-date="minDate"
+                                            :value="new Date()"
+                                            transition="fade"
+                                            locale="es-SV"
+                                            timezone="UTC"
+                                            @dayclick="handleDayClick"
+                                        />
 
                                         <div class="mb-3 d-flex align-items-center">
                                             <span class="material-icons">wc</span>
@@ -214,10 +236,18 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
 
 <script>
 import swal from "sweetalert2";
+// import { Calendar } from 'v-calendar';
+import { DatePicker } from 'v-calendar';
+import 'v-calendar/style.css';
+
 
 const API_URL = process.env.VUE_APP_API_URL;
 
 export default {
+    components: {
+        // Calendar,
+        DatePicker,
+    },
     data() {
         return {
             currentStep: 1,
@@ -229,7 +259,7 @@ export default {
                 last_name: '',
                 phone: '',
                 email: '',
-                date_of_birth: '',
+                date_of_birth: new Date().toISOString().split('T')[0], // Inicializar con la fecha actual
                 gender: '',
                 emergency_contact_name: '',
                 emergency_contact_phone: '',
@@ -238,7 +268,10 @@ export default {
                 accept_terms: false,
                 user_rol: 'paciente'
             },
-            errors: {}
+            errors: {},
+            date: new Date(),
+            minDate: new Date(new Date().setFullYear(new Date().getFullYear() - 100)),
+            maxDate: new Date(),
         };
     },
     computed: {
@@ -252,13 +285,9 @@ export default {
                 case 2:
                     return !this.patient_form.accept_terms;
                 case 3:
-                    return false;
-                case 4:
                     return !this.patient_form.email ||
                         !this.patient_form.password ||
                         this.patient_form.password !== this.patient_form.confirm_password;
-                case 5:
-                    return !this.patient_form.home_address || !this.patient_form.home_address_reference;
                 default:
                     return false;
             }
@@ -380,11 +409,25 @@ export default {
         handleClose() {
             this.clearSavedData();
             this.$emit('close');
+        },
+        handleDayClick(day) {
+            this.patient_form.date_of_birth = day.date.toISOString().split('T')[0];
+            console.log(this.patient_form.date_of_birth);
+            this.hideDatePicker();
+        },
+        showDatePicker() {
+            const datePicker = document.getElementById('datePicker');
+            datePicker.classList.remove('d-none');
+        },
+        hideDatePicker() {
+            const datePicker = document.getElementById('datePicker');
+            datePicker.classList.add('d-none');
         }
     },
     mounted() {
         // Load saved data when component mounts
         this.loadSavedData();
+        this.patient_form.date_of_birth = new Date().toISOString().split('T')[0];
 
         this.beforeUnloadHandler = () => {
             // Save all form data
