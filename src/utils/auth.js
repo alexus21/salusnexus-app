@@ -1,5 +1,8 @@
 export async function validateAuth() {
     const API_URL = process.env.VUE_APP_API_URL;
+    if (!localStorage.getItem('token')) {
+        return false;
+    }
     try {
         const response = await fetch(`${API_URL}/validate`, {
             method: 'GET',

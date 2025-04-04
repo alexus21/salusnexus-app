@@ -112,23 +112,6 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
 
                         <!-- Paso 3 -->
                         <div class="carousel-item" :class="{ active: currentStep === 3 }">
-                            <div class="text-center mb-4">
-                                <div class="profile-photo-container">
-                                    <div class="profile-photo">
-                                            <span v-if="!patient_form.photo" class="material-icons photo-placeholder">
-                                                add_a_photo
-                                            </span>
-                                        <img v-else :src="patient_form.photo" alt="Foto de perfil">
-                                    </div>
-                                    <input type="file" id="photo" @change="handlePhotoUpload" accept="image/*"
-                                           class="d-none">
-                                    <label for="photo" class="btn btn-sm btn-primary mt-2">Subir foto</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Paso 4 -->
-                        <div class="carousel-item" :class="{ active: currentStep === 4 }">
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="mb-3 d-flex align-items-center">
@@ -158,7 +141,7 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
                         </div>
 
                         <!-- Paso 5 -->
-                        <div class="carousel-item" :class="{ active: currentStep === 5 }">
+<!--                        <div class="carousel-item" :class="{ active: currentStep === 5 }">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3 d-flex align-items-center">
@@ -192,7 +175,7 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
                             <LocationPickerComponent v-if="showLocationPicker"
                                                      @location-selected="handleLocationSelected"
                                                      @close="showLocationPicker = false"/>
-                        </div>
+                        </div>-->
 
                         <!-- Botones de navegación -->
                         <div class="navigation-footer">
@@ -231,32 +214,23 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
 
 <script>
 import swal from "sweetalert2";
-import LocationPickerComponent from "@/components/locationpicker/LocationPickerComponent.vue";
 
 const API_URL = process.env.VUE_APP_API_URL;
 
 export default {
-    components: {
-        LocationPickerComponent
-    },
     data() {
         return {
             currentStep: 1,
-            totalSteps: 5,
+            totalSteps: 3,
             showLocationPicker: false,
             activeAddressField: null,
             patient_form: {
-                photo: '',
                 first_name: '',
                 last_name: '',
                 phone: '',
                 email: '',
                 date_of_birth: '',
                 gender: '',
-                home_address: '',
-                home_latitude: '',
-                home_longitude: '',
-                home_address_reference: '',
                 emergency_contact_name: '',
                 emergency_contact_phone: '',
                 password: '',
@@ -337,13 +311,6 @@ export default {
                     console.error(error);
                 });
         },
-        handlePhotoUpload(event) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                this.patient_form.photo = reader.result;
-            };
-            reader.readAsDataURL(event.target.files[0]);
-        },
         nextStep() {
             if (this.currentStep < this.totalSteps) this.currentStep++;
         },
@@ -366,7 +333,7 @@ export default {
                 return value && value !== '' && value !== 'Seleccione un género';
             });
         },
-        openLocationPicker(field) {
+        /*openLocationPicker(field) {
             this.activeAddressField = field;
             this.showLocationPicker = true;
         },
@@ -376,7 +343,7 @@ export default {
             this.patient_form.home_latitude = location.lat;
             this.patient_form.home_longitude = location.lng;
             this.showLocationPicker = false;
-        },
+        },*/
         loadSavedData() {
             // Load form data
             Object.keys(this.patient_form).forEach(key => {
