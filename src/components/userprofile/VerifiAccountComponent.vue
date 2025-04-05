@@ -25,44 +25,72 @@
                         <div class="mb-3 d-flex align-items-center">
                             <span class="material-icons">home</span>
                             <div class="input-group">
-                                <input type="text" id="home_address" name="home_address"
+                                <input type="text"
+                                       id="home_address"
+                                       name="home_address"
                                        v-model="patient_form.home_address"
-                                       class="form-control ms-3" required readonly
-                                       placeholder="Dirección de residencia">
-                                <button type="button" class="btn btn-primary"
+                                       class="form-control ms-3"
+                                       placeholder="Dirección de residencia"
+                                       required
+                                       readonly>
+                                <button type="button"
+                                        class="btn btn-primary"
                                         @click="openLocationPicker('home_address')">
                                     <span class="material-icons">location_on</span>
                                 </button>
                             </div>
                         </div>
-                        <small class="text-muted" v-if="patient_form.home_latitude && patient_form.home_longitude">
+                        <small class="text-muted"
+                               v-if="patient_form.home_latitude && patient_form.home_longitude">
                             Lat: {{ patient_form.home_latitude }}, Lng: {{ patient_form.home_longitude }}
                         </small>
                         <div class="mb-3 d-flex align-items-center">
                             <span class="material-icons">location_city</span>
-                            <input type="text" id="home_address_reference" v-model="patient_form.home_address_reference"
-                                   class="form-control ms-3" required placeholder="Dirección de referencia">
+                            <input type="text"
+                                   id="home_address_reference"
+                                   v-model="patient_form.home_address_reference"
+                                   class="form-control ms-3"
+                                   placeholder="Dirección de referencia"
+                                   required>
                         </div>
-                        <LocationPickerComponent v-if="showLocationPicker"
-                                                 @location-selected="handleLocationSelected"
-                                                 @close="showLocationPicker = false"/>
+                        <LocationPickerComponent
+                                v-if="showLocationPicker"
+                                @location-selected="handleLocationSelected"
+                                @close="showLocationPicker = false"/>
 
                         <div class="mb-3 d-flex align-items-center">
                             <span class="material-icons">fingerprint</span>
-                            <input type="text" id="dui" v-model="patient_form.dui"
-                                   class="form-control ms-3" required placeholder="Documento de identidad (DUI)">
+                            <input type="text" id="dui"
+                                   v-model="patient_form.dui"
+                                   class="form-control ms-3"
+                                   maxlength="10"
+                                   placeholder="Documento de identidad (DUI)"
+                                   @input="formatDUI"
+                                   required>
                         </div>
 
                         <div class="mb-3 d-flex align-items-center">
                             <span class="material-icons">contact_emergency</span>
-                            <input type="text" id="dui" v-model="patient_form.emergency_contact_name"
-                                   class="form-control ms-3" required placeholder="Contacto de emergencia">
+                            <input type="text"
+                                   id="emergency_contact_name"
+                                   v-model="patient_form.emergency_contact_name"
+                                   class="form-control ms-3"
+                                   placeholder="Contacto de emergencia"
+                                   maxlength="50"
+                                   @input="formatName"
+                                   required>
                         </div>
 
                         <div class="mb-3 d-flex align-items-center">
                             <span class="material-icons">emergency</span>
-                            <input type="text" id="dui" v-model="patient_form.emergency_contact_phone"
-                                   class="form-control ms-3" required placeholder="Teléfono de contacto de emergencia">
+                            <input type="text"
+                                   id="emergency_contact_phone"
+                                   v-model="patient_form.emergency_contact_phone"
+                                   class="form-control ms-3"
+                                   maxlength="8"
+                                   placeholder="Teléfono de contacto de emergencia"
+                                   @input="formatPhone"
+                                   required>
                         </div>
                     </div>
                 </div>
@@ -224,7 +252,7 @@ export default {
                 console.error("Error al verificar la cuenta: " + error.message);
             }
         },
-        async checkIfIsVerified(){
+        async checkIfIsVerified() {
             await fetch(`${process.env.VUE_APP_API_URL}/is-verified`, {
                 method: 'GET',
                 headers: {
@@ -233,7 +261,7 @@ export default {
             })
                 .then(response => response.json())
                 .then(data => {
-                    if(data.status) {
+                    if (data.status) {
                         swal.fire({
                             icon: 'info',
                             title: '¡Atención!',
@@ -246,7 +274,58 @@ export default {
                 .catch(error => {
                     console.error("Error al verificar la cuenta: " + error.message);
                 });
-        }
+        },
+        formatDUI() {
+            // Eliminar cualquier carácter que no sea dígito
+            let value = this.patient_form.dui.replace(/\D/g, '');
+
+            // Si hay más de 9 dígitos, truncar a 9
+            if (value.length > 9) {
+                value = value.slice(0, 9);
+            }
+
+            // Si hay más de 8 dígitos, agregar el guion antes del último dígito
+            if (value.length > 8) {
+                this.patient_form.dui = value.slice(0, 8) + '-' + value.slice(8);
+            } else {
+                this.patient_form.dui = value;
+            }
+        },
+        formatPhone() {
+            // Eliminar cualquier carácter que no sea dígito
+            let value = this.patient_form.emergency_contact_phone.replace(/\D/g, '');
+
+            // Verificar si el primer dígito es 6 o 7
+            if (value.length > 0 && !/^[67]/.test(value)) {
+                // Si el primer dígito no es 6 ni 7, borrar todo
+                this.patient_form.emergency_contact_phone = '';
+            } else {
+                // Si hay más de 8 dígitos, truncar a 8
+                if (value.length > 8) {
+                    value = value.slice(0, 8);
+                }
+                // Formatear el número de teléfono
+                this.patient_form.emergency_contact_phone = value;
+            }
+        },
+        formatName(){
+            // Eliminar cualquier carácter que no sea letra o espacio
+            this.patient_form.emergency_contact_name =
+                this.patient_form.emergency_contact_name.replace(/[^a-zÁáÉéÍíÓóÚúÑñÜüÇçA-Z\s\-']/g, '');
+
+            // Limitar a 50 caracteres
+            if (this.patient_form.emergency_contact_name.length > 50) {
+                this.patient_form.emergency_contact_name = this.patient_form.emergency_contact_name.slice(0, 50);
+            }
+
+            // Primero convertir todo a minúsculas
+            let nameInLowerCase = this.patient_form.emergency_contact_name.toLowerCase();
+
+            // Luego capitalizar la primera letra de cada palabra
+            this.patient_form.emergency_contact_name = nameInLowerCase.replace(/(^|\s|-)([a-záéíóúüñç])/g, function(match, separator, char) {
+                return separator + char.toUpperCase();
+            });
+        },
     }
 }
 </script>
