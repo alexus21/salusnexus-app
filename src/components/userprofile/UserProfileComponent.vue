@@ -3,7 +3,7 @@
         <div class="col-md-4">
             <div class="row d-flex justify-content-center">
                 <div class="row d-flex justify-content-center">
-                    <img src="logo.jpg" alt="profile picture" class="img-fluid">
+                    <img :src="profile_photo" alt="profile picture" class="img-fluid">
                 </div>
                 <div class="row d-flex justify-content-center mt-3">
                     <p class="p-name text-primary">{{
@@ -61,7 +61,7 @@
                     </li>
                     <li class="list-group-item">Correo electrónico: {{ user ? user.email : 'Cargando...' }}</li>
                     <li class="list-group-item">Teléfono: {{ user ? user.phone : 'Cargando...' }}</li>
-                    <li class="list-group-item">Dirección: {{ user ? user.home_address_1 : 'Cargando...' }}</li>
+                    <li class="list-group-item">Dirección: {{ user ? user.home_address : 'Cargando...' }}</li>
                 </ul>
             </div>
             <div class="row d-flex justify-content-center mt-5">
@@ -81,6 +81,7 @@
 import swal from "sweetalert2";
 
 const API_URL = process.env.VUE_APP_API_URL;
+const API_URL_IMAGE = process.env.VUE_APP_API_URL_IMAGE;
 
 export default {
     name: 'UserProfileComponent',
@@ -89,6 +90,7 @@ export default {
             user: null,
             loading: true,
             isVerified: null,
+            profile_photo: null,
         }
     },
     async mounted() {
@@ -112,6 +114,8 @@ export default {
                 } else {
                     this.user = data.data;
                     this.isVerified = data.data.verified;
+                    this.profile_photo = API_URL_IMAGE + '/' + data.data.profile_photo_path;
+                    console.log(this.profile_photo);
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -123,10 +127,11 @@ export default {
             if(!this.isVerified){
                 swal.fire({
                     icon: 'warning',
+                    iconColor: '#D69656',
                     title: '¡Atención!',
                     text: 'Tu cuenta no está verificada. Por favor verifica tu cuenta para acceder a todas las funciones.',
                     confirmButtonText: 'Verificar',
-                    confirmButtonColor: '#3085d6',
+                    confirmButtonColor: '#5660d6',
                     allowEscapeKey: false,
                     allowOutsideClick: false,
                 }).then((result) => {
