@@ -106,8 +106,7 @@ export default {
             reader.readAsDataURL(event.target.files[0]);
         },
         handleClose() {
-            this.clearSavedData();
-            this.$emit('close');
+            this.$router.push({ name: 'Home' });
         },
     }
 }
