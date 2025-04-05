@@ -7,6 +7,7 @@ import PatientSusbcriptionPlansComponent
 import LoginPage from "@/components/login/LoginPage.vue";
 
 import {validateAuth} from "@/utils/auth";
+import VerifyAccountComponent from "@/components/userprofile/VerifiAccountComponent.vue";
 
 const routes = [
     {
@@ -38,6 +39,14 @@ const routes = [
         path: '/userprofile',
         name: 'UserProfile',
         component: UserProfileComponent,
+        meta: {
+            requiresAuth: true
+        },
+    },
+    {
+        path: '/userprofile/verification',
+        name: 'Verification',
+        component: VerifyAccountComponent,
         meta: {
             requiresAuth: true
         },

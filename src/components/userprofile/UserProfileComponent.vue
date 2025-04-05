@@ -78,6 +78,8 @@
 </template>
 
 <script>
+import swal from "sweetalert2";
+
 const API_URL = process.env.VUE_APP_API_URL;
 
 export default {
@@ -86,10 +88,13 @@ export default {
         return {
             user: null,
             loading: true,
+            isVerified: null,
         }
     },
-    mounted() {
-        this.fetchUserData();
+    async mounted() {
+        await this.fetchUserData().then(() => {
+            this.showAlertIsNotVerified();
+        });
     },
     methods: {
         async fetchUserData() {
@@ -106,15 +111,32 @@ export default {
                     console.error('Error fetching user data:', data.message);
                 } else {
                     this.user = data.data;
-                    console.log(data.data);
+                    this.isVerified = data.data.verified;
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
             } finally {
                 this.loading = false;
             }
+        },
+        showAlertIsNotVerified(){
+            if(!this.isVerified){
+                swal.fire({
+                    icon: 'warning',
+                    title: '¡Atención!',
+                    text: 'Tu cuenta no está verificada. Por favor verifica tu cuenta para acceder a todas las funciones.',
+                    confirmButtonText: 'Verificar',
+                    confirmButtonColor: '#3085d6',
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.$router.push({ name: 'Verification' });
+                    }
+                });
+            }
         }
-    }
+    },
 }
 </script>
 

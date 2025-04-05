@@ -162,43 +162,6 @@ Acepta recibir notificaciones relacionadas con sus citas y tratamientos médicos
                             </div>
                         </div>
 
-                        <!-- Paso 5 -->
-<!--                        <div class="carousel-item" :class="{ active: currentStep === 5 }">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3 d-flex align-items-center">
-                                        <span class="material-icons">home</span>
-                                        <div class="input-group">
-                                            <input type="text" id="home_address" name="home_address" v-model="patient_form.home_address"
-                                                   class="form-control" required readonly placeholder="Dirección de residencia">
-                                            <button type="button" class="btn btn-primary"
-                                                    @click="openLocationPicker('home_address')">
-                                                <span class="material-icons">location_on</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <small class="text-muted"
-                                           v-if="patient_form.home_latitude && patient_form.home_longitude">
-                                        Lat: {{ patient_form.home_latitude }}, Lng: {{
-                                            patient_form.home_longitude
-                                        }}
-                                    </small>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3 d-flex align-items-center">
-                                        <span class="material-icons">location_city</span>
-                                        <input type="text" id="home_address_reference"
-                                               v-model="patient_form.home_address_reference"
-                                               class="form-control" required placeholder="Dirección de referencia">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <LocationPickerComponent v-if="showLocationPicker"
-                                                     @location-selected="handleLocationSelected"
-                                                     @close="showLocationPicker = false"/>
-                        </div>-->
-
                         <!-- Botones de navegación -->
                         <div class="navigation-footer">
                             <div class="navigation-buttons">
@@ -324,14 +287,14 @@ export default {
                         return;
                     }
 
+                    localStorage.clear();
+
                     swal.fire({
                         icon: 'success',
                         title: '¡Registro exitoso!',
                         text: 'El paciente ha sido registrado correctamente'
                     }).then(() => {
                         // Acceder al access_token dentro del objeto data
-                        localStorage.clear();
-
                         localStorage.setItem("token", responseData.data.access_token);
                         window.location.href = '/';
                     });
@@ -362,17 +325,6 @@ export default {
                 return value && value !== '' && value !== 'Seleccione un género';
             });
         },
-        /*openLocationPicker(field) {
-            this.activeAddressField = field;
-            this.showLocationPicker = true;
-        },
-        handleLocationSelected(location) {
-            const field = this.activeAddressField;
-            this.patient_form[field] = location.address;
-            this.patient_form.home_latitude = location.lat;
-            this.patient_form.home_longitude = location.lng;
-            this.showLocationPicker = false;
-        },*/
         loadSavedData() {
             // Load form data
             Object.keys(this.patient_form).forEach(key => {
