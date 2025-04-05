@@ -76,9 +76,31 @@
                                 <span class="input-icon">
                                     <i class="fas fa-birthday-cake"></i>
                                 </span>
-                                <input type="date" id="date_of_birth" v-model="patient_form.date_of_birth" 
-                                       class="form-control" required>
+                                <input
+                                    id="date_of_birth"
+                                    type="date"
+                                    v-model="patient_form.date_of_birth"
+                                    class="form-control"
+                                    readonly
+                                    placeholder="Fecha de Nacimiento"
+                                    @click="showDatePicker"
+                                />
                             </div>
+                            <DatePicker
+                                class="form-control d-none"
+                                id="datePicker"
+                                expanded
+                                title-position="right"
+                                v-model="patient_form.date_of_birth"
+                                mode="date"
+                                :max-date="maxDate"
+                                :min-date="minDate"
+                                :value="new Date()"
+                                transition="fade"
+                                locale="es-SV"
+                                timezone="UTC"
+                                @dayclick="handleDayClick"
+                            />
                             
                             <div class="input-group">
                                 <span class="input-icon">
@@ -185,11 +207,16 @@
 
 <script>
 import swal from 'sweetalert2';
+import { DatePicker } from 'v-calendar';
+import 'v-calendar/style.css';
 
 const API_URL = process.env.VUE_APP_API_URL;
 
 export default {
     name: 'RegisterPage',
+    components: {
+        DatePicker,
+    },
     data() {
         return {
             patient_form: {
@@ -207,7 +234,10 @@ export default {
                 user_rol: 'paciente'
             },
             errors: {},
-            showTermsModal: false
+            showTermsModal: false,
+            date: new Date(),
+            minDate: new Date(new Date().setFullYear(new Date().getFullYear() - 100)),
+            maxDate: new Date()
         };
     },
     computed: {
@@ -282,6 +312,27 @@ export default {
         },
         closeTerms() {
             this.showTermsModal = false;
+        },
+        handleDayClick(day) {
+            const selectedDate = day.date.toISOString().split('T')[0];
+            const today = new Date().toISOString().split('T')[0];
+
+            if (selectedDate <= today) {
+                this.patient_form.date_of_birth = selectedDate;
+                console.log(this.patient_form.date_of_birth);
+            } else {
+                console.log('Selected date is in the future and not allowed.');
+            }
+
+            this.hideDatePicker();
+        },
+        showDatePicker() {
+            const datePicker = document.getElementById('datePicker');
+            datePicker.classList.remove('d-none');
+        },
+        hideDatePicker() {
+            const datePicker = document.getElementById('datePicker');
+            datePicker.classList.add('d-none');
         }
     }
 };
@@ -750,6 +801,54 @@ export default {
     background-color: #0b5ed7;
 }
 
+/* Estilos para el DatePicker */
+:deep(.vc-container) {
+    --day-content-transition: all .1s ease-in;
+    --day-popover-transition: all .1s ease-in;
+    --day-border-radius: 50%;
+    border: none;
+    width: 100%;
+}
+
+:deep(.vc-weeks) {
+    padding: 0;
+}
+
+:deep(.vc-day) {
+    padding: 5px 0;
+}
+
+:deep(.vc-day-content) {
+    font-size: 14px;
+    font-weight: 500;
+    height: 32px;
+    width: 32px;
+}
+
+:deep(.vc-day-content:hover) {
+    background-color: #e9ecef;
+    color: #0d6efd;
+}
+
+:deep(.vc-highlight) {
+    background-color: #0d6efd;
+    color: white;
+}
+
+:deep(.vc-title) {
+    font-weight: 600;
+    color: #1a2b48;
+}
+
+:deep(.vc-arrow) {
+    padding: 8px;
+}
+
+:deep(.vc-nav-title) {
+    color: #0d6efd;
+    font-weight: 600;
+}
+
 /* Animaciones */
 @keyframes fadeInUp {
     from {
@@ -810,6 +909,18 @@ export default {
     
     .step-connector {
         width: 60px;
+    }
+
+    #datePicker {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 100;
+        max-width: 90vw;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
     }
 }
 </style> 
