@@ -109,13 +109,13 @@ export default {
     name: 'HeaderComponent',
     methods: {
         handleRegisterClick() {
-            this.$emit('open-register-component');
+            this.$router.push('/register');
         },
         handleLoginClick() {
             this.$router.push('/login');
         },
         handleProfileClick() {
-            window.location.href = "/userprofile";
+            this.$router.push('/userprofile');
         },
         handleLogout() {
             swal.fire({

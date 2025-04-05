@@ -5,6 +5,7 @@ import UserProfileComponent from "@/components/userprofile/UserProfileComponent.
 import PatientSusbcriptionPlansComponent
     from "@/components/subscriptionplan/patients/PatientSusbcriptionPlansComponent.vue";
 import LoginPage from "@/components/login/LoginPage.vue";
+import RegisterPage from "@/components/register/RegisterPage.vue";
 
 import {validateAuth} from "@/utils/auth";
 import VerifyAccountComponent from "@/components/userprofile/VerifiAccountComponent.vue";
@@ -23,6 +24,14 @@ const routes = [
         path: '/login',
         name: 'Login',
         component: LoginPage,
+        meta: {
+            hideHeader: true
+        }
+    },
+    {
+        path: '/register',
+        name: 'Register',
+        component: RegisterPage,
         meta: {
             hideHeader: true
         }
