@@ -120,8 +120,14 @@
                                 <span class="input-icon">
                                     <i class="fas fa-phone"></i>
                                 </span>
-                                <input type="tel" id="phone" v-model="patient_form.phone" 
-                                       class="form-control" placeholder="Teléfono" required>
+                                <input type="tel"
+                                       id="phone"
+                                       v-model="patient_form.phone"
+                                       class="form-control"
+                                       placeholder="Teléfono"
+                                       maxlength="8"
+                                       @input="formatPhone"
+                                       required>
                             </div>
                             
                             <div class="input-group">
@@ -137,7 +143,7 @@
                                     <i class="fas fa-lock"></i>
                                 </span>
                                 <input type="password" id="password" v-model="patient_form.password" 
-                                       class="form-control" placeholder="Contraseña" required>
+                                       class="form-control" placeholder="Contraseña" minlength="8" maxlength="20" required>
                             </div>
                             
                             <div class="input-group">
@@ -242,7 +248,8 @@ export default {
     },
     computed: {
         canSubmit() {
-            return this.patient_form.accept_terms && 
+            return this.patient_form.accept_terms &&
+                this.patient_form.password.length >= 8 &&
                 this.patient_form.password === this.patient_form.confirm_password &&
                 this.patient_form.password !== '';
         }
@@ -333,7 +340,24 @@ export default {
         hideDatePicker() {
             const datePicker = document.getElementById('datePicker');
             datePicker.classList.add('d-none');
-        }
+        },
+        formatPhone() {
+            // Eliminar cualquier carácter que no sea dígito
+            let value = this.patient_form.phone.replace(/\D/g, '');
+
+            // Verificar si el primer dígito es 2, 6 o 7
+            if (value.length > 0 && !/^[267]/.test(value)) {
+                // Si el primer dígito no es 2, 6 ni 7, borrar todo
+                this.patient_form.phone = '';
+            } else {
+                // Si hay más de 8 dígitos, truncar a 8
+                if (value.length > 8) {
+                    value = value.slice(0, 8);
+                }
+                // Formatear el número de teléfono
+                this.patient_form.phone = value;
+            }
+        },
     }
 };
 </script>

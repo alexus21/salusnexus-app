@@ -102,7 +102,7 @@
                             <span class="material-icons">close</span>
                         </button>
                         <button title="Registrar" type="submit" class="btn btn-success ms-3"
-                                :disabled="patient_form.home_address_reference === ''"
+                                :disabled="!canSubmit"
                                 @click="verifyAccount">
                             <span class="material-icons">verified</span>
                         </button>
@@ -138,6 +138,15 @@ export default {
             },
             photoFile: null,
             errors: {},
+        }
+    },
+    computed: {
+        canSubmit() {
+            return this.patient_form.home_address_reference !== '' &&
+                this.patient_form.home_address !== '' &&
+                this.patient_form.dui !== '' &&
+                this.patient_form.emergency_contact_name !== '' &&
+                this.patient_form.emergency_contact_phone !== '';
         }
     },
     mounted() {
@@ -295,9 +304,9 @@ export default {
             // Eliminar cualquier carácter que no sea dígito
             let value = this.patient_form.emergency_contact_phone.replace(/\D/g, '');
 
-            // Verificar si el primer dígito es 6 o 7
-            if (value.length > 0 && !/^[67]/.test(value)) {
-                // Si el primer dígito no es 6 ni 7, borrar todo
+            // Verificar si el primer dígito es 2, 6 o 7
+            if (value.length > 0 && !/^[267]/.test(value)) {
+                // Si el primer dígito no es 2, 6 ni 7, borrar todo
                 this.patient_form.emergency_contact_phone = '';
             } else {
                 // Si hay más de 8 dígitos, truncar a 8
