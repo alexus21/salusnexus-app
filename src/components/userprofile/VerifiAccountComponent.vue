@@ -112,6 +112,9 @@ export default {
             errors: {},
         }
     },
+    mounted() {
+        this.checkIfIsVerified();
+    },
     methods: {
         openLocationPicker(field) {
             this.activeAddressField = field;
@@ -220,6 +223,29 @@ export default {
             } catch (error) {
                 console.error("Error al verificar la cuenta: " + error.message);
             }
+        },
+        async checkIfIsVerified(){
+            await fetch(`${process.env.VUE_APP_API_URL}/is-verified`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.status) {
+                        swal.fire({
+                            icon: 'info',
+                            title: '¡Atención!',
+                            text: data.message
+                        }).then(() => {
+                            this.$router.push({name: 'UserProfile'});
+                        })
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al verificar la cuenta: " + error.message);
+                });
         }
     }
 }
