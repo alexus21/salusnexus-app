@@ -225,7 +225,7 @@ export default {
                 }
 
                 // Realizar la petición con fetch
-                await fetch(`${process.env.VUE_APP_API_URL}/user-verification`, {
+                await fetch(`${process.env.VUE_APP_API_URL}/verification/patient`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
