@@ -13,15 +13,15 @@
                 
                 <div class="payment-method-selector">
                     <div class="payment-card-icon">
-                        <img src="/visa.png" alt="Visa" />
+                        <img :src="getPaymentMethodIcon" :alt="selectedPaymentMethod" />
                     </div>
                     <div class="select-wrapper">
                         <select v-model="selectedPaymentMethod" class="payment-select">
                             <option value="visa">Visa</option>
                             <option value="mastercard">MasterCard</option>
                             <option value="amex">American Express</option>
-                            <option value="discover">Discover</option>
-                            <option value="dinersclub">Diners Club</option>
+                            <option value="diners">Diners Club</option>
+                            <option value="maestro">Maestro</option>
                             <option value="paypal">Paypal</option>
                         </select>
                     </div>
@@ -182,7 +182,20 @@ export default {
                 cardholder_name: '',
                 expiration_date: '',
                 cvv: ''
+            },
+            paymentIcons: {
+                'visa': '/visa.png',
+                'mastercard': '/mastercard.png',
+                'amex': '/amex.png',
+                'diners': '/diners.png',
+                'maestro': '/maestro.png',
+                'paypal': '/paypal.png'
             }
+        }
+    },
+    computed: {
+        getPaymentMethodIcon() {
+            return this.paymentIcons[this.selectedPaymentMethod] || this.paymentIcons['visa'];
         }
     },
     methods: {
