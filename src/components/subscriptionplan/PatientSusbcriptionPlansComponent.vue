@@ -35,7 +35,7 @@
                 </ul>
             </div>
             <div class="row d-flex justify-content-center align-items-center mt-auto pt-3 m-1">
-                <button class="btn btn-dark text-white border-1 border-black w-100">
+                <button class="btn btn-dark text-white border-1 border-black w-100" @click="start">
                     Comenzar gratis
                 </button>
             </div>
@@ -72,7 +72,7 @@
                 </ul>
             </div>
             <div class="row d-flex justify-content-center align-items-center mt-auto pt-3 m-1">
-                <button class="btn btn-dark text-white border-1 border-black w-100">
+                <button class="btn btn-dark text-white border-1 border-black w-100" @click="start">
                     Comenzar prueba gratuita de 14 días
                 </button>
             </div>
@@ -126,6 +126,13 @@ export default {
                 'Notificaciones de citas futuras',
                 'Recordatorios personalizados para ti'
             ]
+        }
+    },
+    methods: {
+        start() {
+            this.$router.push({
+                name: 'Register',
+            });
         }
     }
 }

@@ -3,14 +3,25 @@ import HomeComponent from "@/components/home/HomeComponent.vue";
 import DashboardLayout from "@/components/main/healthcareProfessionals/DashboardLayout.vue";
 import UserProfileComponent from "@/components/userprofile/UserProfileComponent.vue";
 import PatientSusbcriptionPlansComponent
-    from "@/components/subscriptionplan/patients/PatientSusbcriptionPlansComponent.vue";
+    from "@/components/subscriptionplan/PatientSusbcriptionPlansComponent.vue";
 import LoginPage from "@/components/login/LoginPage.vue";
 import RegisterPage from "@/components/register/RegisterPage.vue";
+import AddPaymentMethodComponent from "@/components/paymentmethod/AddPaymentMethodComponent.vue";
 
 import {validateAuth} from "@/utils/auth";
-import VerifyAccountComponent from "@/components/userprofile/VerifiAccountComponent.vue";
+import VerifyPatientAccountComponent from "@/components/verifyaccount/VerifyPatientAccountComponent.vue";
 
 const routes = [
+    // Rutas para componentes de prueba
+    {
+        path: '/add-payment-method',
+        name: 'AddPaymentMethod',
+        component: AddPaymentMethodComponent,
+        meta: {
+            requiresAuth: false
+        }
+    },
+
     {
         path: '/',
         name: 'Home',
@@ -55,7 +66,7 @@ const routes = [
     {
         path: '/userprofile/verification',
         name: 'Verification',
-        component: VerifyAccountComponent,
+        component: VerifyPatientAccountComponent,
         meta: {
             requiresAuth: true
         },
