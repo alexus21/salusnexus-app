@@ -64,6 +64,10 @@
                     </button>
                 </form>
                 
+                <div class="account-options">
+                    <router-link to="/register" class="create-account-mobile">Crear cuenta</router-link>
+                </div>
+                
                 <!-- Iconos médicos decorativos -->
                 <div class="medical-icons">
                     <div class="icon-item"><i class="fas fa-heartbeat"></i></div>
@@ -567,6 +571,33 @@ export default {
     transform: scale(1.02);
 }
 
+.account-options {
+    text-align: center;
+    margin: 15px 0;
+    position: relative;
+    z-index: 10;
+}
+
+.create-account-mobile {
+    display: none;
+    color: #0d6efd;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 1px solid #0d6efd;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    position: relative;
+    z-index: 10;
+}
+
+.create-account-mobile:hover, 
+.create-account-mobile:focus {
+    background-color: rgba(13, 110, 253, 0.1);
+    color: #0b5ed7;
+}
+
 @media (max-width: 768px) {
     .login-container {
         flex-direction: column;
@@ -582,14 +613,99 @@ export default {
     
     .left-panel {
         border-radius: 20px 20px 0 0;
-        padding: 30px;
+        padding: 30px 20px;
         text-align: center;
         align-items: center;
+        position: relative;
+        min-height: 260px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
     }
     
     .right-panel {
         padding: 30px;
         border-radius: 0 0 20px 20px;
+    }
+    
+    /* Reposicionamiento para la imagen del doctor */
+    .medical-illustration {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .doctor-image-container {
+        padding: 0;
+        border-radius: 0;
+        width: 100%;
+        text-align: center;
+        box-shadow: none;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .doctor-image {
+        max-width: 170px;
+        margin-bottom: -5px;
+    }
+    
+    .medical-cross {
+        top: 10px;
+        right: 25%;
+    }
+    
+    /* Ajustar texto para que no se sobreponga con la imagen */
+    .welcome-text {
+        font-size: 24px;
+        margin-bottom: 10px;
+        margin-top: 0;
+    }
+    
+    .new-account-text {
+        position: absolute;
+        bottom: 85px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        margin: 0;
+        font-weight: 600;
+        color: #0a2d5e;
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 5px 0;
+        border-radius: 20px;
+        width: 80%;
+        left: 10%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    }
+    
+    .register-btn {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        margin: 0;
+        z-index: 10;
+        background-color: #0d6efd;
+        padding: 10px 20px;
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.25);
+        border: 2px solid #ffffff;
+        font-weight: 600;
+    }
+    
+    .register-btn:hover, .register-btn:active {
+        background-color: #0b5ed7;
+        box-shadow: 0 6px 12px rgba(13, 110, 253, 0.3);
+        transform: translateX(-50%) translateY(-2px);
+    }
+    
+    /* Hide features*/
+    .features-container {
+        display: none;
     }
     
     .input-group {
@@ -613,66 +729,43 @@ export default {
         margin-top: 10px;
     }
     
-    .welcome-text {
-        font-size: 24px;
-        margin-bottom: 10px;
-    }
-    
-    .account-text {
-        margin-bottom: 15px;
-    }
-    
-    .register-btn {
-        margin: 0 auto;
-    }
-    
     .medical-icons {
         margin-top: 1.5rem;
     }
     
-    .medical-illustration {
-        margin: 1rem 0;
+    /* En móvil, mostrar el enlace de crear cuenta en el panel derecho */
+    .create-account-mobile {
+        display: inline-block;
     }
     
-    .medical-illustration img {
-        width: 100%;
-        max-width: 120px;
-        height: auto;
-        object-fit: contain;
+    /* Ocultar el texto y botón en el panel izquierdo en móvil */
+    .new-account-text, .register-btn {
+        display: none;
+    }
+}
+
+/* Estilos específicos para pantallas muy estrechas */
+@media (max-width: 360px) {
+    .left-panel {
+        min-height: 240px;
+        padding-top: 20px;
     }
     
-    .doctor-image-container {
-        padding: 10px;
+    .doctor-image {
+        max-width: 150px;
     }
     
-    .medical-cross {
-        width: 18px;
-        height: 18px;
-    }
-    
-    .medical-cross:before {
-        width: 10px;
-        height: 3px;
-    }
-    
-    .medical-cross:after {
-        width: 3px;
-        height: 10px;
-    }
-    
-    .features-container {
-        gap: 0.6rem;
-        margin-bottom: 20px;
-    }
-    
-    .login-feature-item {
-        padding: 0.6rem 1rem;
+    .new-account-text {
+        bottom: 75px;
+        width: 90%;
+        left: 5%;
         font-size: 0.9rem;
     }
     
-    /* Hide features*/
-    .features-container{
-        display: none;
+    .register-btn {
+        bottom: 35px;
+        padding: 8px 20px;
+        font-size: 0.95rem;
     }
 }
 </style> 
