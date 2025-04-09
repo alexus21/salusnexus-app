@@ -13,10 +13,10 @@
                 
                 <!-- Ilustración médica -->
                 <div class="medical-illustration">
-                    <svg width="180" height="180" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Icono de persona estilo Material Design -->
-                        <path d="M256 256c52.8 0 96-43.2 96-96s-43.2-96-96-96-96 43.2-96 96 43.2 96 96 96zm0 48c-64 0-192 32-192 96v32h384v-32c0-64-128-96-192-96z" fill="white" opacity="0.7"/>
-                    </svg>
+                    <div class="doctor-image-container">
+                        <img src="/loginRegister.png" alt="Profesional médico" class="doctor-image">
+                        <div class="medical-cross"></div>
+                    </div>
                 </div>
                 
                 <div class="features-container">
@@ -422,13 +422,6 @@ export default {
     background-color: white;
 }
 
-/* Para laptops de 14 pulgadas, aplicar un width del 90% a .register-container */
-@media (max-width: 1400px) {
-    .register-container {
-        width: 90%;
-    }
-}
-
 .left-panel {
     width: 40%;
     background: linear-gradient(135deg, rgba(13, 110, 253, 0.2) 0%, rgba(10, 88, 202, 0.3) 100%);
@@ -582,6 +575,57 @@ export default {
     margin: 1.5rem 0;
     position: relative;
     z-index: 2;
+    display: flex;
+    justify-content: center;
+}
+
+.doctor-image-container {
+    border-radius: 16px;
+    padding: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.medical-cross {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    background-color: white;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.medical-cross:before, .medical-cross:after {
+    content: '';
+    position: absolute;
+    background-color: #0d6efd;
+}
+
+.medical-cross:before {
+    width: 14px;
+    height: 4px;
+    border-radius: 2px;
+}
+
+.medical-cross:after {
+    width: 4px;
+    height: 14px;
+    border-radius: 2px;
+}
+
+.doctor-image {
+    max-width: 210px;
+    height: auto;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.doctor-image:hover {
+    transform: scale(1.02);
 }
 
 /* Panel derecho (formulario) */
@@ -939,9 +983,30 @@ export default {
         font-size: 24px;
     }
     
-    .medical-illustration svg {
-        width: 120px;
-        height: 120px;
+    .medical-illustration img {
+        width: 100%;
+        max-width: 120px;
+        height: auto;
+        object-fit: contain;
+    }
+    
+    .doctor-image-container {
+        padding: 10px;
+    }
+    
+    .medical-cross {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .medical-cross:before {
+        width: 10px;
+        height: 3px;
+    }
+    
+    .medical-cross:after {
+        width: 3px;
+        height: 10px;
     }
     
     .step-connector {
@@ -960,13 +1025,19 @@ export default {
         box-shadow: 0 5px 20px rgba(0,0,0,0.2);
     }
 
-    /* Hide features and medical illustration */
-
-    .features-container{
+    /* Hide features on very small screens but keep medical illustration visible when possible */
+    .features-container {
         display: none;
     }
+    
+    .medical-illustration {
+        margin: 1rem 0;
+    }
+}
 
-    .medical-illustration{
+@media (max-width: 480px) {
+    /* Only hide medical illustration on extremely small screens */
+    .medical-illustration {
         display: none;
     }
 }

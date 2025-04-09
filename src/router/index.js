@@ -18,7 +18,8 @@ const routes = [
         name: 'AddPaymentMethod',
         component: AddPaymentMethodComponent,
         meta: {
-            requiresAuth: false
+            requiresAuth: false,
+            hideHeader: true
         }
     },
 
