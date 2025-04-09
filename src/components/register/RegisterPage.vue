@@ -255,64 +255,70 @@ export default {
         }
     },
     methods: {
-        register() {
-            // Aseguramos que los campos de emergencia no estén vacíos para el API
-            if (!this.patient_form.emergency_contact_name) {
-                this.patient_form.emergency_contact_name = 'Pendiente';
-            }
-            if (!this.patient_form.emergency_contact_phone) {
-                this.patient_form.emergency_contact_phone = '0000000000';
-            }
-            
-            fetch(API_URL + '/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
+        async register() {
+            // Ensure emergency contact fields are not empty
+            this.patient_form = {
+                ...this.patient_form,
+                emergency_contact_name: this.patient_form.emergency_contact_name || 'Pendiente',
+                emergency_contact_phone: this.patient_form.emergency_contact_phone || '0000000000',
+            };
+
+            // Show loading alert
+            swal.fire({
+                title: "Cargando...",
+                text: "Por favor, espere mientras se verifica su cuenta.",
+                timerProgressBar: true,
+                didOpen: () => {
+                    swal.showLoading();
                 },
-                body: JSON.stringify(this.patient_form)
-            })
-                .then(response => response.json())
-                .then(responseData => {
-                    if (!responseData.status) {
-                        if (responseData.errors) {
-                            this.errors = responseData.errors;
-                            const errorMessage = Object.values(responseData.errors).join('\n');
-                            swal.fire({
-                                icon: 'error',
-                                title: '¡Error!',
-                                text: errorMessage
-                            });
-                            return;
-                        }
+            });
 
-                        swal.fire({
-                            icon: 'error',
-                            title: '¡Error!',
-                            text: 'Ocurrió un error al registrar el paciente'
-                        });
-                        return;
-                    }
+            try {
+                // Make the API request
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(this.patient_form),
+                });
 
-                    localStorage.clear();
+                const data = await response.json();
 
-                    swal.fire({
-                        icon: 'success',
-                        title: '¡Registro exitoso!',
-                        text: 'Su cuenta ha sido creada correctamente'
-                    }).then(() => {
-                        // Acceder al access_token dentro del objeto data
-                        localStorage.setItem("token", responseData.data.access_token);
-                        this.$router.push('/');
-                    });
-                })
-                .catch(error => {
-                    console.error(error);
+                // Handle errors in the response
+                if (!data.status) {
+                    const errorMessage = data.errors
+                        ? Object.values(data.errors).join('\n')
+                        : 'Ocurrió un error al registrar el paciente';
                     swal.fire({
                         icon: 'error',
                         title: '¡Error!',
-                        text: 'Ocurrió un error en la comunicación con el servidor'
+                        text: errorMessage,
                     });
+                    return;
+                }
+
+                // Clear local storage and save the token
+                localStorage.clear();
+                localStorage.setItem("token", data.data.access_token);
+
+                // Show success alert and redirect
+                swal.fire({
+                    icon: 'success',
+                    title: '¡Registro exitoso!',
+                    text: 'Su cuenta ha sido creada correctamente',
+                }).then(() => {
+                    this.$router.push('/');
                 });
+            } catch (error) {
+                // Handle network or unexpected errors
+                console.error('Error:', error);
+                swal.fire({
+                    icon: 'error',
+                    title: '¡Error!',
+                    text: 'Ocurrió un error al registrar el paciente. Por favor, inténtelo de nuevo.',
+                });
+            }
         },
         showTerms() {
             this.showTermsModal = true;

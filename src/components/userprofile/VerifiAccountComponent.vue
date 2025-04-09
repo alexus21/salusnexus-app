@@ -207,58 +207,69 @@ export default {
             }
         },
         async verifyAccount() {
+            const formData = new FormData();
+
+            // Agregar los datos del formulario
+            formData.append('home_address', this.patient_form.home_address);
+            formData.append('home_latitude', this.patient_form.home_latitude);
+            formData.append('home_longitude', this.patient_form.home_longitude);
+            formData.append('home_address_reference', this.patient_form.home_address_reference);
+            formData.append('dui', this.patient_form.dui);
+            formData.append('emergency_contact_name', this.patient_form.emergency_contact_name);
+            formData.append('emergency_contact_phone', this.patient_form.emergency_contact_phone);
+
+            // Agregar el archivo directamente si existe
+            if (this.photoFile) {
+                formData.append('profile_photo_path', this.photoFile);
+            }
+
+            swal.fire({
+                title: "Cargando...",
+                text: "Por favor, espere mientras se verifica su cuenta.",
+                timerProgressBar: true,
+                didOpen: () => {
+                    swal.showLoading();
+                },
+            });
+
             try {
-                const formData = new FormData();
-
-                // Agregar los datos del formulario
-                formData.append('home_address', this.patient_form.home_address);
-                formData.append('home_latitude', this.patient_form.home_latitude);
-                formData.append('home_longitude', this.patient_form.home_longitude);
-                formData.append('home_address_reference', this.patient_form.home_address_reference);
-                formData.append('dui', this.patient_form.dui);
-                formData.append('emergency_contact_name', this.patient_form.emergency_contact_name);
-                formData.append('emergency_contact_phone', this.patient_form.emergency_contact_phone);
-
-                // Agregar el archivo directamente si existe
-                if (this.photoFile) {
-                    formData.append('profile_photo_path', this.photoFile);
-                }
-
-                // Realizar la petición con fetch
-                await fetch(`${process.env.VUE_APP_API_URL}/verification/patient`, {
+                const response = await fetch(`${process.env.VUE_APP_API_URL}/verification/patient`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     },
                     body: formData
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (!data.status) {
-                            if (data.error) {
-                                this.errors = data.error;
-                                const errorMessage = Object.values(this.errors).flat().join('\n');
-                                swal.fire({
-                                    icon: 'error',
-                                    title: '¡Error!',
-                                    text: errorMessage
-                                });
-                                return;
-                            }
-                        }
+                });
+
+                const data = await response.json();
+
+                if (!data.status) {
+                    if (data.error) {
+                        this.errors = data.error;
+                        const errorMessage = Object.values(this.errors).flat().join('\n');
                         swal.fire({
-                            icon: 'success',
-                            title: '¡Éxito!',
-                            text: data.message
-                        }).then(() => {
-                            this.$router.push({name: 'Home'});
+                            icon: 'error',
+                            title: '¡Error!',
+                            text: errorMessage
                         });
-                    })
-                    .catch(error => {
-                        console.error("Error al verificar la cuenta: " + error.message);
-                    });
+                        return;
+                    }
+                }
+
+                swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: data.message
+                }).then(() => {
+                    this.$router.push({ name: 'Home' });
+                });
             } catch (error) {
                 console.error("Error al verificar la cuenta: " + error.message);
+                swal.fire({
+                    icon: 'error',
+                    title: '¡Error!',
+                    text: "Ocurrió un error al verificar la cuenta. Por favor, inténtelo de nuevo."
+                });
             }
         },
         async checkIfIsVerified() {

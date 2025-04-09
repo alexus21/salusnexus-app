@@ -127,16 +127,9 @@ export default {
 
                     // Guardamos los datos de respuesta
                     const token = responseData.data.access_token;
-                    const message = responseData.message;
 
-                    swal.fire({
-                        icon: 'success',
-                        title: '¡Éxito!',
-                        text: message,
-                    }).then(() => {
-                        localStorage.setItem('token', token);
-                        this.$router.push('/');
-                    });
+                    localStorage.setItem('token', token);
+                    this.$router.push('/');
                 })
                 .catch(error => {
                     console.error('Error:', error);
