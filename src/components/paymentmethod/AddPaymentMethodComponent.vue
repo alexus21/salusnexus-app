@@ -29,7 +29,7 @@
 
                 <h5 class="data-title">Agregar datos:</h5>
 
-                <form @submit.prevent="confirmPayment">
+                <form @submit.prevent="addPaymentMethod">
                     <!-- Nombre del propietario -->
                     <div class="form-group">
                         <input
@@ -186,6 +186,7 @@ export default {
                 expiration_date: '',
                 cvv: '',
                 payment_provider: null,
+                subscription_period: null
             },
             paymentIcons: {
                 'visa': '/visa.png',
@@ -335,15 +336,32 @@ export default {
 
             return true;
         },
-        async confirmPayment() {
+        async addPaymentMethod() {
             if (!this.validateInput()) {
                 return;
             }
 
+            swal.fire({
+                title: 'Confirmar',
+                text: '¿Confirmar suscripción?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, confirmar',
+                cancelButtonText: 'Cancelar',
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    await this.confirmPayment();
+                }
+            });
+        },
+        async confirmPayment(){
             const formData = {
                 ...this.card_form,
-                payment_provider: this.selectedPaymentMethod
+                payment_provider: this.selectedPaymentMethod,
+                subscription_period: localStorage.getItem('periodo'),
             };
+
+            console.log(formData);
 
             swal.fire({
                 title: "Cargando...",
@@ -396,7 +414,7 @@ export default {
                     text: 'Ocurrió un error al agregar el método de pago.',
                 });
             }
-        },
+        }
     }
 }
 </script>

@@ -7,7 +7,7 @@
         </button>
     </div>
     <div class="row d-flex justify-content-center m-3">
-        <div class="col-md-auto p-3 m-3 text-start subscription-card" id="basicPlanInfo" v-if="!advanced">
+        <div class="col-md-auto p-3 m-3 text-start subscription-card" id="basicPlanInfo" v-if="!yearly">
             <div class="row d-flex justify-content-start ms-1">
                 <p class="btn btn-light text-black border-1 border-dark-subtle"
                    style="width: auto; font-size: 18px; font-weight: bold;">
@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <div class="col-md-auto p-3 m-3 text-start subscription-card" id="advancedPlanInfo" v-if="!advanced">
+        <div class="col-md-auto p-3 m-3 text-start subscription-card" id="advancedPlanInfo" v-if="!yearly">
             <div class="row d-flex justify-content-start ms-1">
                 <p class="btn btn-light text-black border-1 border-dark-subtle"
                    style="width: auto; font-size: 18px; font-weight: bold;">
@@ -81,7 +81,7 @@
             </div>
         </div>
 
-        <div class="col-md-auto p-3 m-3 text-start subscription-card" id="advancedPlanInfo" v-if="advanced">
+        <div class="col-md-auto p-3 m-3 text-start subscription-card" id="advancedPlanInfo" v-if="yearly">
             <div class="row d-flex justify-content-start ms-1">
                 <p class="btn btn-light text-black border-1 border-dark-subtle"
                    style="width: auto; font-size: 18px; font-weight: bold;">
@@ -109,7 +109,7 @@
                 </ul>
             </div>
             <div class="row d-flex justify-content-center align-items-center mt-auto pt-3 m-1">
-                <button class="btn btn-dark text-white border-1 border-black w-100" @click="startProPlan">
+                <button class="btn btn-dark text-white border-1 border-black w-100" @click="startYearlyPlan">
                     Comenzar prueba gratuita de 14 días
                 </button>
             </div>
@@ -163,24 +163,33 @@ export default {
                 'Notificaciones de citas futuras',
                 'Recordatorios personalizados para ti'
             ],
-            advanced: false,
+            yearly: false,
         }
     },
     methods: {
         startFreePlan() {
             localStorage.setItem('selected_plan', 'gratis');
+            localStorage.setItem('periodo', 'mensual');
             this.$router.push({
                 name: 'Register',
             });
         },
         startProPlan() {
             localStorage.setItem('selected_plan', 'avanzado');
+            localStorage.setItem('periodo', 'mensual');
+            this.$router.push({
+                name: 'Register',
+            });
+        },
+        startYearlyPlan() {
+            localStorage.setItem('selected_plan', 'avanzado');
+            localStorage.setItem('periodo', 'anual');
             this.$router.push({
                 name: 'Register',
             });
         },
         showFree() {
-            this.advanced = false;
+            this.yearly = false;
             const btnMonthlyPayment = document.getElementById('btnMonthlyPayment');
             const btnYearlyPayment = document.getElementById('btnYearlyPayment');
 
@@ -190,11 +199,11 @@ export default {
             btnYearlyPayment.style.backgroundColor = '#FFFFFF';
         },
         showAdvanced() {
-            this.advanced = !this.advanced;
+            this.yearly = !this.yearly;
             const btnMonthlyPayment = document.getElementById('btnMonthlyPayment');
             const btnYearlyPayment = document.getElementById('btnYearlyPayment');
 
-            if (this.advanced) {
+            if (this.yearly) {
                 btnMonthlyPayment.style.color = 'black';
                 btnMonthlyPayment.style.backgroundColor = '#FFFFFF';
                 btnYearlyPayment.style.color = 'white';
