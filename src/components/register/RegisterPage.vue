@@ -266,7 +266,7 @@ export default {
             // Show loading alert
             swal.fire({
                 title: "Cargando...",
-                text: "Por favor, espere mientras se verifica su cuenta.",
+                text: "Por favor, espere mientras se crea su cuenta...",
                 timerProgressBar: true,
                 didOpen: () => {
                     swal.showLoading();
@@ -307,7 +307,7 @@ export default {
                     title: '¡Registro exitoso!',
                     text: 'Su cuenta ha sido creada correctamente',
                 }).then(() => {
-                    if (localStorage.getItem('plan') === 'avanzado') {
+                    if (localStorage.getItem('selected_plan') === 'avanzado') {
                         this.$router.push({ name: 'AddPaymentMethod' });
                     } else {
                         this.$router.push({ name: 'Home' });

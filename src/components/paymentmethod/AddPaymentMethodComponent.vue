@@ -4,16 +4,16 @@
         <div class="decorative-element decorative-element-1"></div>
         <div class="decorative-element decorative-element-2"></div>
         <div class="decorative-element decorative-element-3"></div>
-        
+
         <div class="payment-container">
             <!-- Panel izquierdo - Configuración de pago -->
             <div class="left-panel">
                 <h2 class="panel-title">Configuración</h2>
                 <h5 class="panel-subtitle">Método de pago</h5>
-                
+
                 <div class="payment-method-selector">
                     <div class="payment-card-icon">
-                        <img :src="getPaymentMethodIcon" :alt="selectedPaymentMethod" />
+                        <img :src="getPaymentMethodIcon" :alt="selectedPaymentMethod"/>
                     </div>
                     <div class="select-wrapper">
                         <select v-model="selectedPaymentMethod" class="payment-select">
@@ -26,80 +26,81 @@
                         </select>
                     </div>
                 </div>
-                
+
                 <h5 class="data-title">Agregar datos:</h5>
-                
+
                 <form @submit.prevent="confirmPayment">
                     <!-- Nombre del propietario -->
                     <div class="form-group">
-                        <input 
-                            type="text"
-                            id="cardholder_name"
-                            class="form-control"
-                            v-model="card_form.cardholder_name"
-                            placeholder="Ingresa tu nombre"
-                            @input="formatName"
-                            required
+                        <input
+                                type="text"
+                                id="cardholder_name"
+                                class="form-control"
+                                v-model="card_form.cardholder_name"
+                                placeholder="Ingresa tu nombre"
+                                @input="formatName"
+                                required
                         />
                         <label class="form-label">Nombre del propietario de la tarjeta</label>
                     </div>
-                    
+
                     <!-- Número de tarjeta -->
                     <div class="card-details">
                         <div class="form-group card-number">
-                            <input 
-                                type="text"
-                                id="card_number"
-                                class="form-control"
-                                maxlength="19"
-                                placeholder="**** **** **** ****"
-                                v-model="card_form.card_number"
-                                @input="formatCardNumber"
-                                required
+                            <input
+                                    type="text"
+                                    id="card_number"
+                                    class="form-control"
+                                    maxlength="19"
+                                    placeholder="**** **** **** ****"
+                                    v-model="card_form.card_number"
+                                    @input="formatCardNumber"
+                                    required
                             />
                             <label class="form-label">Número de la tarjeta (espacios se agregan automáticamente)</label>
                         </div>
-                        
+
                         <div class="card-extra-details">
                             <div class="form-group expiration">
-                                <input 
-                                    type="text"
-                                    id="expiration_date"
-                                    class="form-control"
-                                    placeholder="MM/YY"
-                                    v-model="card_form.expiration_date"
-                                    @input="formatExpirationDate"
-                                    required
+                                <input
+                                        type="text"
+                                        id="expiration_date"
+                                        class="form-control"
+                                        placeholder="MM/YY"
+                                        v-model="card_form.expiration_date"
+                                        @input="formatExpirationDate"
+                                        required
                                 />
                                 <label class="form-label">Expiración (la pleca (/) se agrega automáticamente)</label>
                             </div>
-                            
+
                             <div class="form-group cvv">
-                                <input 
-                                    type="text"
-                                    id="cvv"
-                                    class="form-control"
-                                    placeholder="Cvv"
-                                    v-model="card_form.cvv"
-                                    maxlength="3"
-                                    required
+                                <input
+                                        type="text"
+                                        id="cvv"
+                                        class="form-control"
+                                        placeholder="Cvv"
+                                        v-model="card_form.cvv"
+                                        maxlength="3"
+                                        @input="formatCVV"
+                                        required
                                 />
                                 <label class="form-label">Cvv</label>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="action-buttons">
                         <button type="submit" class="confirm-btn">Confirmar</button>
                         <button type="button" class="cancel-btn">Cancelar</button>
                     </div>
                 </form>
             </div>
-            
+
             <!-- Panel derecho - Beneficios -->
             <div class="right-panel">
                 <h2 class="benefits-title">Beneficios adquiridos</h2>
-                
+
                 <ul class="benefits-list">
                     <li class="benefit-item">
                         <div class="benefit-icon">
@@ -107,56 +108,56 @@
                         </div>
                         <span class="benefit-text">Todas las ventajas del plan básico</span>
                     </li>
-                    
+
                     <li class="benefit-item">
                         <div class="benefit-icon">
                             <i class="fas fa-users"></i>
                         </div>
                         <span class="benefit-text">Acceso a reseñas públicas de otros pacientes</span>
                     </li>
-                    
+
                     <li class="benefit-item">
                         <div class="benefit-icon">
                             <i class="fas fa-calendar-alt"></i>
                         </div>
                         <span class="benefit-text">Historial de citas</span>
                     </li>
-                    
+
                     <li class="benefit-item">
                         <div class="benefit-icon">
                             <i class="fas fa-headset"></i>
                         </div>
                         <span class="benefit-text">Soporte prioritario para la gestión de citas</span>
                     </li>
-                    
+
                     <li class="benefit-item">
                         <div class="benefit-icon">
                             <i class="fas fa-heartbeat"></i>
                         </div>
                         <span class="benefit-text">Consejos de salud personalizados según perfil</span>
                     </li>
-                    
+
                     <li class="benefit-item">
                         <div class="benefit-icon">
                             <i class="fas fa-pills"></i>
                         </div>
                         <span class="benefit-text">Detalles de medicamentos recetados</span>
                     </li>
-                    
+
                     <li class="benefit-item">
                         <div class="benefit-icon">
                             <i class="fas fa-bell"></i>
                         </div>
                         <span class="benefit-text">Notificaciones de citas futuras</span>
                     </li>
-                    
+
                     <li class="benefit-item">
                         <div class="benefit-icon">
                             <i class="fas fa-clock"></i>
                         </div>
                         <span class="benefit-text">Recordatorios personalizados para ti</span>
                     </li>
-                    
+
                     <li class="benefit-item">
                         <div class="benefit-icon premium-icon">
                             <i class="fas fa-crown"></i>
@@ -253,6 +254,17 @@ export default {
                 this.card_form.expiration_date = digits;
             }
         },
+        formatCVV() {
+            // Remove all non-digit characters
+            let digits = this.card_form.cvv.replace(/\D/g, '');
+
+            // Limit to a maximum of 3 digits
+            if (digits.length > 3) {
+                digits = digits.slice(0, 3);
+            }
+
+            this.card_form.cvv = digits;
+        },
         validateInput() {
             const currentYear = new Date().getFullYear();
             const lastTwoDigitsOfTheYear = currentYear.toString().slice(-2);
@@ -333,38 +345,57 @@ export default {
                 payment_provider: this.selectedPaymentMethod
             };
 
-            console.log(formData);
-
-            const response = await fetch(API_URL + '/add-payment-method', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+            swal.fire({
+                title: "Cargando...",
+                text: "Por favor, espere mientras se verifica su cuenta.",
+                timerProgressBar: true,
+                didOpen: () => {
+                    swal.showLoading();
                 },
-                body: formData,
             });
 
-            const data = response.json();
-            console.log(data);
+            try {
+                const response = await fetch(API_URL + '/add-payment-method', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                    body: JSON.stringify(formData),
+                });
 
-            if (!data.status) {
-                const errorMessage = data.errors
-                    ? Object.values(data.errors).join('\n')
-                    : 'Ocurrió un error al agregar el método de pago';
+                const data = await response.json();
+                console.log(data);
+
+                if (!data.status) {
+                    const errorMessage = data.errors
+                        ? Object.values(data.errors).join('\n')
+                        : 'Ocurrió un error al agregar el método de pago';
+
+                    swal.fire({
+                        icon: 'error',
+                        title: '¡Error!',
+                        text: errorMessage,
+                    });
+                    return;
+                }
+
+                // If all validations pass, proceed with the payment
+                swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Método de pago agregado correctamente.',
+                }).then(() => {
+                    this.$router.push({name: 'Home'});
+                })
+            } catch (error) {
+                console.error('Error al agregar el método de pago:', error);
                 swal.fire({
                     icon: 'error',
                     title: '¡Error!',
-                    text: errorMessage,
+                    text: 'Ocurrió un error al agregar el método de pago.',
                 });
-                return;
             }
-
-            // If all validations pass, proceed with the payment
-            swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: 'Método de pago agregado correctamente.',
-            });
         },
     }
 }
@@ -419,7 +450,7 @@ export default {
     min-height: 600px;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     position: relative;
     z-index: 1;
     background-color: white;
@@ -432,7 +463,7 @@ export default {
     background-color: white;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid rgba(0,0,0,0.05);
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .panel-title {
@@ -665,11 +696,11 @@ export default {
         width: 95%;
         flex-direction: column;
     }
-    
+
     .left-panel, .right-panel {
         width: 100%;
     }
-    
+
     .right-panel {
         border-radius: 0 0 20px 20px;
     }
@@ -679,29 +710,29 @@ export default {
     .payment-page {
         padding: 10px;
     }
-    
+
     .left-panel, .right-panel {
         padding: 30px 20px;
     }
-    
+
     .payment-method-selector {
         flex-direction: column;
         gap: 15px;
     }
-    
+
     .payment-card-icon {
         margin-right: 0;
     }
-    
+
     .card-extra-details {
         flex-direction: column;
         gap: 20px;
     }
-    
+
     .cvv {
         width: 100%;
     }
-    
+
     .action-buttons {
         flex-direction: column;
     }
