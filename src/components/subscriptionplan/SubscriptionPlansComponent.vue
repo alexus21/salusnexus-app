@@ -1,13 +1,13 @@
 <template>
     <div class="row d-flex justify-content-center m-3 gap-lg-3">
-        <button id="btnMonthlyPayment">Mensual</button>
-        <button id="btnYearlyPayment" class="d-flex align-items-center justify-content-center">
+        <button id="btnMonthlyPayment" @click="showFree">Mensual</button>
+        <button id="btnYearlyPayment" class="d-flex align-items-center justify-content-center" @click="showAdvanced">
             Anual <p id="saving">
-            Ahorre 20%</p>
+            Ahorre 15%</p>
         </button>
     </div>
     <div class="row d-flex justify-content-center m-3">
-        <div class="col-md-auto p-3 m-3 text-start subscription-card" id="basicPlanInfo">
+        <div class="col-md-auto p-3 m-3 text-start subscription-card" id="basicPlanInfo" v-if="!advanced">
             <div class="row d-flex justify-content-start ms-1">
                 <p class="btn btn-light text-black border-1 border-dark-subtle"
                    style="width: auto; font-size: 18px; font-weight: bold;">
@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <div class="col-md-auto p-3 m-3 text-start subscription-card" id="advancedPlanInfo">
+        <div class="col-md-auto p-3 m-3 text-start subscription-card" id="advancedPlanInfo" v-if="!advanced">
             <div class="row d-flex justify-content-start ms-1">
                 <p class="btn btn-light text-black border-1 border-dark-subtle"
                    style="width: auto; font-size: 18px; font-weight: bold;">
@@ -57,6 +57,43 @@
             <hr>
             <div class="row d-flex justify-content-start align-items-center">
                 <p class="price">$5.99</p>
+            </div>
+            <div class="row d-flex justify-content-start align-items-center">
+                <p class="fw-bold">Por miembro</p>
+            </div>
+            <hr>
+            <div class="row d-flex justify-content-start align-items-center">
+                <ul class="features-list">
+                    <SubscriptionFeatureItem
+                        v-for="(feature, index) in advancedPlanFeatures"
+                        :key="`advanced-${index}`"
+                        :feature-text="feature"
+                    />
+                </ul>
+            </div>
+            <div class="row d-flex justify-content-center align-items-center mt-auto pt-3 m-1">
+                <button class="btn btn-dark text-white border-1 border-black w-100" @click="startProPlan">
+                    Comenzar prueba gratuita de 14 días
+                </button>
+            </div>
+            <div class="row d-flex justify-content-center align-items-center text-center mt-2">
+                <p class="small">Se requiere tarjeta de débito/crédito</p>
+            </div>
+        </div>
+
+        <div class="col-md-auto p-3 m-3 text-start subscription-card" id="advancedPlanInfo" v-if="advanced">
+            <div class="row d-flex justify-content-start ms-1">
+                <p class="btn btn-light text-black border-1 border-dark-subtle"
+                   style="width: auto; font-size: 18px; font-weight: bold;">
+                    ADVANCED
+                </p>
+            </div>
+            <div class="row d-flex justify-content-start mt-3">
+                <p>Plan profesional</p>
+            </div>
+            <hr>
+            <div class="row d-flex justify-content-start align-items-center">
+                <p class="price">$60.99</p>
             </div>
             <div class="row d-flex justify-content-start align-items-center">
                 <p class="fw-bold">Por miembro</p>
@@ -125,7 +162,8 @@ export default {
                 'Detalles de medicamentos recetados',
                 'Notificaciones de citas futuras',
                 'Recordatorios personalizados para ti'
-            ]
+            ],
+            advanced: false,
         }
     },
     methods: {
@@ -141,6 +179,33 @@ export default {
                 name: 'Register',
             });
         },
+        showFree() {
+            this.advanced = false;
+            const btnMonthlyPayment = document.getElementById('btnMonthlyPayment');
+            const btnYearlyPayment = document.getElementById('btnYearlyPayment');
+
+            btnMonthlyPayment.style.color = 'white';
+            btnMonthlyPayment.style.backgroundColor = '#000000';
+            btnYearlyPayment.style.color = 'black';
+            btnYearlyPayment.style.backgroundColor = '#FFFFFF';
+        },
+        showAdvanced() {
+            this.advanced = !this.advanced;
+            const btnMonthlyPayment = document.getElementById('btnMonthlyPayment');
+            const btnYearlyPayment = document.getElementById('btnYearlyPayment');
+
+            if (this.advanced) {
+                btnMonthlyPayment.style.color = 'black';
+                btnMonthlyPayment.style.backgroundColor = '#FFFFFF';
+                btnYearlyPayment.style.color = 'white';
+                btnYearlyPayment.style.backgroundColor = '#000000';
+            } else {
+                btnMonthlyPayment.style.color = 'white';
+                btnMonthlyPayment.style.backgroundColor = '#000000';
+                btnYearlyPayment.style.color = 'black';
+                btnYearlyPayment.style.backgroundColor = '#FFFFFF';
+            }
+        }
     }
 }
 
