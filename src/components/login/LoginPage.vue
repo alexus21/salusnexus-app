@@ -602,5 +602,10 @@ export default {
         padding: 0.6rem 1rem;
         font-size: 0.9rem;
     }
+    
+    /* Hide features*/
+    .features-container{
+        display: none;
+    }
 }
 </style> 

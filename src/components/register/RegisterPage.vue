@@ -422,6 +422,13 @@ export default {
     background-color: white;
 }
 
+/* Para laptops de 14 pulgadas, aplicar un width del 90% a .register-container */
+@media (max-width: 1400px) {
+    .register-container {
+        width: 90%;
+    }
+}
+
 .left-panel {
     width: 40%;
     background: linear-gradient(135deg, rgba(13, 110, 253, 0.2) 0%, rgba(10, 88, 202, 0.3) 100%);
@@ -951,6 +958,16 @@ export default {
         background-color: white;
         border-radius: 10px;
         box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+
+    /* Hide features and medical illustration */
+
+    .features-container{
+        display: none;
+    }
+
+    .medical-illustration{
+        display: none;
     }
 }
 </style> 
