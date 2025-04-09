@@ -2,8 +2,8 @@ import {createRouter, createWebHistory} from "vue-router";
 import HomeComponent from "@/components/home/HomeComponent.vue";
 import DashboardLayout from "@/components/main/healthcareProfessionals/DashboardLayout.vue";
 import UserProfileComponent from "@/components/userprofile/UserProfileComponent.vue";
-import PatientSusbcriptionPlansComponent
-    from "@/components/subscriptionplan/PatientSusbcriptionPlansComponent.vue";
+import SubscriptionPlansComponent
+    from "@/components/subscriptionplan/SubscriptionPlansComponent.vue";
 import LoginPage from "@/components/login/LoginPage.vue";
 import RegisterPage from "@/components/register/RegisterPage.vue";
 import AddPaymentMethodComponent from "@/components/paymentmethod/AddPaymentMethodComponent.vue";
@@ -13,15 +13,7 @@ import VerifyPatientAccountComponent from "@/components/verifyaccount/VerifyPati
 
 const routes = [
     // Rutas para componentes de prueba
-    {
-        path: '/add-payment-method',
-        name: 'AddPaymentMethod',
-        component: AddPaymentMethodComponent,
-        meta: {
-            requiresAuth: false,
-            hideHeader: true
-        }
-    },
+
 
     {
         path: '/',
@@ -45,6 +37,15 @@ const routes = [
         name: 'Register',
         component: RegisterPage,
         meta: {
+            hideHeader: true
+        }
+    },
+    {
+        path: '/add-payment-method',
+        name: 'AddPaymentMethod',
+        component: AddPaymentMethodComponent,
+        meta: {
+            requiresAuth: true,
             hideHeader: true
         }
     },
@@ -75,7 +76,7 @@ const routes = [
     {
         path: '/plans/patients',
         name: 'PatientsSubscriptionPlans',
-        component: PatientSusbcriptionPlansComponent
+        component: SubscriptionPlansComponent
     },
     {
         path: '/:pathMatch(.*)*',

@@ -299,7 +299,6 @@ export default {
                 }
 
                 // Clear local storage and save the token
-                localStorage.clear();
                 localStorage.setItem("token", data.data.access_token);
 
                 // Show success alert and redirect
@@ -308,7 +307,11 @@ export default {
                     title: '¡Registro exitoso!',
                     text: 'Su cuenta ha sido creada correctamente',
                 }).then(() => {
-                    this.$router.push('/');
+                    if (localStorage.getItem('plan') === 'avanzado') {
+                        this.$router.push({ name: 'AddPaymentMethod' });
+                    } else {
+                        this.$router.push({ name: 'Home' });
+                    }
                 });
             } catch (error) {
                 // Handle network or unexpected errors
@@ -332,7 +335,6 @@ export default {
 
             if (selectedDate <= today) {
                 this.patient_form.date_of_birth = selectedDate;
-                console.log(this.patient_form.date_of_birth);
             } else {
                 console.log('Selected date is in the future and not allowed.');
             }

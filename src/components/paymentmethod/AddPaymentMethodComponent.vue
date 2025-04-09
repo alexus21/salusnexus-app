@@ -17,12 +17,12 @@
                     </div>
                     <div class="select-wrapper">
                         <select v-model="selectedPaymentMethod" class="payment-select">
-                            <option value="visa">Visa</option>
+                            <option value="visa">VISA</option>
                             <option value="mastercard">MasterCard</option>
-                            <option value="amex">American Express</option>
-                            <option value="diners">Diners Club</option>
                             <option value="maestro">Maestro</option>
                             <option value="paypal">Paypal</option>
+                            <option value="diners">Diners Club</option>
+                            <option value="amex">American Express</option>
                         </select>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                                 @input="formatCardNumber"
                                 required
                             />
-                            <label class="form-label">Número de la tarjeta</label>
+                            <label class="form-label">Número de la tarjeta (espacios se agregan automáticamente)</label>
                         </div>
                         
                         <div class="card-extra-details">
@@ -71,7 +71,7 @@
                                     @input="formatExpirationDate"
                                     required
                                 />
-                                <label class="form-label">Expiración</label>
+                                <label class="form-label">Expiración (la pleca (/) se agrega automáticamente)</label>
                             </div>
                             
                             <div class="form-group cvv">
@@ -172,6 +172,8 @@
 <script>
 import swal from "sweetalert2";
 
+const API_URL = process.env.VUE_APP_API_URL;
+
 export default {
     name: 'AddPaymentMethodComponent',
     data() {
@@ -181,7 +183,8 @@ export default {
                 card_number: '',
                 cardholder_name: '',
                 expiration_date: '',
-                cvv: ''
+                cvv: '',
+                payment_provider: null,
             },
             paymentIcons: {
                 'visa': '/visa.png',
@@ -190,7 +193,8 @@ export default {
                 'diners': '/diners.png',
                 'maestro': '/maestro.png',
                 'paypal': '/paypal.png'
-            }
+            },
+            errors: {},
         }
     },
     computed: {
@@ -272,6 +276,15 @@ export default {
                 return false;
             }
 
+            if (lastTwoDigitsOfExpirationYear - lastTwoDigitsOfTheYear > 5) {
+                swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'La fecha de expiración no puede ser mayor a 5 años.',
+                });
+                return false;
+            }
+
             if (this.card_form.card_number.replace(/\s/g, '').length < 16) {
                 swal.fire({
                     icon: 'error',
@@ -310,8 +323,39 @@ export default {
 
             return true;
         },
-        confirmPayment() {
-            if(!this.validateInput()) {
+        async confirmPayment() {
+            if (!this.validateInput()) {
+                return;
+            }
+
+            const formData = {
+                ...this.card_form,
+                payment_provider: this.selectedPaymentMethod
+            };
+
+            console.log(formData);
+
+            const response = await fetch(API_URL + '/add-payment-method', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                },
+                body: formData,
+            });
+
+            const data = response.json();
+            console.log(data);
+
+            if (!data.status) {
+                const errorMessage = data.errors
+                    ? Object.values(data.errors).join('\n')
+                    : 'Ocurrió un error al agregar el método de pago';
+                swal.fire({
+                    icon: 'error',
+                    title: '¡Error!',
+                    text: errorMessage,
+                });
                 return;
             }
 

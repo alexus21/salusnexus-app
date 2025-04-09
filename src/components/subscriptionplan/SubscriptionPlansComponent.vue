@@ -35,7 +35,7 @@
                 </ul>
             </div>
             <div class="row d-flex justify-content-center align-items-center mt-auto pt-3 m-1">
-                <button class="btn btn-dark text-white border-1 border-black w-100" @click="start">
+                <button class="btn btn-dark text-white border-1 border-black w-100" @click="startFreePlan">
                     Comenzar gratis
                 </button>
             </div>
@@ -72,7 +72,7 @@
                 </ul>
             </div>
             <div class="row d-flex justify-content-center align-items-center mt-auto pt-3 m-1">
-                <button class="btn btn-dark text-white border-1 border-black w-100" @click="start">
+                <button class="btn btn-dark text-white border-1 border-black w-100" @click="startProPlan">
                     Comenzar prueba gratuita de 14 días
                 </button>
             </div>
@@ -129,11 +129,18 @@ export default {
         }
     },
     methods: {
-        start() {
+        startFreePlan() {
+            localStorage.setItem('selected_plan', 'gratis');
             this.$router.push({
                 name: 'Register',
             });
-        }
+        },
+        startProPlan() {
+            localStorage.setItem('selected_plan', 'avanzado');
+            this.$router.push({
+                name: 'Register',
+            });
+        },
     }
 }
 

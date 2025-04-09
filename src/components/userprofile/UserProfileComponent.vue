@@ -108,14 +108,12 @@ export default {
                     }
                 });
                 const data = await response.json();
-                console.log(data);
                 if (!data.status) {
                     console.error('Error fetching user data:', data.message);
                 } else {
                     this.user = data.data;
                     this.isVerified = data.data.verified;
                     this.profile_photo = API_URL_IMAGE + '/' + data.data.profile_photo_path;
-                    console.log(this.profile_photo);
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
