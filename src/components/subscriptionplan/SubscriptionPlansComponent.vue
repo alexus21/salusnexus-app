@@ -252,11 +252,12 @@ body {
 }
 
 #saving {
-    background-color: #eddb8c;
-    margin-left: 10px; /* Adjust as needed */
+    color: black;
+    background-color: #fff574 ;
+    margin-left: 10px;
     margin-top: 17px;
     border-radius: 5px;
-    padding: 3px; /* Adjust as needed */
+    padding: 5px;
 }
 
 .subscription-card {
