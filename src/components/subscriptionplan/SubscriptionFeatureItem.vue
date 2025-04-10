@@ -28,29 +28,51 @@ export default {
         iconClass() {
             // Mapa de nombres de características a íconos de FontAwesome
             const iconMap = {
-                'básico': 'check-circle',
-                'reseñas': 'users',
+                'perfil': 'user-circle',      // Added for profile creation
+                'soporte': 'headset',         // Existing mappings for advanced plan (can overlap or be specific)
+                'directorio': 'address-book',  // Added for directory access
+                'agendar': 'calendar',    // Added for scheduling appointments
+                'reseñas': 'star',            // Changed for reviews/ratings
+                'calificar': 'star',         // Added alternative keyword for ratings
+                'citas': 'calendar-plus',      // Added alternative keyword for appointments
+                'domicilio': 'home',          // Added for home services
+                'básico': 'check-circle', // Keep check for 'Todas las ventajas del plan básico'
                 'historial': 'calendar-alt',
-                'soporte': 'headset',
                 'salud': 'heartbeat',
                 'medicamentos': 'pills',
                 'notificaciones': 'bell',
                 'recordatorios': 'clock',
                 'premium': 'crown'
+                // Removed 'users' as it's less specific than 'star' for reviews
             };
 
             // Detectar automáticamente el ícono basado en el texto
-            let iconName = this.icon;
+            let iconName = 'check-circle'; // Default to check-circle if no keyword matches
 
             // Buscar palabras clave en el texto para asignar ícono
-            if (this.isPremium || this.featureText.toLowerCase().includes('premium')) {
+            const lowerFeatureText = this.featureText.toLowerCase();
+
+            if (this.isPremium || lowerFeatureText.includes('premium')) {
                 iconName = 'crown';
             } else {
+                // Check specific keywords first
+                let foundIcon = false;
                 for (const [keyword, icon] of Object.entries(iconMap)) {
-                    if (this.featureText.toLowerCase().includes(keyword)) {
-                        iconName = icon;
+                    if (keyword !== 'básico' && lowerFeatureText.includes(keyword)) {
+                         // Prioritize specific keywords over the general 'básico'
+                         if (keyword === 'reseñas' && lowerFeatureText.includes('acceso a reseñas')) {
+                             // Special case for 'Acceso a reseñas...' use 'users'
+                             iconName = 'users';
+                         } else {
+                            iconName = icon;
+                         }
+                        foundIcon = true;
                         break;
                     }
+                }
+                 // If no specific keyword found, and it includes 'básico', use check-circle
+                if (!foundIcon && lowerFeatureText.includes('básico')) {
+                    iconName = 'check-circle';
                 }
             }
 
