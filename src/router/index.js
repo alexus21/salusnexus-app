@@ -76,7 +76,10 @@ const routes = [
     {
         path: '/plans/patients',
         name: 'PatientsSubscriptionPlans',
-        component: SubscriptionPlansComponent
+        component: SubscriptionPlansComponent,
+        meta: {
+            hideHeader: true
+        }
     },
     {
         path: '/:pathMatch(.*)*',
