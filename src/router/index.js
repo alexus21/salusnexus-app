@@ -1,5 +1,6 @@
 import {createRouter, createWebHistory} from "vue-router";
 import HomeComponent from "@/components/home/HomeComponent.vue";
+import MediProDashboard from "@/components/dashboard/MediProDashboard.vue";
 import DashboardLayout from "@/components/main/healthcareProfessionals/DashboardLayout.vue";
 import UserProfileComponent from "@/components/userprofile/UserProfileComponent.vue";
 import SubscriptionPlansComponent
@@ -18,7 +19,24 @@ const routes = [
     {
         path: '/',
         name: 'Home',
-        component: HomeComponent
+        component: HomeComponent,
+        beforeEnter: async (to, from, next) => {
+            const isAuthenticated = await validateAuth();
+            if (isAuthenticated) {
+                next({ name: 'MediProHome' });
+            } else {
+                next();
+            }
+        }
+    },
+    {
+        path: '/medipro-home',
+        name: 'MediProHome',
+        component: MediProDashboard,
+        meta: {
+            requiresAuth: true,
+            hideHeader: true
+        }
     },
     {
         path: '/home',
@@ -54,7 +72,8 @@ const routes = [
         name: 'Dashboard',
         component: DashboardLayout,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            hideHeader: true
         },
     },
     {
@@ -97,6 +116,13 @@ router.beforeEach(async (to, from, next) => {
         const isAuthenticated = await validateAuth();
         if (!isAuthenticated) {
             next({name: 'Home'});
+        } else {
+            next();
+        }
+    } else if (to.path === '/login' || to.path === '/register') {
+        const isAuthenticated = await validateAuth();
+        if (isAuthenticated) {
+            next({name: 'MediProHome'});
         } else {
             next();
         }

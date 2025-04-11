@@ -133,7 +133,7 @@ export default {
                     const token = responseData.data.access_token;
 
                     localStorage.setItem('token', token);
-                    this.$router.push('/');
+                    this.$router.push({ name: 'MediProHome' });
                 })
                 .catch(error => {
                     console.error('Error:', error);
