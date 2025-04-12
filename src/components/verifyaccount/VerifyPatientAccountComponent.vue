@@ -269,7 +269,7 @@ export default {
                     text: data.message
                 }).then(() => {
                     localStorage.setItem('user', JSON.stringify(data.user));
-                    this.$router.push({ name: 'UserProfileComponent' });
+                    this.$router.push({ name: 'UserProfile' });
                 });
             } catch (error) {
                 console.error("Error al verificar la cuenta: " + error.message);

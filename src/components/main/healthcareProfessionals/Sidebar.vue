@@ -79,12 +79,16 @@ export default {
 
              // Manejo especial para Logout
              if (itemName === 'Logout') {
-                this.$emit('logout-request');
+                this.Logout();
              }
         },
         goToHome() {
             this.$router.push({ name: 'Home' });
         },
+        Logout() {
+            localStorage.removeItem('token');
+            window.location.reload();
+        }
     },
 };
 </script>
