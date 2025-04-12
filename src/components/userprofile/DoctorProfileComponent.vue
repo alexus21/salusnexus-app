@@ -285,9 +285,9 @@ export default {
 
 /* Container Styles with gradient background like HomeComponent */
 .profile-container {
-    width: 1200px;
+    max-width: 1200px;
+    width: 100%;
     margin: 2rem auto;
-    /* height: 90vh; */
     padding: 1.5rem;
     background: linear-gradient(135deg, #F0F8FF 0%, #FFFFFF 50%, #F8FBFF 100%);
     border-radius: 1rem;
@@ -918,11 +918,19 @@ export default {
     }
 }
 
-/* Responsive Styles */
+/* Media queries más completos para responsive design */
+@media (max-width: 1200px) {
+    .profile-container {
+        margin: 1.5rem;
+        width: calc(100% - 3rem);
+    }
+}
+
 @media (max-width: 991px) {
     .profile-container {
         margin: 1rem;
-        padding: 1rem;
+        padding: 1.25rem;
+        width: calc(100% - 2rem);
     }
     
     .profile-header {
@@ -930,6 +938,7 @@ export default {
         align-items: center;
         text-align: center;
         gap: 1rem;
+        padding-bottom: 1.25rem;
     }
     
     .profile-header-content {
@@ -948,10 +957,13 @@ export default {
         overflow-x: auto;
         white-space: nowrap;
         padding-bottom: 0.5rem;
+        justify-content: flex-start;
+        width: 100%;
     }
     
     .tab {
         padding: 0.75rem 1rem;
+        flex: 0 0 auto;
     }
     
     .info-row {
@@ -966,14 +978,63 @@ export default {
     .info-value {
         min-width: auto;
     }
+}
+
+@media (max-width: 767px) {
+    .profile-container {
+        margin: 0.75rem;
+        padding: 1rem;
+        width: calc(100% - 1.5rem);
+        border-radius: 0.75rem;
+    }
     
+    .info-cards-container,
+    .schedule-cards-container,
+    .services-cards-container {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .info-card,
+    .schedule-card,
     .service-card {
-        min-width: 100%;
-        max-width: 100%;
+        padding: 1rem;
+    }
+    
+    .info-card-icon,
+    .service-card-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .info-card-icon i,
+    .service-card-icon i {
+        font-size: 1.25rem;
+    }
+    
+    .schedule-card-icon {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .schedule-card-icon i {
+        font-size: 1.5rem;
+    }
+    
+    .service-card-description {
+        font-size: 0.9rem;
+        margin-bottom: 0.75rem;
     }
 }
 
 @media (max-width: 576px) {
+    .profile-container {
+        margin: 0.5rem;
+        padding: 0.75rem;
+        width: calc(100% - 1rem);
+        border-radius: 0.5rem;
+    }
+    
     .profile-name {
         font-size: 1.5rem;
     }
@@ -983,21 +1044,81 @@ export default {
         height: 100px;
     }
     
+    .btn-edit {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
     .decorative-element {
         opacity: 0.1;
     }
     
-    .info-section {
-        padding: 1.25rem;
+    .tab {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.9rem;
     }
     
-    .info-icon {
+    .info-card-title {
+        font-size: 0.8rem;
+    }
+    
+    .info-card-value {
+        font-size: 0.95rem;
+    }
+    
+    .schedule-card-day {
+        font-size: 1rem;
+    }
+    
+    .schedule-card-time {
+        font-size: 1.1rem;
+    }
+    
+    .service-card-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .service-card-description {
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+    
+    .service-card-duration {
+        font-size: 0.8rem;
+    }
+}
+
+/* Corregir comportamiento para pantallas muy pequeñas */
+@media (max-width: 360px) {
+    .profile-container {
+        margin: 0.25rem;
         padding: 0.5rem;
+        width: calc(100% - 0.5rem);
+    }
+    
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .profile-name {
         font-size: 1.25rem;
     }
     
-    .info-title {
-        font-size: 1.1rem;
+    .profile-location {
+        font-size: 0.85rem;
+    }
+    
+    .specialty-tag {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .info-card,
+    .schedule-card,
+    .service-card {
+        padding: 0.75rem;
     }
 }
 
