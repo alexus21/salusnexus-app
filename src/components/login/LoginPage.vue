@@ -134,7 +134,7 @@ export default {
 
                     localStorage.setItem('token', token);
                     localStorage.setItem('user', JSON.stringify(responseData.data.user));
-                    this.$router.push({ name: 'MediProHome' });
+                    this.$router.push({ name: 'loginHome' });
                 })
                 .catch(error => {
                     console.error('Error:', error);

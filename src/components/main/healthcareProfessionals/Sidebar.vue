@@ -1,6 +1,6 @@
 <template>
     <aside :class="['sidebar', { 'is-open': isOpen }]">
-        <div class="sidebar-logo">Mi Salud Pro</div>
+        <div class="sidebar-logo btn" @click.prevent="goToHome">Salus Nexus</div>
         <nav class="sidebar-nav">
             <ul>
                 <li v-for="item in navigationItems" :key="item.name">
@@ -81,6 +81,9 @@ export default {
              if (itemName === 'Logout') {
                 this.$emit('logout-request');
              }
+        },
+        goToHome() {
+            this.$router.push({ name: 'Home' });
         },
     },
 };
