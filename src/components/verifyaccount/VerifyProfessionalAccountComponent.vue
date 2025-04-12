@@ -1,5 +1,5 @@
 <template>
-    <div class="register-form">
+    <div class="register-form" v-if="!isVerified">
         <div class="form-container">
             <h2 class="form-title text-decoration-underline">Verifica tu cuenta</h2>
             <form @submit.prevent="register">
@@ -138,6 +138,7 @@ export default {
             },
             photoFile: null,
             errors: {},
+            isVerified: false,
         }
     },
     computed: {
@@ -153,6 +154,12 @@ export default {
         this.checkIfIsVerified();
     },
     methods: {
+        async checkIfIsVerified() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user && user.verified) {
+                await this.showAlertIsVerified();
+            }
+        },
         openLocationPicker(field) {
             this.activeAddressField = field;
             this.showLocationPicker = true;
@@ -272,29 +279,6 @@ export default {
                 });
             }
         },
-        async checkIfIsVerified() {
-            await fetch(`${process.env.VUE_APP_API_URL}/is-verified`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                },
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status) {
-                        swal.fire({
-                            icon: 'info',
-                            title: '¡Atención!',
-                            text: data.message
-                        }).then(() => {
-                            this.$router.push({name: 'UserProfile'});
-                        })
-                    }
-                })
-                .catch(error => {
-                    console.error("Error al verificar la cuenta: " + error.message);
-                });
-        },
         formatDUI() {
             // Eliminar cualquier carácter que no sea dígito
             let value = this.patient_form.dui.replace(/\D/g, '');
@@ -346,6 +330,20 @@ export default {
                 return separator + char.toUpperCase();
             });
         },
+        async showAlertIsVerified() {
+            swal.fire({
+                icon: 'success',
+                iconColor: '#4CAF50',
+                title: 'Cuenta verificada',
+                text: 'Esta cuenta ya ha sido verificada. Puedes continuar con el uso de la aplicación.',
+                confirmButtonText: 'OK',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.isVerified = true;
+                    this.$router.push({ name: 'Home' });
+                }
+            });
+        }
     }
 }
 </script>

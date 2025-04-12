@@ -154,6 +154,12 @@ export default {
         this.checkIfIsVerified();
     },
     methods: {
+        async checkIfIsVerified() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user && user.verified) {
+                this.showAlertIsVerified();
+            }
+        },
         openLocationPicker(field) {
             this.activeAddressField = field;
             this.showLocationPicker = true;
@@ -273,12 +279,6 @@ export default {
                 });
             }
         },
-        async checkIfIsVerified() {
-            const user = JSON.parse(localStorage.getItem('user'));
-            if (user || user.verified) {
-                this.showAlertIsVerified();
-            }
-        },
         formatDUI() {
             // Eliminar cualquier carácter que no sea dígito
             let value = this.patient_form.dui.replace(/\D/g, '');
@@ -334,8 +334,8 @@ export default {
             swal.fire({
                 icon: 'success',
                 iconColor: '#4CAF50',
-                title: 'Account Verified',
-                text: 'Your account has been successfully verified.',
+                title: 'Cuenta verificada',
+                text: 'Esta cuenta ya ha sido verificada. Puedes continuar con el uso de la aplicación.',
                 confirmButtonText: 'OK',
             }).then((result) => {
                 if (result.isConfirmed) {

@@ -97,28 +97,6 @@ export default {
         await this.loadUserData();
     },
     methods: {
-        /*async fetchUserData() {
-            try {
-                const response = await fetch(API_URL + '/userprofile', {
-                    method: "GET",
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('token'),
-                    }
-                });
-                const data = await response.json();
-                if (!data.status) {
-                    console.error('Error fetching user data:', data.message);
-                } else {
-                    this.user = data.data;
-                    this.isVerified = data.data.verified;
-                    this.profile_photo = API_URL_IMAGE + '/' + data.data.profile_photo_path;
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            } finally {
-                this.loading = false;
-            }
-        },*/
         async loadUserData() {
             this.user = JSON.parse(localStorage.getItem('user'));
             //Esperar un segundo para simular la carga de datos
