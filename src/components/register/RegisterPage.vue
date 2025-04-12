@@ -300,6 +300,7 @@ export default {
 
                 // Clear local storage and save the token
                 localStorage.setItem("token", data.data.access_token);
+                localStorage.setItem("user", JSON.stringify(data.data.user));
 
                 // Show success alert and redirect
                 swal.fire({

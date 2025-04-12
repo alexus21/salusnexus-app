@@ -268,7 +268,8 @@ export default {
                     title: '¡Éxito!',
                     text: data.message
                 }).then(() => {
-                    this.$router.push({ name: 'Home' });
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    this.$router.push({ name: 'UserProfileComponent' });
                 });
             } catch (error) {
                 console.error("Error al verificar la cuenta: " + error.message);
@@ -340,7 +341,7 @@ export default {
             }).then((result) => {
                 if (result.isConfirmed) {
                     this.isVerified = true;
-                    this.$router.push({ name: 'Home' });
+                    this.$router.push({ name: 'UserProfileComponent' });
                 }
             });
         }
