@@ -80,7 +80,7 @@
 <script>
 import swal from "sweetalert2";
 
-const API_URL = process.env.VUE_APP_API_URL;
+// const API_URL = process.env.VUE_APP_API_URL;
 const API_URL_IMAGE = process.env.VUE_APP_API_URL_IMAGE;
 
 export default {
@@ -94,12 +94,10 @@ export default {
         }
     },
     async mounted() {
-        await this.fetchUserData().then(() => {
-            this.showAlertIsNotVerified();
-        });
+        await this.loadUserData();
     },
     methods: {
-        async fetchUserData() {
+        /*async fetchUserData() {
             try {
                 const response = await fetch(API_URL + '/userprofile', {
                     method: "GET",
@@ -120,9 +118,17 @@ export default {
             } finally {
                 this.loading = false;
             }
+        },*/
+        async loadUserData() {
+            this.user = JSON.parse(localStorage.getItem('user'));
+            //Esperar un segundo para simular la carga de datos
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            this.isVerified = this.user.verified;
+            this.profile_photo = API_URL_IMAGE + '/' + this.user.profile_photo_path;
+            await this.showAlertIsNotVerified();
         },
-        showAlertIsNotVerified(){
-            if(!this.isVerified){
+        async showAlertIsNotVerified() {
+            if (!this.isVerified) {
                 swal.fire({
                     icon: 'warning',
                     iconColor: '#D69656',
@@ -134,7 +140,7 @@ export default {
                     allowOutsideClick: false,
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        this.$router.push({ name: 'Verification' });
+                        this.$router.push({name: 'Verification'});
                     }
                 });
             }

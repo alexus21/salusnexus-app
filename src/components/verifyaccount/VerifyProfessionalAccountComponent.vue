@@ -1,5 +1,5 @@
 <template>
-    <div class="register-form" v-if="!isVerified">
+    <div class="register-form">
         <div class="form-container">
             <h2 class="form-title text-decoration-underline">Verifica tu cuenta</h2>
             <form @submit.prevent="register">
@@ -138,7 +138,6 @@ export default {
             },
             photoFile: null,
             errors: {},
-            isVerified: false,
         }
     },
     computed: {
@@ -274,10 +273,27 @@ export default {
             }
         },
         async checkIfIsVerified() {
-            const user = JSON.parse(localStorage.getItem('user'));
-            if (user || user.verified) {
-                this.showAlertIsVerified();
-            }
+            await fetch(`${process.env.VUE_APP_API_URL}/is-verified`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status) {
+                        swal.fire({
+                            icon: 'info',
+                            title: '¡Atención!',
+                            text: data.message
+                        }).then(() => {
+                            this.$router.push({name: 'UserProfile'});
+                        })
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al verificar la cuenta: " + error.message);
+                });
         },
         formatDUI() {
             // Eliminar cualquier carácter que no sea dígito
@@ -330,20 +346,6 @@ export default {
                 return separator + char.toUpperCase();
             });
         },
-        showAlertIsVerified() {
-            swal.fire({
-                icon: 'success',
-                iconColor: '#4CAF50',
-                title: 'Account Verified',
-                text: 'Your account has been successfully verified.',
-                confirmButtonText: 'OK',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    this.isVerified = true;
-                    this.$router.push({ name: 'Home' });
-                }
-            });
-        }
     }
 }
 </script>

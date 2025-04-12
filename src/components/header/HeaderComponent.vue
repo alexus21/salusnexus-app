@@ -139,7 +139,7 @@ export default {
                         .then((response) => response.json())
                         .then((responseData) => {
                             if (responseData.status) {
-                                localStorage.removeItem("token");
+                                localStorage.clear();
                                 this.isLogged = false;
                                 window.location.reload();
                             } else {
