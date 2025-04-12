@@ -17,7 +17,7 @@
                                 </div>
                                 <input type="file" id="photo" @change="handlePhotoUpload" accept="image/*"
                                        class="d-none">
-                                <label for="photo" class="btn btn-sm btn-primary mt-2">Subir foto</label>
+                                <label for="photo" class="btn btn-sm btn-primary mt-2">Agrega tu fotografía</label>
                             </div>
                         </div>
                     </div>
@@ -119,7 +119,7 @@ import imageCompression from 'browser-image-compression';
 import swal from "sweetalert2";
 
 export default {
-    name: 'VerifyAccountComponent',
+    name: 'VerifyPatientAccountComponent',
     components: {
         LocationPickerComponent
     },

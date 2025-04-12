@@ -11,6 +11,7 @@ import AddPaymentMethodComponent from "@/components/paymentmethod/AddPaymentMeth
 
 import {validateAuth} from "@/utils/auth";
 import VerifyPatientAccountComponent from "@/components/verifyaccount/VerifyPatientAccountComponent.vue";
+import VerifyProfessionalAccountComponent from "@/components/verifyaccount/VerifyProfessionalAccountComponent.vue";
 
 const routes = [
     // Rutas para componentes de prueba
@@ -87,9 +88,17 @@ const routes = [
         },
     },
     {
-        path: '/userprofile/verification',
-        name: 'Verification',
+        path: '/paciente/verification',
+        name: 'VerifyPatientAccount',
         component: VerifyPatientAccountComponent,
+        meta: {
+            requiresAuth: true
+        },
+    },
+    {
+        path: '/profesional/verification',
+        name: 'VerifyProfessionalAccount',
+        component: VerifyProfessionalAccountComponent,
         meta: {
             requiresAuth: true
         },

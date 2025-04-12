@@ -1,0 +1,222 @@
+<template>
+    <div class="row">
+        <h3 class="form-title text-decoration-underline">Datos personales</h3>
+        <div class="col-md-6">
+            <div class="text-center mb-4">
+                <div class="profile-photo-container">
+                    <div class="profile-photo">
+                                    <span v-if="!firstStepForm.profile_photo_path"
+                                          class="material-icons photo-placeholder">
+                                        add_a_photo
+                                    </span>
+                        <img class="w-50" v-else :src="firstStepForm.profile_photo_path"
+                             alt="Foto de perfil">
+                    </div>
+                    <input type="file" id="photo" @change="handlePhotoUpload" accept="image/*"
+                           class="d-none">
+                    <label for="photo" class="btn btn-sm btn-primary mt-2">Agrega tu
+                        fotografía</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3 d-flex align-items-center">
+                <span class="material-icons">home</span>
+                <div class="input-group">
+                    <input type="text"
+                           id="home_address"
+                           name="home_address"
+                           v-model="firstStepForm.home_address"
+                           class="form-control ms-3"
+                           placeholder="Ubicación"
+                           required
+                           readonly>
+                    <button type="button"
+                            class="btn btn-primary"
+                            @click="openLocationPicker('home_address')">
+                        <span class="material-icons">location_on</span>
+                    </button>
+                </div>
+            </div>
+            <small class="text-muted"
+                   v-if="firstStepForm.home_latitude && firstStepForm.home_longitude">
+                Lat: {{ firstStepForm.home_latitude }}, Lng:
+                {{ firstStepForm.home_longitude }}
+            </small>
+            <div class="mb-3 d-flex align-items-center">
+                <span class="material-icons">location_city</span>
+                <input type="text"
+                       id="home_address_reference"
+                       v-model="firstStepForm.home_address_reference"
+                       class="form-control ms-3"
+                       placeholder="Dirección"
+                       required>
+            </div>
+            <LocationPickerComponent
+                    v-if="showLocationPicker"
+                    @location-selected="handleLocationSelected"
+                    @close="showLocationPicker = false"/>
+
+            <div class="mb-3 d-flex align-items-center">
+                <span class="material-icons">fingerprint</span>
+                <input type="text" id="dui"
+                       v-model="firstStepForm.dui"
+                       class="form-control ms-3"
+                       maxlength="10"
+                       placeholder="Documento de identidad (DUI)"
+                       @input="formatDUI"
+                       required>
+            </div>
+
+            <div class="mb-3 d-flex align-items-center">
+                <span class="material-icons">book</span>
+                <textarea type="text"
+                          id="emergency_contact_name"
+                          v-model="firstStepForm.biography"
+                          class="form-control ms-3"
+                          placeholder="Biografía"
+                          required>
+                </textarea>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+
+import LocationPickerComponent from "@/components/locationpicker/LocationPickerComponent.vue";
+import imageCompression from "browser-image-compression";
+
+export default {
+    name: "FirstStepComponent",
+    components: {
+        LocationPickerComponent
+    },
+    data() {
+        return {
+            showLocationPicker: false,
+            firstStepForm: {
+                home_address: '', //
+                home_latitude: null, //
+                home_longitude: null, //
+                home_address_reference: '', //
+                dui: '', //
+                biography: '', //
+                profile_photo_path: null, //
+            }
+        };
+    },
+    methods: {
+        openLocationPicker(field) {
+            this.activeAddressField = field;
+            this.showLocationPicker = true;
+        },
+        handleLocationSelected(location) {
+            const field = this.activeAddressField;
+            this.firstStepForm[field] = location.address;
+            this.firstStepForm.home_latitude = location.lat;
+            this.firstStepForm.home_longitude = location.lng;
+            this.showLocationPicker = false;
+        },
+        async handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validar tipo de archivo
+            if (!file.type.match('image.*')) {
+                console.error("Por favor selecciona solo imágenes");
+                return;
+            }
+
+            try {
+                // Mostrar indicador de carga
+                this.isLoading = true;
+
+                // Opciones para la compresión
+                const options = {
+                    maxSizeMB: 1,              // Tamaño máximo en MB
+                    maxWidthOrHeight: 800,     // Dimensión máxima
+                    useWebWorker: true         // Usar Web Worker para no bloquear UI
+                };
+
+                // Comprimir la imagen
+                const compressedFile = await imageCompression(file, options);
+
+                // Generar vista previa
+                const reader = new FileReader();
+                reader.onload = () => {
+                    this.firstStepForm.profile_photo_path = reader.result;
+                    this.isLoading = false;
+                };
+                reader.readAsDataURL(compressedFile);
+
+                // Guarda el archivo comprimido para usarlo al enviar
+                this.photoFile = compressedFile;
+            } catch (error) {
+                console.error("Error al procesar la imagen:", error);
+                this.isLoading = false;
+            }
+        },
+        formatDUI() {
+            // Eliminar cualquier carácter que no sea dígito
+            let value = this.firstStepForm.dui.replace(/\D/g, '');
+
+            // Si hay más de 9 dígitos, truncar a 9
+            if (value.length > 9) {
+                value = value.slice(0, 9);
+            }
+
+            // Si hay más de 8 dígitos, agregar el guion antes del último dígito
+            if (value.length > 8) {
+                this.firstStepForm.dui = value.slice(0, 8) + '-' + value.slice(8);
+            } else {
+                this.firstStepForm.dui = value;
+            }
+        },
+        formatPhone() {
+            // Eliminar cualquier carácter que no sea dígito
+            let value = this.professional_form.emergency_contact_phone.replace(/\D/g, '');
+
+            // Verificar si el primer dígito es 2, 6 o 7
+            if (value.length > 0 && !/^[267]/.test(value)) {
+                // Si el primer dígito no es 2, 6 ni 7, borrar todo
+                this.firstStepForm.emergency_contact_phone = '';
+            } else {
+                // Si hay más de 8 dígitos, truncar a 8
+                if (value.length > 8) {
+                    value = value.slice(0, 8);
+                }
+                // Formatear el número de teléfono
+                this.firstStepForm.emergency_contact_phone = value;
+            }
+
+            this.$emit('update-form', this.firstStepForm);
+        },
+        formatName() {
+            // Eliminar cualquier carácter que no sea letra o espacio
+            this.firstStepForm.emergency_contact_name =
+                this.professional_form.emergency_contact_name.replace(/[^a-zÁáÉéÍíÓóÚúÑñÜüÇçA-Z\s\-']/g, '');
+
+            // Limitar a 50 caracteres
+            if (this.professional_form.emergency_contact_name.length > 50) {
+                this.firstStepForm.emergency_contact_name = this.professional_form.emergency_contact_name.slice(0, 50);
+            }
+
+            // Primero convertir todo a minúsculas
+            let nameInLowerCase = this.professional_form.emergency_contact_name.toLowerCase();
+
+            // Luego capitalizar la primera letra de cada palabra
+            this.firstStepForm.emergency_contact_name = nameInLowerCase.replace(/(^|\s|-)([a-záéíóúüñç])/g, function (match, separator, char) {
+                return separator + char.toUpperCase();
+            });
+
+            this.$emit('update-form', this.firstStepForm);
+        },
+    }
+}
+
+</script>
+
+<style scoped>
+
+</style>

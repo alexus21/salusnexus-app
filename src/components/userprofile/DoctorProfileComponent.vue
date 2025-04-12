@@ -249,7 +249,7 @@ export default {
                     allowOutsideClick: false,
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        this.$router.push({name: 'Verification'});
+                        this.$router.push({name: 'VerifyProfessionalAccount'});
                     }
                 });
             }
