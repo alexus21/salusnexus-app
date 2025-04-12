@@ -3,9 +3,9 @@
         <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
                 <!-- Logo con efecto de brillo -->
-                <a class="navbar-brand" href="#">
+                <a class="navbar-brand" href="#" @click.prevent="handleLogoClick">
                     <span class="brand-highlight"></span>
-                    <i class="fas fa-heartbeat brand-icon"></i> Mi App
+                    <i class="fas fa-heartbeat brand-icon"></i> Salus Nexus
                 </a>
 
                 <!-- Botón para colapsar con efecto hover -->
@@ -65,7 +65,7 @@
 
                     <!-- Botones para escritorio mejorados (visible solo en pantallas >= lg) -->
                     <div class="d-none d-lg-flex auth-btn-container">
-                        <button class="btn btn-outline-light border border-black border-1 text-black auth-btn"
+                        <button class="btn btn-outline-light border  border-1 text-black auth-btn"
                                 id="btnRegister"
                                 @click="handleRegisterClick"
                                 v-if="!isLogged">
@@ -79,7 +79,7 @@
                             <span class="material-icons">login</span> Iniciar sesión
                         </button>
 
-                        <button class="btn btn-outline-light border border-black border-1 text-black auth-btn"
+                        <button class="btn btn-outline-light border border-1 text-black auth-btn"
                                 id="btnProfile"
                                 @click="handleProfileClick"
                                 v-if="isLogged">
@@ -116,6 +116,10 @@ export default {
         },
         handleProfileClick() {
             this.$router.push('/userprofile');
+        },
+        handleLogoClick() {
+            // this.$router.push({name: 'Dashboard'});
+            this.$router.push({name: 'Home'});
         },
         handleLogout() {
             swal.fire({
