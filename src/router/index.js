@@ -2,7 +2,7 @@ import {createRouter, createWebHistory} from "vue-router";
 import HomeComponent from "@/components/home/HomeComponent.vue";
 import LoginHome from "@/components/dashboard/LoginHome.vue";
 import DashboardLayout from "@/components/main/healthcareProfessionals/DashboardLayout.vue";
-import UserProfileComponent from "@/components/userprofile/UserProfileComponent.vue";
+import DoctorProfileComponent from "@/components/userprofile/DoctorProfileComponent.vue";
 import SubscriptionPlansComponent
     from "@/components/subscriptionplan/SubscriptionPlansComponent.vue";
 import LoginPage from "@/components/login/LoginPage.vue";
@@ -79,9 +79,11 @@ const routes = [
     {
         path: '/userprofile',
         name: 'UserProfile',
-        component: UserProfileComponent,
+        // component: UserProfileComponent,
+        component: DoctorProfileComponent,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            // hideHeader: true
         },
     },
     {
