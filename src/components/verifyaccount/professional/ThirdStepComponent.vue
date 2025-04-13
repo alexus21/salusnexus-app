@@ -209,6 +209,17 @@ export default {
             this.thirdStepForm.home_longitude = location.lng;
             this.showLocationPicker = false;
         },
+        sendFormData() {
+            this.$emit("update-third-step-data", this.thirdStepForm);
+        }
+    },
+    watch: {
+        thirdStepForm: {
+            deep: true,
+            handler() {
+                this.sendFormData();
+            }
+        }
     }
 }
 

@@ -12,10 +12,10 @@
                             <SecondStepComponent @update-second-step-data="updateSecondStepForm" />
                         </div>
                         <div class="carousel-item">
-                            <ThirdStepComponent />
+                            <ThirdStepComponent @update-third-step-data="updateThirdStepForm" />
                         </div>
                         <div class="carousel-item">
-                            <FourthStepComponent />
+                            <FourthStepComponent @update-fourth-step-data="updateFourthStepForm" />
                         </div>
                     </div>
                 </div>
@@ -25,7 +25,7 @@
                     <!-- Otros botones -->
                     <div class="navigation-buttons mt-3">
                         <button class="btn btn-outline-primary me-3" type="button" data-bs-target="#carouselExampleFade"
-                                data-bs-slide="prev">
+                                data-bs-slide="prev" :disabled="!enablePreviousButton" @click="handlePrevButton">
                             <span class="material-icons">arrow_back_ios</span>
                         </button>
                         <button title="Cancelar" type="button" class="btn btn-secondary" @click="handleClose">
@@ -36,7 +36,7 @@
                             <span class="material-icons">verified</span>
                         </button>
                         <button class="btn btn-outline-primary ms-3" type="button" data-bs-target="#carouselExampleFade"
-                                data-bs-slide="next">
+                                data-bs-slide="next" :disabled="!enableNextButton" @click="handleNextButton">
                             <span class="material-icons">arrow_forward_ios</span>
                         </button>
                     </div>
@@ -96,6 +96,9 @@ export default {
             },
             errors: {},
             isVerified: false,
+            current_step: 0,
+            enablePreviousButton: false,
+            enableNextButton: true,
         }
     },
     computed: {
@@ -111,6 +114,20 @@ export default {
         this.checkIfIsVerified();
     },
     methods: {
+        handleNextButton() {
+            if (this.current_step < 3) {
+                this.current_step += 1;
+            }
+            this.enablePreviousButton = this.current_step > 0;
+            this.enableNextButton = this.current_step < 3;
+        },
+        handlePrevButton() {
+            if (this.current_step > 0) {
+                this.current_step -= 1;
+            }
+            this.enablePreviousButton = this.current_step > 0;
+            this.enableNextButton = this.current_step < 3;
+        },
         async checkIfIsVerified() {
             const user = JSON.parse(localStorage.getItem('user'));
             if (user && user.verified) {
@@ -218,6 +235,24 @@ export default {
             this.professional_form.speciality_id = data.speciality_id;
             this.professional_form.license_image_path = data.license_image_path;
             this.professional_form.years_of_experience = data.years_of_experience;
+        },
+        updateThirdStepForm(data) {
+            this.professional_form.clinic_name = data.clinic_name;
+            this.professional_form.clinic_address = data.clinic_address;
+            this.professional_form.clinic_latitude = data.clinic_latitude;
+            this.professional_form.clinic_longitude = data.clinic_longitude;
+            this.professional_form.clinic_address_reference = data.clinic_address_reference;
+            this.professional_form.description = data.description;
+            this.professional_form.city_id = data.city_id;
+            this.professional_form.speciality_type = data.speciality_type;
+            this.professional_form.facade_photo = data.facade_photo;
+            this.professional_form.waiting_room_photo = data.waiting_room_photo;
+            this.professional_form.office_photo = data.office_photo;
+        },
+        updateFourthStepForm(data) {
+            this.professional_form.facade_photo = data.facade_photo;
+            this.professional_form.waiting_room_photo = data.waiting_room_photo;
+            this.professional_form.office_photo = data.office_photo;
         },
     }
 }

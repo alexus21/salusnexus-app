@@ -193,7 +193,17 @@ export default {
                 console.error("Error al procesar la imagen:", error);
                 this.isLoading = false;
             }
-        },
+        },sendFormData() {
+            this.$emit("update-fourth-step-data", this.fourthStepForm);
+        }
+    },
+    watch: {
+        thirdStepForm: {
+            deep: true,
+            handler() {
+                this.sendFormData();
+            }
+        }
     }
 }
 
