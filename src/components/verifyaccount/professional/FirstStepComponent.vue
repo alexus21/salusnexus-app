@@ -109,8 +109,8 @@ export default {
                 dui: '', //
                 biography: '', //
                 profile_photo_path: null, //
+                profilePhotoFile: null,
             },
-            profilePhotoFile: null,
             isLoading: false,
         };
     },
@@ -159,7 +159,7 @@ export default {
                 reader.readAsDataURL(compressedFile);
 
                 // Guarda el archivo comprimido para usarlo al enviar
-                this.profilePhotoFile = compressedFile;
+                this.firstStepForm.profilePhotoFile = compressedFile;
             } catch (error) {
                 console.error("Error al procesar la imagen:", error);
                 this.isLoading = false;

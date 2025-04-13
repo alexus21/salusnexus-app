@@ -96,6 +96,12 @@ export default {
             current_step: 0,
             enablePreviousButton: false,
             enableNextButton: true,
+
+            profile_photo_file: null,
+            license_photo_file: null,
+            facade_photo_file: null,
+            waiting_room_photo_file: null,
+            office_photo_file: null,
         }
     },
     computed: {
@@ -135,7 +141,49 @@ export default {
             this.$router.push({name: 'Home'});
         },
         async verifyAccount() {
-            console.log(this.professional_form);
+            const formData = new FormData();
+            formData.append('home_address', this.professional_form.home_address);
+            formData.append('home_latitude', this.professional_form.home_latitude);
+            formData.append('home_longitude', this.professional_form.home_longitude);
+            formData.append('home_address_reference', this.professional_form.home_address_reference);
+            formData.append('dui', this.professional_form.dui);
+            formData.append('biography', this.professional_form.biography);
+            formData.append('license_number', this.professional_form.license_number);
+            formData.append('license_authority', this.professional_form.license_authority);
+            formData.append('issue_date', this.professional_form.issue_date);
+            formData.append('expiration_date', this.professional_form.expiration_date);
+            formData.append('speciality_id', this.professional_form.speciality_id);
+            formData.append('years_of_experience', this.professional_form.years_of_experience);
+            formData.append('clinic_name', this.professional_form.clinic_name);
+            formData.append('clinic_address', this.professional_form.clinic_address);
+            formData.append('clinic_latitude', this.professional_form.clinic_latitude);
+            formData.append('clinic_longitude', this.professional_form.clinic_longitude);
+            formData.append('clinic_address_reference', this.professional_form.clinic_address_reference);
+            formData.append('description', this.professional_form.description);
+            formData.append('city_id', this.professional_form.city_id);
+            formData.append('speciality_type', this.professional_form.speciality_type);
+
+            if (this.profile_photo_file){
+                formData.append('profile_photo_path', this.profile_photo_file);
+            }
+
+            if (this.license_photo_file){
+                formData.append('license_image_path', this.license_photo_file);
+            }
+
+            if (this.facade_photo_file){
+                formData.append('facade_photo', this.facade_photo_file);
+            }
+
+            if (this.waiting_room_photo_file){
+                formData.append('waiting_room_photo', this.waiting_room_photo_file);
+            }
+
+            if (this.office_photo_file){
+                formData.append('office_photo', this.office_photo_file);
+            }
+
+            console.log(formData);
 
             swal.fire({
                 title: "Cargando...",
@@ -152,7 +200,7 @@ export default {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     },
-                    body: JSON.stringify(this.professional_form)
+                    body: formData
                 });
 
                 const data = await response.json();
@@ -176,7 +224,7 @@ export default {
                     text: data.message
                 }).then(() => {
                     localStorage.setItem('user', JSON.stringify(data.user));
-                    this.$router.push({name: 'UserProfileComponent'});
+                    this.$router.push({name: 'UserProfile'});
                 });
             } catch (error) {
                 console.error("Error al verificar la cuenta: " + error.message);
@@ -209,6 +257,7 @@ export default {
             this.professional_form.dui = data.dui;
             this.professional_form.biography = data.biography;
             this.professional_form.profile_photo_path = data.profile_photo_path;
+            this.profile_photo_file = data.profilePhotoFile;
         },
         updateSecondStepForm(data) {
             this.professional_form.license_number = data.license_number;
@@ -218,6 +267,7 @@ export default {
             this.professional_form.speciality_id = data.speciality_id;
             this.professional_form.license_image_path = data.license_image_path;
             this.professional_form.years_of_experience = data.years_of_experience;
+            this.license_photo_file = data.licensePhotoFile;
         },
         updateThirdStepForm(data) {
             this.professional_form.clinic_name = data.clinic_name;
@@ -236,6 +286,10 @@ export default {
             this.professional_form.facade_photo = data.facade_photo;
             this.professional_form.waiting_room_photo = data.waiting_room_photo;
             this.professional_form.office_photo = data.office_photo;
+
+            this.facade_photo_file = data.facadePhotoFile;
+            this.waiting_room_photo_file = data.waitingRoomPhotoFile;
+            this.office_photo_file = data.officePhotoFile;
         },
     }
 }

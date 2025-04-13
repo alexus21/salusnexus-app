@@ -97,6 +97,10 @@ export default {
                 facade_photo: null,
                 waiting_room_photo: null,
                 office_photo: null,
+
+                facade_photo_file: null,
+                waiting_room_photo_file: null,
+                office_photo_file: null,
             },
             isLoading: false,
         };
@@ -135,7 +139,7 @@ export default {
                 reader.readAsDataURL(compressedFile);
 
                 // Guarda el archivo comprimido para usarlo al enviar
-                this.facadePhotoFile = compressedFile;
+                this.fourthStepForm.facadePhotoFile = compressedFile;
             } catch (error) {
                 console.error("Error al procesar la imagen:", error);
                 this.isLoading = false;
@@ -174,7 +178,7 @@ export default {
                 reader.readAsDataURL(compressedFile);
 
                 // Guarda el archivo comprimido para usarlo al enviar
-                this.waitingRoomPhotoFile = compressedFile;
+                this.fourthStepForm.waitingRoomPhotoFile = compressedFile;
             } catch (error) {
                 console.error("Error al procesar la imagen:", error);
                 this.isLoading = false;
@@ -213,7 +217,7 @@ export default {
                 reader.readAsDataURL(compressedFile);
 
                 // Guarda el archivo comprimido para usarlo al enviar
-                this.officePhotoFile = compressedFile;
+                this.fourthStepForm.officePhotoFile = compressedFile;
             } catch (error) {
                 console.error("Error al procesar la imagen:", error);
                 this.isLoading = false;

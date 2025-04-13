@@ -140,12 +140,12 @@ export default {
                 speciality_id: '', //
                 license_image_path: null, //
                 years_of_experience: '',
+                licensePhotoFile: null,
             },
             specialities: {},
             date: new Date(),
             minDate: new Date(new Date().setFullYear(new Date().getFullYear() - 100)),
             maxDate: new Date(),
-            licensePhotoFile: null,
             isLoading: false,
         };
     },
@@ -217,7 +217,7 @@ export default {
                 reader.readAsDataURL(compressedFile);
 
                 // Guarda el archivo comprimido para usarlo al enviar
-                this.licensePhotoFile = compressedFile;
+                this.secondStepForm.licensePhotoFile = compressedFile;
             } catch (error) {
                 console.error("Error al procesar la imagen:", error);
                 this.isLoading = false;
