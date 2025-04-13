@@ -114,6 +114,7 @@ export default {
                     text: 'Tu cuenta no está verificada. Por favor verifica tu cuenta para acceder a todas las funciones.',
                     confirmButtonText: 'Verificar',
                     confirmButtonColor: '#5660d6',
+                    cancelButtonText: 'Cancelar',
                     allowEscapeKey: false,
                     allowOutsideClick: false,
                 }).then((result) => {

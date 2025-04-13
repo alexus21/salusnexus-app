@@ -44,6 +44,11 @@
                                 </a>
                             </li>
                             <li>
+                                <a class="dropdown-item" href="#" @click.prevent="goToClinic">
+                                    <i class="fa-solid fa-house-chimney-medical"></i> Mi clínica
+                                </a>
+                            </li>
+                            <li>
                                 <a class="dropdown-item" href="#" @click.prevent="logout">
                                     <i class="fas fa-sign-out-alt"></i> Cerrar sesión
                                 </a>
@@ -57,7 +62,7 @@
         <!-- Contenido principal -->
         <div class="dashboard-content">
             <div class="dashboard-header">
-                <h1 class="welcome-title">¡Bienvenido, Dr. Mario García!</h1>
+                <h1 class="welcome-title">¡Bienvenido, {{user && user.first_name && user.last_name ? (partialName + '!') : 'Cargando...'}}</h1>
                 <p class="welcome-subtitle">Aquí tienes pacientes potenciales cercanos a tu ubicación que coinciden con
                     tu especialidad en Cardiología</p>
             </div>
@@ -269,10 +274,37 @@ export default {
                     statusClass: 'status-interacted',
                     avatar: 'https://salusnexus-app.s3.us-east-2.amazonaws.com/images/2868b57e-c141-4948-97eb-84475e246755.png'
                 }
-            ]
+            ],
+            user: null,
+            fullName: null,
+            partialName: null,
         }
     },
+
+    mounted() {
+        this.user = JSON.parse(localStorage.getItem('user'));
+        if (!this.user) {
+            this.$router.push('/login');
+        }
+        this.fullName = this.getFullName();
+        this.partialName = this.getPartalNme();
+    },
     methods: {
+        getFullName() {
+            if (this.user && this.user.first_name && this.user.last_name) {
+                return `${this.user.first_name} ${this.user.last_name}`;
+            }
+            return 'Cargando...';
+        },
+
+        getPartalNme(){
+            //Obtener solo primer nombre y primer apellido
+            if (this.user && this.user.first_name && this.user.last_name) {
+                const firstName = this.user.first_name.split(' ')[0];
+                const lastName = this.user.last_name.split(' ')[0];
+                return `${firstName} ${lastName}`;
+            }
+        },
         setActiveFilter(filter) {
             this.activeFilter = filter;
             this.showEmptyState = (filter === 'all');
@@ -283,6 +315,9 @@ export default {
         },
         goToProfile() {
             this.$router.push('/userprofile');
+        },
+        goToClinic(){
+            this.$router.push('/clinic');
         },
         logout() {
             localStorage.removeItem('token');

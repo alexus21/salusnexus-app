@@ -245,6 +245,8 @@ export default {
                     text: 'Tu cuenta no está verificada. Por favor verifica tu cuenta para acceder a todas las funciones.',
                     confirmButtonText: 'Verificar',
                     confirmButtonColor: '#5660d6',
+                    cancelButtonText: 'Cancelar',
+                    showCancelButton: true,
                     allowEscapeKey: false,
                     allowOutsideClick: false,
                 }).then((result) => {
@@ -285,16 +287,17 @@ export default {
 
 /* Container Styles with gradient background like HomeComponent */
 .profile-container {
-    max-width: 1200px;
+
     width: 100%;
-    margin: 2rem auto;
+    height: 98vh;
     padding: 1.5rem;
     background: linear-gradient(135deg, #F0F8FF 0%, #FFFFFF 50%, #F8FBFF 100%);
-    border-radius: 1rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    /* border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); */
     font-family: var(--font-family);
     position: relative;
     overflow: hidden;
+    
 }
 
 /* Elementos decorativos de fondo - similares al HomeComponent */
