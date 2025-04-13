@@ -12,6 +12,7 @@ import AddPaymentMethodComponent from "@/components/paymentmethod/AddPaymentMeth
 import {validateAuth} from "@/utils/auth";
 import VerifyPatientAccountComponent from "@/components/verifyaccount/VerifyPatientAccountComponent.vue";
 import VerifyProfessionalAccountComponent from "@/components/verifyaccount/VerifyProfessionalAccountComponent.vue";
+import ClinicaPreview from "@/components/userprofile/ClinicaPreview.vue";
 
 const routes = [
     // Rutas para componentes de prueba
@@ -102,6 +103,14 @@ const routes = [
         meta: {
             requiresAuth: true
         },
+    },
+    {
+        path: '/preview-clinic',
+        name: 'PreviewClinic',
+        component: ClinicaPreview,
+        meta: {
+            requiresAuth: true
+        }
     },
     {
         path: '/plans/patients',

@@ -317,7 +317,7 @@ export default {
             this.$router.push('/userprofile');
         },
         goToClinic(){
-            this.$router.push('/clinic');
+            this.$router.push('/preview-clinic');
         },
         logout() {
             localStorage.removeItem('token');
