@@ -153,7 +153,6 @@ export default {
                 const response = await fetch(`${process.env.VUE_APP_API_URL}/verification/professionals`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     },
                     body: JSON.stringify(this.professional_form)

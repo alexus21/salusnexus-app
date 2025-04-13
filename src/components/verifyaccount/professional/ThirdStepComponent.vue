@@ -80,7 +80,7 @@
                            id="clinic_address_reference"
                            name="clinic_address_reference"
                            class="form-control ms-3"
-                           placeholder="Ubicación"
+                           placeholder="Ubicación geográfica en el mapa"
                            v-model="thirdStepForm.clinic_address_reference"
                            required
                            readonly>
@@ -93,7 +93,6 @@
             </div>
             <small class="text-muted"
                    v-if="thirdStepForm.clinic_latitude && thirdStepForm.clinic_longitude">
-                Dirección: {{ thirdStepForm.clinic_address_reference }}<br>
                 Lat: {{ thirdStepForm.clinic_latitude }}, Lng: {{ thirdStepForm.clinic_longitude }}
             </small>
             <LocationPickerComponent
@@ -206,9 +205,7 @@ export default {
         },
         handleLocationSelected(location) {
             const field = this.activeAddressField;
-            this.thirdStepForm[field] = location.clinic_address_reference;
-            this.thirdStepForm.clinic_address = location.clinic_address;
-            this.thirdStepForm.clinic_address_reference = location.clinic_address_reference;
+            this.thirdStepForm[field] = location.address; // Cambio aquí - usar location.address
             this.thirdStepForm.clinic_latitude = location.lat;
             this.thirdStepForm.clinic_longitude = location.lng;
             this.showLocationPicker = false;

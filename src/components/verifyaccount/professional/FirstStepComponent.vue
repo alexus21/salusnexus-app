@@ -40,8 +40,7 @@
             </div>
             <small class="text-muted"
                    v-if="firstStepForm.home_latitude && firstStepForm.home_longitude">
-                Lat: {{ firstStepForm.home_latitude }}, Lng:
-                {{ firstStepForm.home_longitude }}
+                Lat: {{ firstStepForm.home_latitude }}, Lng: {{ firstStepForm.home_longitude }}
             </small>
             <div class="mb-3 d-flex align-items-center">
                 <span class="material-icons">location_city</span>
