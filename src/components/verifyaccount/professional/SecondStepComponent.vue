@@ -50,26 +50,37 @@
                     </select>
                 </div>
             </div>
-
-            <div class="mb-3 d-flex align-items-center">
-                <span class="material-icons">location_city</span>
-                <input type="text"
-                       id="home_address_reference"
-                       v-model="secondStepForm.issue_date"
-                       class="form-control ms-3"
-                       placeholder="Dirección"
-                       required>
+            <div class="row mb-3">
+                <div class="col-12 col-md-3">
+                    <span class="text-secondary">Emisión:</span>
+                </div>
+                <div class="col-12 col-md-9">
+                    <div class="input-group">
+                        <input
+                            id="issue_date"
+                            type="date"
+                            v-model="secondStepForm.issue_date"
+                            class="form-control"
+                            placeholder="Fecha de emisión"
+                        />
+                    </div>
+                </div>
             </div>
-
-            <div class="mb-3 d-flex align-items-center">
-                <span class="material-icons">fingerprint</span>
-                <input type="text" id="dui"
-                       v-model="secondStepForm.expiration_date"
-                       class="form-control ms-3"
-                       maxlength="10"
-                       placeholder="Documento de identidad (DUI)"
-                       @input="formatDUI"
-                       required>
+            <div class="row mb-3">
+                <div class="col-12 col-md-3">
+                    <span class="text-secondary">Expiración:</span>
+                </div>
+                <div class="col-12 col-md-9">
+                    <div class="input-group">
+                        <input
+                            id="expiration_date"
+                            type="date"
+                            v-model="secondStepForm.expiration_date"
+                            class="form-control"
+                            placeholder="Fecha de expiración"
+                        />
+                    </div>
+                </div>
             </div>
 
             <div class="mb-3 d-flex align-items-center">
@@ -89,9 +100,11 @@
                 <span class="material-icons">book</span>
                 <input type="text"
                        id="emergency_contact_name"
-                       v-model="secondStepForm.biography"
+                       v-model="secondStepForm.years_of_experience"
                        class="form-control ms-3"
                        placeholder="Años de experiencia"
+                       @input="formatExperience"
+                       maxlength="2"
                        required>
             </div>
         </div>
@@ -105,8 +118,7 @@ import swal from "sweetalert2";
 
 export default {
     name: "SecondStepComponent",
-    components: {
-    },
+    components: {},
     data() {
         return {
             showLocationPicker: false,
@@ -120,6 +132,9 @@ export default {
                 years_of_experience: '',
             },
             specialities: {},
+            date: new Date(),
+            minDate: new Date(new Date().setFullYear(new Date().getFullYear() - 100)),
+            maxDate: new Date(),
         };
     },
     mounted() {
@@ -140,7 +155,7 @@ export default {
                         const errorMessage = Object.values(this.errors).flat().join('\n');
                         swal.fire({
                             icon: 'error',
-                            title: '¡Error!',
+                            title: '¡Error al obtener la lista de especialidades!',
                             text: errorMessage
                         });
                         return;
@@ -148,7 +163,6 @@ export default {
                 }
 
                 this.specialities = data;
-                console.log(this.specialities);
             } catch (error) {
                 console.error("Error al obtener las especialidades: " + error.message);
                 swal.fire({
@@ -157,17 +171,6 @@ export default {
                     text: "Ocurrió un error al obtener la lista de especialidades médicas. Por favor, inténtelo de nuevo."
                 });
             }
-        },
-        openLocationPicker(field) {
-            this.activeAddressField = field;
-            this.showLocationPicker = true;
-        },
-        handleLocationSelected(location) {
-            const field = this.activeAddressField;
-            this.secondStepForm[field] = location.address;
-            this.secondStepForm.home_latitude = location.lat;
-            this.secondStepForm.home_longitude = location.lng;
-            this.showLocationPicker = false;
         },
         async handlePhotoUpload(event) {
             const file = event.target.files[0];
@@ -208,58 +211,15 @@ export default {
                 this.isLoading = false;
             }
         },
-        formatDUI() {
+        formatExperience() {
             // Eliminar cualquier carácter que no sea dígito
-            let value = this.secondStepForm.dui.replace(/\D/g, '');
-
-            // Si hay más de 9 dígitos, truncar a 9
-            if (value.length > 9) {
-                value = value.slice(0, 9);
+            let value = this.secondStepForm.years_of_experience.replace(/\D/g, '');
+            // Si hay más de 2 dígitos, truncar a 2
+            if (value.length > 2) {
+                value = value.slice(0, 2);
             }
-
-            // Si hay más de 8 dígitos, agregar el guion antes del último dígito
-            if (value.length > 8) {
-                this.secondStepForm.dui = value.slice(0, 8) + '-' + value.slice(8);
-            } else {
-                this.secondStepForm.dui = value;
-            }
-        },
-        formatPhone() {
-            // Eliminar cualquier carácter que no sea dígito
-            let value = this.secondStepForm.emergency_contact_phone.replace(/\D/g, '');
-
-            // Verificar si el primer dígito es 2, 6 o 7
-            if (value.length > 0 && !/^[267]/.test(value)) {
-                // Si el primer dígito no es 2, 6 ni 7, borrar todo
-                this.secondStepForm.emergency_contact_phone = '';
-            } else {
-                // Si hay más de 8 dígitos, truncar a 8
-                if (value.length > 8) {
-                    value = value.slice(0, 8);
-                }
-                // Formatear el número de teléfono
-                this.secondStepForm.emergency_contact_phone = value;
-            }
-
-            this.$emit('update-form', this.secondStepForm);
-        },
-        formatName() {
-            // Eliminar cualquier carácter que no sea letra o espacio
-            this.secondStepForm.emergency_contact_name =
-                this.secondStepForm.emergency_contact_name.replace(/[^a-zÁáÉéÍíÓóÚúÑñÜüÇçA-Z\s\-']/g, '');
-
-            // Limitar a 50 caracteres
-            if (this.secondStepForm.emergency_contact_name.length > 50) {
-                this.secondStepForm.emergency_contact_name = this.secondStepForm.emergency_contact_name.slice(0, 50);
-            }
-
-            // Primero convertir todo a minúsculas
-            let nameInLowerCase = this.secondStepForm.emergency_contact_name.toLowerCase();
-
-            // Luego capitalizar la primera letra de cada palabra
-            this.secondStepForm.emergency_contact_name = nameInLowerCase.replace(/(^|\s|-)([a-záéíóúüñç])/g, function (match, separator, char) {
-                return separator + char.toUpperCase();
-            });
+            // Formatear el número de teléfono
+            this.secondStepForm.years_of_experience = value;
 
             this.$emit('update-form', this.secondStepForm);
         },

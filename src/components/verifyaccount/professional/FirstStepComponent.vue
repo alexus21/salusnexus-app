@@ -28,7 +28,7 @@
                            name="home_address"
                            v-model="firstStepForm.home_address"
                            class="form-control ms-3"
-                           placeholder="Ubicación"
+                           placeholder="Ubicación geográfica en el mapa"
                            required
                            readonly>
                     <button type="button"
@@ -49,7 +49,7 @@
                        id="home_address_reference"
                        v-model="firstStepForm.home_address_reference"
                        class="form-control ms-3"
-                       placeholder="Dirección"
+                       placeholder="Dirección exacta"
                        required>
             </div>
             <LocationPickerComponent

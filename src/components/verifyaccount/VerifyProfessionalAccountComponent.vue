@@ -6,7 +6,7 @@
                 <div id="carouselExampleFade" class="carousel slide carousel-fade">
                     <div class="carousel-inner">
                         <div class="carousel-item active">
-                            <FirstStepComponent/>
+                            <FirstStepComponent />
                         </div>
                         <div class="carousel-item">
                             <SecondStepComponent />
@@ -14,28 +14,30 @@
                         <div class="carousel-item">
                             <ThirdStepComponent />
                         </div>
+                        <div class="carousel-item">
+                            <FourthStepComponent />
+                        </div>
                     </div>
                 </div>
 
-                <!--Botones-->
-                <div class="navigation-footer">
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade"
-                            data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade"
-                            data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
-                    <div class="navigation-buttons">
+                <!-- Botones abajo del carrusel -->
+                <div class="navigation-footer text-center mt-4">
+                    <!-- Otros botones -->
+                    <div class="navigation-buttons mt-3">
+                        <button class="btn btn-outline-primary me-3" type="button" data-bs-target="#carouselExampleFade"
+                                data-bs-slide="prev">
+                            <span class="material-icons">arrow_back_ios</span>
+                        </button>
                         <button title="Cancelar" type="button" class="btn btn-secondary" @click="handleClose">
                             <span class="material-icons">close</span>
                         </button>
                         <button title="Registrar" type="button" class="btn btn-success ms-3" :disabled="!canSubmit"
                                 @click="verifyAccount">
                             <span class="material-icons">verified</span>
+                        </button>
+                        <button class="btn btn-outline-primary ms-3" type="button" data-bs-target="#carouselExampleFade"
+                                data-bs-slide="next">
+                            <span class="material-icons">arrow_forward_ios</span>
                         </button>
                     </div>
                 </div>
@@ -49,10 +51,12 @@ import swal from "sweetalert2";
 import FirstStepComponent from "@/components/verifyaccount/professional/FirstStepComponent.vue";
 import SecondStepComponent from "@/components/verifyaccount/professional/SecondStepComponent.vue";
 import ThirdStepComponent from "@/components/verifyaccount/professional/ThirdStepComponent.vue";
+import FourthStepComponent from "@/components/verifyaccount/professional/FourthComponent.vue";
 
 export default {
     name: 'VerifyProfessionalAccountComponent',
     components: {
+        FourthStepComponent,
         ThirdStepComponent,
         SecondStepComponent,
         FirstStepComponent,
@@ -80,8 +84,9 @@ export default {
 
                 clinic_name: '',
                 clinic_address: '',
-                latitude: null,
-                longitude: null,
+                clinic_map_location: '',
+                clinic_latitude: null,
+                clinic_longitude: null,
                 clinic_address_reference: '',
                 description: '',
                 city_id: null,
