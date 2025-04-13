@@ -216,14 +216,12 @@ export default {
                     }
                 }
 
-                console.log(data);
-
                 swal.fire({
                     icon: 'success',
                     title: '¡Éxito!',
                     text: data.message
                 }).then(() => {
-                    localStorage.setItem('user', JSON.stringify(data));
+                    localStorage.setItem('user', JSON.stringify(data.user));
                     this.$router.push({name: 'UserProfile'});
                 });
             } catch (error) {
