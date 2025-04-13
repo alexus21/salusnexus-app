@@ -6,16 +6,24 @@
                 <div class="text-center mb-4">
                     <div class="profile-photo-container">
                         <div class="profile-photo">
-                                    <span v-if="!fourthStepForm.facade_photo"
-                                          class="material-icons photo-placeholder">
-                                        add_a_photo
-                                    </span>
-                            <img class="w-50" v-else :src="fourthStepForm.facade_photo"
-                                 alt="Foto de perfil">
+                            <!-- Animación de carga cuando isLoading es true -->
+                            <div v-if="isLoading" class="spinner-container">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                                <p class="mt-2">Procesando imagen...</p>
+                            </div>
+                            <span v-if="!fourthStepForm.facade_photo"
+                                  class="material-icons photo-placeholder">
+                                add_a_photo
+                            </span>
+                            <img v-else :src="fourthStepForm.facade_photo" alt="Foto de la fachada">
                         </div>
                         <input type="file" id="facade_photo" @change="handleFacadePhotoUpload" accept="image/*"
                                class="d-none">
-                        <label for="facade_photo" class="btn btn-sm btn-primary mt-2">Fachada</label>
+                        <label for="facade_photo" class="btn btn-sm btn-primary mt-2">
+                            {{ isLoading ? 'Procesando...' : 'Agrega una fotografía de la fachada' }}
+                        </label>
                     </div>
                 </div>
             </div>
@@ -23,16 +31,24 @@
                 <div class="text-center mb-4">
                     <div class="profile-photo-container">
                         <div class="profile-photo">
-                                    <span v-if="!fourthStepForm.waiting_room_photo"
-                                          class="material-icons photo-placeholder">
-                                        add_a_photo
-                                    </span>
-                            <img class="w-50" v-else :src="fourthStepForm.waiting_room_photo"
+                            <div v-if="isLoading" class="spinner-container">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                                <p class="mt-2">Procesando imagen...</p>
+                            </div>
+                            <span v-if="!fourthStepForm.waiting_room_photo"
+                                  class="material-icons photo-placeholder">
+                                add_a_photo
+                            </span>
+                            <img v-else :src="fourthStepForm.waiting_room_photo"
                                  alt="Foto de perfil">
                         </div>
                         <input type="file" id="waiting_room_photo" @change="handleWaitingRoomPhotoUpload" accept="image/*"
                                class="d-none">
-                        <label for="waiting_room_photo" class="btn btn-sm btn-primary mt-2">Sala de espera (opcional)</label>
+                        <label for="waiting_room_photo" class="btn btn-sm btn-primary mt-2">
+                            {{ isLoading ? 'Procesando...' : 'Agrega una fotografía de la sala de espera' }}
+                        </label>
                     </div>
                 </div>
             </div>
@@ -40,16 +56,24 @@
                 <div class="text-center mb-4">
                     <div class="profile-photo-container">
                         <div class="profile-photo">
-                                    <span v-if="!fourthStepForm.office_photo"
-                                          class="material-icons photo-placeholder">
-                                        add_a_photo
-                                    </span>
-                            <img class="w-50" v-else :src="fourthStepForm.office_photo"
+                            <div v-if="isLoading" class="spinner-container">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                                <p class="mt-2">Procesando imagen...</p>
+                            </div>
+                            <span v-if="!fourthStepForm.office_photo"
+                                  class="material-icons photo-placeholder">
+                                add_a_photo
+                            </span>
+                            <img v-else :src="fourthStepForm.office_photo"
                                  alt="Foto de perfil">
                         </div>
                         <input type="file" id="room_photo" @change="handleOfficeRoomPhotoUpload" accept="image/*"
                                class="d-none">
-                        <label for="room_photo" class="btn btn-sm btn-primary mt-2">Consultorio (opcional)</label>
+                        <label for="room_photo" class="btn btn-sm btn-primary mt-2">
+                            {{ isLoading ? 'Procesando...' : 'Agrega una fotografía del consultorio' }}
+                        </label>
                     </div>
                 </div>
             </div>
@@ -74,6 +98,7 @@ export default {
                 waiting_room_photo: null,
                 office_photo: null,
             },
+            isLoading: false,
         };
     },
     methods: {
@@ -210,5 +235,31 @@ export default {
 </script>
 
 <style scoped>
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
 
+.profile-photo {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid #e9ecef;
+}
+
+.photo-placeholder {
+    font-size: 48px;
+    color: #adb5bd;
+}
 </style>

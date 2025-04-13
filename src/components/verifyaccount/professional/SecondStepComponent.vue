@@ -5,18 +5,27 @@
             <div class="text-center mb-4">
                 <div class="profile-photo-container">
                     <div class="profile-photo">
-                                    <span v-if="!secondStepForm.license_image_path"
-                                          class="material-icons photo-placeholder">
-                                        add_a_photo
-                                    </span>
-                        <img class="w-50" v-else :src="secondStepForm.license_image_path"
-                             alt="Foto de perfil">
+                        <!-- Animación de carga cuando isLoading es true -->
+                        <div v-if="isLoading" class="spinner-container">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            <p class="mt-2">Procesando imagen...</p>
+                        </div>
+                        <!-- Mostrar placeholder cuando no hay imagen ni está cargando -->
+                        <span v-else-if="!secondStepForm.license_image_path"
+                              class="material-icons photo-placeholder">
+                            add_a_photo
+                        </span>
+                        <!-- Mostrar la imagen cuando está cargada -->
+                        <img v-else :src="secondStepForm.license_image_path"
+                             alt="Imagen de licencia médica">
                     </div>
                     <input type="file" id="license_photo" @change="handlePhotoUpload" accept="image/*"
                            class="d-none">
-                    <label for="license_photo" class="btn btn-sm btn-primary mt-2">Agrega una fotografía
-                        de
-                        tu licencia médica</label>
+                    <label for="license_photo" class="btn btn-sm btn-primary mt-2">
+                        {{ isLoading ? 'Procesando...' : 'Agrega una fotografía de tu licencia médica' }}
+                    </label>
                 </div>
             </div>
         </div>
@@ -137,6 +146,7 @@ export default {
             minDate: new Date(new Date().setFullYear(new Date().getFullYear() - 100)),
             maxDate: new Date(),
             licensePhotoFile: null,
+            isLoading: false,
         };
     },
     mounted() {
@@ -261,5 +271,31 @@ export default {
 </script>
 
 <style scoped>
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
 
+.profile-photo {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid #e9ecef;
+}
+
+.photo-placeholder {
+    font-size: 48px;
+    color: #adb5bd;
+}
 </style>

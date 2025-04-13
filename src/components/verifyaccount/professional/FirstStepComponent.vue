@@ -5,17 +5,24 @@
             <div class="text-center mb-4">
                 <div class="profile-photo-container">
                     <div class="profile-photo">
-                                    <span v-if="!firstStepForm.profile_photo_path"
-                                          class="material-icons photo-placeholder">
-                                        add_a_photo
-                                    </span>
-                        <img class="w-50" v-else :src="firstStepForm.profile_photo_path"
+                        <div v-if="isLoading" class="spinner-container">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            <p class="mt-2">Procesando imagen...</p>
+                        </div>
+                        <span v-if="!firstStepForm.profile_photo_path"
+                              class="material-icons photo-placeholder">
+                            add_a_photo
+                        </span>
+                        <img v-else :src="firstStepForm.profile_photo_path"
                              alt="Foto de perfil">
                     </div>
                     <input type="file" id="profile_photo_path" @change="handlePhotoUpload" accept="image/*"
                            class="d-none">
-                    <label for="profile_photo_path" class="btn btn-sm btn-primary mt-2">Agrega tu
-                        fotografía</label>
+                    <label for="profile_photo_path" class="btn btn-sm btn-primary mt-2">
+                        {{ isLoading ? 'Procesando...' : 'Agrega una fotografía' }}
+                    </label>
                 </div>
             </div>
         </div>
@@ -104,6 +111,7 @@ export default {
                 profile_photo_path: null, //
             },
             profilePhotoFile: null,
+            isLoading: false,
         };
     },
     methods: {
@@ -190,5 +198,31 @@ export default {
 </script>
 
 <style scoped>
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
 
+.profile-photo {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid #e9ecef;
+}
+
+.photo-placeholder {
+    font-size: 48px;
+    color: #adb5bd;
+}
 </style>

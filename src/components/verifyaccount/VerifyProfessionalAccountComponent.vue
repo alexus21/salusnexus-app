@@ -21,25 +21,22 @@
                 </div>
 
                 <!-- Botones abajo del carrusel -->
-                <div class="navigation-footer text-center mt-4">
-                    <!-- Otros botones -->
-                    <div class="navigation-buttons mt-3">
-                        <button class="btn btn-outline-primary me-3" type="button" data-bs-target="#carouselExampleFade"
-                                data-bs-slide="prev" :disabled="!enablePreviousButton" @click="handlePrevButton">
-                            <span class="material-icons">arrow_back_ios</span>
-                        </button>
-                        <button title="Cancelar" type="button" class="btn btn-secondary" @click="handleClose">
-                            <span class="material-icons">close</span>
-                        </button>
-                        <button title="Registrar" type="button" class="btn btn-success ms-3" :disabled="!canSubmit"
-                                @click="verifyAccount">
-                            <span class="material-icons">verified</span>
-                        </button>
-                        <button class="btn btn-outline-primary ms-3" type="button" data-bs-target="#carouselExampleFade"
-                                data-bs-slide="next" :disabled="!enableNextButton" @click="handleNextButton">
-                            <span class="material-icons">arrow_forward_ios</span>
-                        </button>
-                    </div>
+                <div class="navigation-buttons mt-3">
+                    <button class="btn btn-outline-primary me-3 icon-btn" type="button" data-bs-target="#carouselExampleFade"
+                            data-bs-slide="prev" :disabled="!enablePreviousButton" @click="handlePrevButton">
+                        <span class="material-icons">arrow_back_ios</span>
+                    </button>
+                    <button title="Cancelar" type="button" class="btn btn-secondary icon-btn" @click="handleClose">
+                        <span class="material-icons">close</span>
+                    </button>
+                    <button title="Registrar" type="button" class="btn btn-success ms-3 icon-btn" :disabled="!canSubmit"
+                            @click="verifyAccount">
+                        <span class="material-icons">send</span>
+                    </button>
+                    <button class="btn btn-outline-primary ms-3 icon-btn" type="button" data-bs-target="#carouselExampleFade"
+                            data-bs-slide="next" :disabled="!enableNextButton" @click="handleNextButton">
+                        <span class="material-icons">arrow_forward_ios</span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -266,6 +263,28 @@ export default {
     border-radius: 15px;
     width: 95%;
     max-width: 1200px;
+}
+
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 4px;
+    vertical-align: middle;
+}
+
+.icon-btn .material-icons {
+    font-size: 20px;
+    line-height: 1;
+}
+
+/* Ajustes específicos para arrow_forward_ios y arrow_back_ios que tienen un alineado especial */
+.icon-btn .material-icons:is([data-icon="arrow_forward_ios"], [data-icon="arrow_back_ios"]) {
+    position: relative;
+    top: 1px; /* Ajuste vertical fino */
 }
 
 </style>
