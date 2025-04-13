@@ -107,7 +107,7 @@ export default {
                 this.professional_form.home_address !== '' &&
                 this.professional_form.dui !== '' &&
                 this.professional_form.emergency_contact_name !== '' &&
-                this.professional_form.emergency_contact_phone !== '';
+                this.professional_form.emergency_contact_phone !== '' && this.current_step === 3;
         }
     },
     mounted() {
@@ -138,21 +138,7 @@ export default {
             this.$router.push({name: 'Home'});
         },
         async verifyAccount() {
-            const formData = new FormData();
-
-            // Agregar los datos del formulario
-            formData.append('home_address', this.professional_form.home_address);
-            formData.append('home_latitude', this.professional_form.home_latitude);
-            formData.append('home_longitude', this.professional_form.home_longitude);
-            formData.append('home_address_reference', this.professional_form.home_address_reference);
-            formData.append('dui', this.professional_form.dui);
-            formData.append('emergency_contact_name', this.professional_form.emergency_contact_name);
-            formData.append('emergency_contact_phone', this.professional_form.emergency_contact_phone);
-
-            // Agregar el archivo directamente si existe
-            if (this.photoFile) {
-                formData.append('profile_photo_path', this.photoFile);
-            }
+            console.log(this.professional_form);
 
             swal.fire({
                 title: "Cargando...",
@@ -164,12 +150,13 @@ export default {
             });
 
             try {
-                const response = await fetch(`${process.env.VUE_APP_API_URL}/verification/patient`, {
+                const response = await fetch(`${process.env.VUE_APP_API_URL}/verification/professionals`, {
                     method: 'POST',
                     headers: {
+                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     },
-                    body: formData
+                    body: JSON.stringify(this.professional_form)
                 });
 
                 const data = await response.json();

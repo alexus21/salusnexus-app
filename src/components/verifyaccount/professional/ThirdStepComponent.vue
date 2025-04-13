@@ -6,8 +6,8 @@
                 <span class="material-icons">house</span>
                 <div class="input-group">
                     <input type="text"
-                           id="home_address"
-                           name="home_address"
+                           id="clinic_name"
+                           name="clinic_name"
                            v-model="thirdStepForm.clinic_name"
                            class="form-control ms-3"
                            placeholder="Nombre de la clínica"
@@ -19,19 +19,20 @@
                 <textarea type="text" id="dui"
                        v-model="thirdStepForm.description"
                        class="form-control ms-3"
-                       maxlength="10"
+                       maxlength="500"
                        placeholder="Descripción de tu clínica"
                        required>
                 </textarea>
             </div>
             <div class="mb-3 d-flex align-items-center">
                 <span class="material-icons">medical_services</span>
-                <input type="text"
-                       id="emergency_contact_name"
-                       v-model="thirdStepForm.speciality_type"
-                       class="form-control ms-3"
-                       placeholder="Años de experiencia"
-                       required>
+                <div class="input-group">
+                    <select class="form-select ms-3" v-model="thirdStepForm.speciality_type">
+                        <option disabled value="">Seleccionar tipo de clínica</option>
+                        <option value="primaria">Primaria</option>
+                        <option value="secundaria">Secundaria</option>
+                    </select>
+                </div>
             </div>
         </div>
         <div class="col-md-6">
@@ -63,8 +64,8 @@
                 <span class="material-icons">home</span>
                 <div class="input-group">
                     <input type="text"
-                           id="home_address"
-                           name="home_address"
+                           id="clinic_address"
+                           name="clinic_address"
                            v-model="thirdStepForm.clinic_address"
                            class="form-control ms-3"
                            placeholder="Dirección de la clínica"
@@ -75,8 +76,8 @@
                 <span class="material-icons">share_location</span>
                 <div class="input-group">
                     <input type="text"
-                           id="home_address"
-                           name="home_address"
+                           id="clinic_address_reference"
+                           name="clinic_address_reference"
                            class="form-control ms-3"
                            placeholder="Ubicación"
                            v-model="thirdStepForm.clinic_address_reference"
@@ -84,15 +85,15 @@
                            readonly>
                     <button type="button"
                             class="btn btn-primary"
-                            @click="openLocationPicker('home_address')">
+                            @click="openLocationPicker('clinic_address_reference')">
                         <span class="material-icons">location_on</span>
                     </button>
                 </div>
             </div>
             <small class="text-muted"
-                   v-if="thirdStepForm.home_latitude && thirdStepForm.home_longitude">
-                Lat: {{ thirdStepForm.home_latitude }}, Lng:
-                {{ thirdStepForm.home_longitude }}
+                   v-if="thirdStepForm.clinic_latitude && thirdStepForm.clinic_longitude">
+                Dirección: {{ thirdStepForm.clinic_address_reference }}<br>
+                Lat: {{ thirdStepForm.clinic_latitude }}, Lng: {{ thirdStepForm.clinic_longitude }}
             </small>
             <LocationPickerComponent
                     v-if="showLocationPicker"
@@ -117,8 +118,8 @@ export default {
             thirdStepForm: {
                 clinic_name: '', //
                 clinic_address: '', //
-                latitude: null, //
-                longitude: null, //
+                clinic_latitude: null, //
+                clinic_longitude: null, //
                 clinic_address_reference: '', //
                 description: '',
                 city_id: '',
@@ -204,9 +205,11 @@ export default {
         },
         handleLocationSelected(location) {
             const field = this.activeAddressField;
-            this.thirdStepForm[field] = location.address;
-            this.thirdStepForm.home_latitude = location.lat;
-            this.thirdStepForm.home_longitude = location.lng;
+            this.thirdStepForm[field] = location.clinic_address_reference;
+            this.thirdStepForm.clinic_address = location.clinic_address;
+            this.thirdStepForm.clinic_address_reference = location.clinic_address_reference;
+            this.thirdStepForm.clinic_latitude = location.lat;
+            this.thirdStepForm.clinic_longitude = location.lng;
             this.showLocationPicker = false;
         },
         sendFormData() {
