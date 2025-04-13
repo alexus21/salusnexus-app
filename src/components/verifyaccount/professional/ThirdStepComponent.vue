@@ -74,6 +74,7 @@
             </div>
             <div class="mb-3 d-flex align-items-center">
                 <span class="material-icons">share_location</span>
+                <!-- Fix this:-->
                 <div class="input-group">
                     <input type="text"
                            id="clinic_address_reference"
