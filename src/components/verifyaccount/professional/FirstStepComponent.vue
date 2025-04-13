@@ -12,9 +12,9 @@
                         <img class="w-50" v-else :src="firstStepForm.profile_photo_path"
                              alt="Foto de perfil">
                     </div>
-                    <input type="file" id="photo" @change="handlePhotoUpload" accept="image/*"
+                    <input type="file" id="profile_photo_path" @change="handlePhotoUpload" accept="image/*"
                            class="d-none">
-                    <label for="photo" class="btn btn-sm btn-primary mt-2">Agrega tu
+                    <label for="profile_photo_path" class="btn btn-sm btn-primary mt-2">Agrega tu
                         fotografía</label>
                 </div>
             </div>
@@ -103,7 +103,8 @@ export default {
                 dui: '', //
                 biography: '', //
                 profile_photo_path: null, //
-            }
+            },
+            profilePhotoFile: null,
         };
     },
     methods: {
@@ -151,7 +152,7 @@ export default {
                 reader.readAsDataURL(compressedFile);
 
                 // Guarda el archivo comprimido para usarlo al enviar
-                this.photoFile = compressedFile;
+                this.profilePhotoFile = compressedFile;
             } catch (error) {
                 console.error("Error al procesar la imagen:", error);
                 this.isLoading = false;
@@ -173,45 +174,17 @@ export default {
                 this.firstStepForm.dui = value;
             }
         },
-        formatPhone() {
-            // Eliminar cualquier carácter que no sea dígito
-            let value = this.professional_form.emergency_contact_phone.replace(/\D/g, '');
-
-            // Verificar si el primer dígito es 2, 6 o 7
-            if (value.length > 0 && !/^[267]/.test(value)) {
-                // Si el primer dígito no es 2, 6 ni 7, borrar todo
-                this.firstStepForm.emergency_contact_phone = '';
-            } else {
-                // Si hay más de 8 dígitos, truncar a 8
-                if (value.length > 8) {
-                    value = value.slice(0, 8);
-                }
-                // Formatear el número de teléfono
-                this.firstStepForm.emergency_contact_phone = value;
-            }
-
-            this.$emit('update-form', this.firstStepForm);
+        sendFormData() {
+            this.$emit("update-first-step-data", this.firstStepForm);
         },
-        formatName() {
-            // Eliminar cualquier carácter que no sea letra o espacio
-            this.firstStepForm.emergency_contact_name =
-                this.professional_form.emergency_contact_name.replace(/[^a-zÁáÉéÍíÓóÚúÑñÜüÇçA-Z\s\-']/g, '');
-
-            // Limitar a 50 caracteres
-            if (this.professional_form.emergency_contact_name.length > 50) {
-                this.firstStepForm.emergency_contact_name = this.professional_form.emergency_contact_name.slice(0, 50);
+    },
+    watch: {
+        firstStepForm: {
+            deep: true,
+            handler() {
+                this.sendFormData();
             }
-
-            // Primero convertir todo a minúsculas
-            let nameInLowerCase = this.professional_form.emergency_contact_name.toLowerCase();
-
-            // Luego capitalizar la primera letra de cada palabra
-            this.firstStepForm.emergency_contact_name = nameInLowerCase.replace(/(^|\s|-)([a-záéíóúüñç])/g, function (match, separator, char) {
-                return separator + char.toUpperCase();
-            });
-
-            this.$emit('update-form', this.firstStepForm);
-        },
+        }
     }
 }
 

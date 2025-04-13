@@ -6,10 +6,10 @@
                 <div id="carouselExampleFade" class="carousel slide carousel-fade">
                     <div class="carousel-inner">
                         <div class="carousel-item active">
-                            <FirstStepComponent />
+                            <FirstStepComponent @update-first-step-data="updateFirstStepForm" />
                         </div>
                         <div class="carousel-item">
-                            <SecondStepComponent />
+                            <SecondStepComponent @update-second-step-data="updateSecondStepForm" />
                         </div>
                         <div class="carousel-item">
                             <ThirdStepComponent />
@@ -60,20 +60,11 @@ export default {
         ThirdStepComponent,
         SecondStepComponent,
         FirstStepComponent,
-        // LocationPickerComponent
     },
     data() {
         return {
             showLocationPicker: false,
             professional_form: {
-                license_number: '', //
-                license_authority: '', //
-                issue_date: '', //
-                expiration_date: '', //
-                speciality_id: '', //
-                license_image_path: null, //
-                years_of_experience: '',
-
                 home_address: '', //
                 home_latitude: null, //
                 home_longitude: null, //
@@ -81,6 +72,14 @@ export default {
                 profile_photo_path: null, //
                 dui: '', //
                 biography: '', //
+
+                license_number: '', //
+                license_authority: '', //
+                issue_date: '', //
+                expiration_date: '', //
+                speciality_id: '', //
+                license_image_path: null, //
+                years_of_experience: '',
 
                 clinic_name: '',
                 clinic_address: '',
@@ -95,7 +94,6 @@ export default {
                 waiting_room_photo: null,
                 office_photo: null,
             },
-            photoFile: null,
             errors: {},
             isVerified: false,
         }
@@ -202,7 +200,25 @@ export default {
                     this.$router.push({name: 'UserProfile'});
                 }
             });
-        }
+        },
+        updateFirstStepForm(data) {
+            this.professional_form.home_address = data.home_address;
+            this.professional_form.home_latitude = data.home_latitude;
+            this.professional_form.home_longitude = data.home_longitude;
+            this.professional_form.home_address_reference = data.home_address_reference;
+            this.professional_form.dui = data.dui;
+            this.professional_form.biography = data.biography;
+            this.professional_form.profile_photo_path = data.profile_photo_path;
+        },
+        updateSecondStepForm(data) {
+            this.professional_form.license_number = data.license_number;
+            this.professional_form.license_authority = data.license_authority;
+            this.professional_form.issue_date = data.issue_date;
+            this.professional_form.expiration_date = data.expiration_date;
+            this.professional_form.speciality_id = data.speciality_id;
+            this.professional_form.license_image_path = data.license_image_path;
+            this.professional_form.years_of_experience = data.years_of_experience;
+        },
     }
 }
 </script>

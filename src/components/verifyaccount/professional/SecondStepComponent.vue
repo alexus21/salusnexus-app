@@ -12,9 +12,9 @@
                         <img class="w-50" v-else :src="secondStepForm.license_image_path"
                              alt="Foto de perfil">
                     </div>
-                    <input type="file" id="photo" @change="handlePhotoUpload" accept="image/*"
+                    <input type="file" id="license_photo" @change="handlePhotoUpload" accept="image/*"
                            class="d-none">
-                    <label for="photo" class="btn btn-sm btn-primary mt-2">Agrega una fotografía
+                    <label for="license_photo" class="btn btn-sm btn-primary mt-2">Agrega una fotografía
                         de
                         tu licencia médica</label>
                 </div>
@@ -30,6 +30,7 @@
                            v-model="secondStepForm.license_number"
                            class="form-control ms-3"
                            placeholder="Número de licencia"
+                           @input="formatLicense"
                            required>
                 </div>
             </div>
@@ -135,6 +136,7 @@ export default {
             date: new Date(),
             minDate: new Date(new Date().setFullYear(new Date().getFullYear() - 100)),
             maxDate: new Date(),
+            licensePhotoFile: null,
         };
     },
     mounted() {
@@ -199,13 +201,13 @@ export default {
                 // Generar vista previa
                 const reader = new FileReader();
                 reader.onload = () => {
-                    this.secondStepForm.profile_photo_path = reader.result;
+                    this.secondStepForm.license_image_path = reader.result;
                     this.isLoading = false;
                 };
                 reader.readAsDataURL(compressedFile);
 
                 // Guarda el archivo comprimido para usarlo al enviar
-                this.photoFile = compressedFile;
+                this.licensePhotoFile = compressedFile;
             } catch (error) {
                 console.error("Error al procesar la imagen:", error);
                 this.isLoading = false;
@@ -222,6 +224,36 @@ export default {
             this.secondStepForm.years_of_experience = value;
 
             this.$emit('update-form', this.secondStepForm);
+        },
+        formatLicense() {
+            // Eliminar cualquier carácter que no sea dígito
+            let value = this.secondStepForm.license_number.replace(/\D/g, '');
+
+            // Limitar a máximo 12 dígitos (3 + 8 + 1)
+            value = value.slice(0, 12);
+
+            // Aplicar el formato ###-########-#
+            if (value.length >= 4) {
+                let part1 = value.slice(0, 3);
+                let part2 = value.slice(3, 11); // Hasta 8 dígitos después del primero
+                let part3 = value.slice(11);    // El último dígito si existe
+
+                this.secondStepForm.license_number = part1 + '-' + part2 + (part3 ? '-' + part3 : '');
+            } else {
+                // Si tiene menos de 4 dígitos, solo mostrar lo que hay sin guiones
+                this.secondStepForm.license_number = value;
+            }
+        },
+        sendFormData() {
+            this.$emit("update-second-step-data", this.secondStepForm);
+        },
+    },
+    watch: {
+        secondStepForm: {
+            deep: true,
+            handler() {
+                this.sendFormData();
+            }
         },
     }
 }

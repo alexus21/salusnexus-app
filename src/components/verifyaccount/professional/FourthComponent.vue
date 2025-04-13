@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <h3 class="form-title text-decoration-underline">Fotografias</h3>
+        <h3 class="form-title text-decoration-underline">Fotografías</h3>
         <div class="row mb-3">
             <div class="col-md-4">
                 <div class="text-center mb-4">
@@ -13,9 +13,9 @@
                             <img class="w-50" v-else :src="fourthStepForm.facade_photo"
                                  alt="Foto de perfil">
                         </div>
-                        <input type="file" id="photo" @change="handleFacadePhotoUpload" accept="image/*"
+                        <input type="file" id="facade_photo" @change="handleFacadePhotoUpload" accept="image/*"
                                class="d-none">
-                        <label for="photo" class="btn btn-sm btn-primary mt-2">Fachada</label>
+                        <label for="facade_photo" class="btn btn-sm btn-primary mt-2">Fachada</label>
                     </div>
                 </div>
             </div>
@@ -30,9 +30,9 @@
                             <img class="w-50" v-else :src="fourthStepForm.waiting_room_photo"
                                  alt="Foto de perfil">
                         </div>
-                        <input type="file" id="photo" @change="handleWaitingRoomPhotoUpload" accept="image/*"
+                        <input type="file" id="waiting_room_photo" @change="handleWaitingRoomPhotoUpload" accept="image/*"
                                class="d-none">
-                        <label for="photo" class="btn btn-sm btn-primary mt-2">Sala de espera (opcional)</label>
+                        <label for="waiting_room_photo" class="btn btn-sm btn-primary mt-2">Sala de espera (opcional)</label>
                     </div>
                 </div>
             </div>
@@ -47,9 +47,9 @@
                             <img class="w-50" v-else :src="fourthStepForm.office_photo"
                                  alt="Foto de perfil">
                         </div>
-                        <input type="file" id="photo" @change="handleOfficeRoomPhotoUpload" accept="image/*"
+                        <input type="file" id="room_photo" @change="handleOfficeRoomPhotoUpload" accept="image/*"
                                class="d-none">
-                        <label for="photo" class="btn btn-sm btn-primary mt-2">Consultorio (opcional)</label>
+                        <label for="room_photo" class="btn btn-sm btn-primary mt-2">Consultorio (opcional)</label>
                     </div>
                 </div>
             </div>
@@ -104,7 +104,7 @@ export default {
                 // Generar vista previa
                 const reader = new FileReader();
                 reader.onload = () => {
-                    this.thirdStepForm.facade_photo = reader.result;
+                    this.fourthStepForm.facade_photo = reader.result;
                     this.isLoading = false;
                 };
                 reader.readAsDataURL(compressedFile);
@@ -143,7 +143,7 @@ export default {
                 // Generar vista previa
                 const reader = new FileReader();
                 reader.onload = () => {
-                    this.thirdStepForm.waiting_room_photo = reader.result;
+                    this.fourthStepForm.waiting_room_photo = reader.result;
                     this.isLoading = false;
                 };
                 reader.readAsDataURL(compressedFile);
@@ -182,7 +182,7 @@ export default {
                 // Generar vista previa
                 const reader = new FileReader();
                 reader.onload = () => {
-                    this.thirdStepForm.office_photo = reader.result;
+                    this.fourthStepForm.office_photo = reader.result;
                     this.isLoading = false;
                 };
                 reader.readAsDataURL(compressedFile);

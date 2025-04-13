@@ -103,8 +103,6 @@
 </template>
 
 <script>
-
-import imageCompression from "browser-image-compression";
 import swal from "sweetalert2";
 import LocationPickerComponent from "@/components/locationpicker/LocationPickerComponent.vue";
 
@@ -124,7 +122,7 @@ export default {
                 clinic_address_reference: '', //
                 description: '',
                 city_id: '',
-                speciality_type: 'primaria',
+                speciality_type: '',
                 facade_photo: null,
                 waiting_room_photo: null,
                 office_photo: null,
@@ -210,178 +208,6 @@ export default {
             this.thirdStepForm.home_latitude = location.lat;
             this.thirdStepForm.home_longitude = location.lng;
             this.showLocationPicker = false;
-        },
-        async handleFacadePhotoUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            // Validar tipo de archivo
-            if (!file.type.match('image.*')) {
-                console.error("Por favor selecciona solo imágenes");
-                return;
-            }
-
-            try {
-                // Mostrar indicador de carga
-                this.isLoading = true;
-
-                // Opciones para la compresión
-                const options = {
-                    maxSizeMB: 1,              // Tamaño máximo en MB
-                    maxWidthOrHeight: 800,     // Dimensión máxima
-                    useWebWorker: true         // Usar Web Worker para no bloquear UI
-                };
-
-                // Comprimir la imagen
-                const compressedFile = await imageCompression(file, options);
-
-                // Generar vista previa
-                const reader = new FileReader();
-                reader.onload = () => {
-                    this.thirdStepForm.facade_photo = reader.result;
-                    this.isLoading = false;
-                };
-                reader.readAsDataURL(compressedFile);
-
-                // Guarda el archivo comprimido para usarlo al enviar
-                this.facadePhotoFile = compressedFile;
-            } catch (error) {
-                console.error("Error al procesar la imagen:", error);
-                this.isLoading = false;
-            }
-        },
-        async handleWaitingRoomPhotoUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            // Validar tipo de archivo
-            if (!file.type.match('image.*')) {
-                console.error("Por favor selecciona solo imágenes");
-                return;
-            }
-
-            try {
-                // Mostrar indicador de carga
-                this.isLoading = true;
-
-                // Opciones para la compresión
-                const options = {
-                    maxSizeMB: 1,              // Tamaño máximo en MB
-                    maxWidthOrHeight: 800,     // Dimensión máxima
-                    useWebWorker: true         // Usar Web Worker para no bloquear UI
-                };
-
-                // Comprimir la imagen
-                const compressedFile = await imageCompression(file, options);
-
-                // Generar vista previa
-                const reader = new FileReader();
-                reader.onload = () => {
-                    this.thirdStepForm.waiting_room_photo = reader.result;
-                    this.isLoading = false;
-                };
-                reader.readAsDataURL(compressedFile);
-
-                // Guarda el archivo comprimido para usarlo al enviar
-                this.waitingRoomPhotoFile = compressedFile;
-            } catch (error) {
-                console.error("Error al procesar la imagen:", error);
-                this.isLoading = false;
-            }
-        },
-        async handleOfficeRoomPhotoUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            // Validar tipo de archivo
-            if (!file.type.match('image.*')) {
-                console.error("Por favor selecciona solo imágenes");
-                return;
-            }
-
-            try {
-                // Mostrar indicador de carga
-                this.isLoading = true;
-
-                // Opciones para la compresión
-                const options = {
-                    maxSizeMB: 1,              // Tamaño máximo en MB
-                    maxWidthOrHeight: 800,     // Dimensión máxima
-                    useWebWorker: true         // Usar Web Worker para no bloquear UI
-                };
-
-                // Comprimir la imagen
-                const compressedFile = await imageCompression(file, options);
-
-                // Generar vista previa
-                const reader = new FileReader();
-                reader.onload = () => {
-                    this.thirdStepForm.office_photo = reader.result;
-                    this.isLoading = false;
-                };
-                reader.readAsDataURL(compressedFile);
-
-                // Guarda el archivo comprimido para usarlo al enviar
-                this.officePhotoFile = compressedFile;
-            } catch (error) {
-                console.error("Error al procesar la imagen:", error);
-                this.isLoading = false;
-            }
-        },
-        formatDUI() {
-            // Eliminar cualquier carácter que no sea dígito
-            let value = this.thirdStepForm.dui.replace(/\D/g, '');
-
-            // Si hay más de 9 dígitos, truncar a 9
-            if (value.length > 9) {
-                value = value.slice(0, 9);
-            }
-
-            // Si hay más de 8 dígitos, agregar el guion antes del último dígito
-            if (value.length > 8) {
-                this.thirdStepForm.dui = value.slice(0, 8) + '-' + value.slice(8);
-            } else {
-                this.thirdStepForm.dui = value;
-            }
-        },
-        formatPhone() {
-            // Eliminar cualquier carácter que no sea dígito
-            let value = this.thirdStepForm.emergency_contact_phone.replace(/\D/g, '');
-
-            // Verificar si el primer dígito es 2, 6 o 7
-            if (value.length > 0 && !/^[267]/.test(value)) {
-                // Si el primer dígito no es 2, 6 ni 7, borrar todo
-                this.thirdStepForm.emergency_contact_phone = '';
-            } else {
-                // Si hay más de 8 dígitos, truncar a 8
-                if (value.length > 8) {
-                    value = value.slice(0, 8);
-                }
-                // Formatear el número de teléfono
-                this.thirdStepForm.emergency_contact_phone = value;
-            }
-
-            this.$emit('update-form', this.thirdStepForm);
-        },
-        formatName() {
-            // Eliminar cualquier carácter que no sea letra o espacio
-            this.thirdStepForm.emergency_contact_name =
-                this.thirdStepForm.emergency_contact_name.replace(/[^a-zÁáÉéÍíÓóÚúÑñÜüÇçA-Z\s\-']/g, '');
-
-            // Limitar a 50 caracteres
-            if (this.thirdStepForm.emergency_contact_name.length > 50) {
-                this.thirdStepForm.emergency_contact_name = this.thirdStepForm.emergency_contact_name.slice(0, 50);
-            }
-
-            // Primero convertir todo a minúsculas
-            let nameInLowerCase = this.thirdStepForm.emergency_contact_name.toLowerCase();
-
-            // Luego capitalizar la primera letra de cada palabra
-            this.thirdStepForm.emergency_contact_name = nameInLowerCase.replace(/(^|\s|-)([a-záéíóúüñç])/g, function (match, separator, char) {
-                return separator + char.toUpperCase();
-            });
-
-            this.$emit('update-form', this.thirdStepForm);
         },
     }
 }
