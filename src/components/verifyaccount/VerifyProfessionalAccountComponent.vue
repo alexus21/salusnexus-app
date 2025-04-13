@@ -183,8 +183,6 @@ export default {
                 formData.append('office_photo', this.office_photo_file);
             }
 
-            console.log(formData);
-
             swal.fire({
                 title: "Cargando...",
                 text: "Por favor, espere mientras se verifica su cuenta.",
@@ -218,12 +216,14 @@ export default {
                     }
                 }
 
+                console.log(data);
+
                 swal.fire({
                     icon: 'success',
                     title: '¡Éxito!',
                     text: data.message
                 }).then(() => {
-                    localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('user', JSON.stringify(data));
                     this.$router.push({name: 'UserProfile'});
                 });
             } catch (error) {
@@ -287,16 +287,15 @@ export default {
             this.professional_form.waiting_room_photo = data.waiting_room_photo;
             this.professional_form.office_photo = data.office_photo;
 
-            this.facade_photo_file = data.facadePhotoFile;
-            this.waiting_room_photo_file = data.waitingRoomPhotoFile;
-            this.office_photo_file = data.officePhotoFile;
+            this.facade_photo_file = data.facade_photo_file;
+            this.waiting_room_photo_file = data.waiting_room_photo_file;
+            this.office_photo_file = data.office_photo_file;
         },
     }
 }
 </script>
 
 <style scoped>
-
 .register-form {
     display: flex;
     justify-content: center;

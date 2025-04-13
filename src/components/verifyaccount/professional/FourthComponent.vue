@@ -139,7 +139,7 @@ export default {
                 reader.readAsDataURL(compressedFile);
 
                 // Guarda el archivo comprimido para usarlo al enviar
-                this.fourthStepForm.facadePhotoFile = compressedFile;
+                this.fourthStepForm.facade_photo_file = compressedFile;
             } catch (error) {
                 console.error("Error al procesar la imagen:", error);
                 this.isLoading = false;
@@ -178,7 +178,7 @@ export default {
                 reader.readAsDataURL(compressedFile);
 
                 // Guarda el archivo comprimido para usarlo al enviar
-                this.fourthStepForm.waitingRoomPhotoFile = compressedFile;
+                this.fourthStepForm.waiting_room_photo_file = compressedFile;
             } catch (error) {
                 console.error("Error al procesar la imagen:", error);
                 this.isLoading = false;
@@ -217,7 +217,7 @@ export default {
                 reader.readAsDataURL(compressedFile);
 
                 // Guarda el archivo comprimido para usarlo al enviar
-                this.fourthStepForm.officePhotoFile = compressedFile;
+                this.fourthStepForm.office_photo_file = compressedFile;
             } catch (error) {
                 console.error("Error al procesar la imagen:", error);
                 this.isLoading = false;
@@ -227,7 +227,7 @@ export default {
         }
     },
     watch: {
-        thirdStepForm: {
+        fourthStepForm: {
             deep: true,
             handler() {
                 this.sendFormData();

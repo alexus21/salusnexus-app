@@ -229,7 +229,7 @@ export default {
     },
     methods: {
         async loadUserData() {
-            this.user = JSON.parse(localStorage.getItem('user'));
+            this.user = JSON.parse(localStorage.getItem('user')).user;
             //Esperar un segundo para simular la carga de datos
             await new Promise(resolve => setTimeout(resolve, 1000));
             this.isVerified = this.user.verified;
