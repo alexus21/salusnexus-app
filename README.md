@@ -1,4 +1,4 @@
-# salusnexus-app
+# salusnexus-app-professionals
 
 ## Project setup
 ```
