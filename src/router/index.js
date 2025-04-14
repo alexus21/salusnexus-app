@@ -12,6 +12,7 @@ import AddPaymentMethodComponent from "@/components/paymentmethod/AddPaymentMeth
 import {validateAuth} from "@/utils/auth";
 import VerifyProfessionalAccountComponent from "@/components/verifyaccount/VerifyProfessionalAccountComponent.vue";
 import ClinicaPreview from "@/components/userprofile/ClinicaPreview.vue";
+import EditClinicView from "@/components/clinic/EditClinicView.vue";
 
 const routes = [
     {
@@ -100,6 +101,15 @@ const routes = [
             requiresAuth: true
         }
     },
+    {
+        path: '/edit-clinic',
+        name: 'EditClinic',
+        component: EditClinicView,
+        meta: {
+          requiresAuth: true // Si necesitas autenticación
+        }
+      },
+
     {
         path: '/planes/profesionales',
         name: 'ProfessionalSubscriptionPlans',

@@ -22,7 +22,7 @@
           </svg>
           Vista de paciente
         </button>
-        <button class="bg-white text-blue-600 rounded-md px-4 py-1">
+        <button class="bg-white text-blue-600 rounded-md px-4 py-1" @click.prevent="goToEditClinicPreview">
           Personalizar vista
         </button>
       </div>
@@ -332,6 +332,14 @@ export default {
   data() {
     return {
       activeTab: 'informacion'
+    }
+  },
+  methods: {
+    editProfile() {
+      this.$router.push('/edit-clinic');
+    },
+    goToEditClinicPreview() {
+      this.$router.push({ name: 'EditClinic' });
     }
   }
 }
