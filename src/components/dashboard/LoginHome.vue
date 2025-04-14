@@ -284,7 +284,7 @@ export default {
     mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));
         if (!this.user) {
-            this.$router.push('/login');
+            this.$router.push({name: 'Login'});
         }
         this.fullName = this.getFullName();
         this.partialName = this.getPartalNme();
@@ -314,17 +314,17 @@ export default {
             // Logic to load all patients would go here
         },
         goToProfile() {
-            this.$router.push('/userprofile');
+            this.$router.push({name: 'UserProfile'});
         },
         goToClinic(){
-            this.$router.push('/preview-clinic');
+            this.$router.push({name: 'PreviewClinic'});
         },
         logout() {
             localStorage.removeItem('token');
             window.location.reload();
         },
         goToDashboard() {
-            this.$router.push('/dashboard');
+            this.$router.push({name: 'Dashboard'});
         }
     }
 }

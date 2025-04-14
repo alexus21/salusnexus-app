@@ -109,13 +109,13 @@ export default {
     name: 'HeaderComponent',
     methods: {
         handleRegisterClick() {
-            this.$router.push('/register');
+            this.$router.push({name: 'Register'});
         },
         handleLoginClick() {
-            this.$router.push('/login');
+            this.$router.push({name: 'Login'});
         },
         handleProfileClick() {
-            this.$router.push('/userprofile');
+            this.$router.push({name: 'UserProfile'});
         },
         handleLogoClick() {
             // this.$router.push({name: 'Dashboard'});

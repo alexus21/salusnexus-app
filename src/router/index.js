@@ -10,14 +10,10 @@ import RegisterPage from "@/components/register/RegisterPage.vue";
 import AddPaymentMethodComponent from "@/components/paymentmethod/AddPaymentMethodComponent.vue";
 
 import {validateAuth} from "@/utils/auth";
-import VerifyPatientAccountComponent from "@/components/verifyaccount/VerifyPatientAccountComponent.vue";
 import VerifyProfessionalAccountComponent from "@/components/verifyaccount/VerifyProfessionalAccountComponent.vue";
 import ClinicaPreview from "@/components/userprofile/ClinicaPreview.vue";
 
 const routes = [
-    // Rutas para componentes de prueba
-
-
     {
         path: '/',
         name: 'Home',
@@ -61,7 +57,7 @@ const routes = [
         }
     },
     {
-        path: '/add-payment-method',
+        path: '/agregar-pago',
         name: 'AddPaymentMethod',
         component: AddPaymentMethodComponent,
         meta: {
@@ -79,7 +75,7 @@ const routes = [
         },
     },
     {
-        path: '/userprofile',
+        path: '/perfil',
         name: 'UserProfile',
         // component: UserProfileComponent,
         component: DoctorProfileComponent,
@@ -89,15 +85,7 @@ const routes = [
         },
     },
     {
-        path: '/paciente/verification',
-        name: 'VerifyPatientAccount',
-        component: VerifyPatientAccountComponent,
-        meta: {
-            requiresAuth: true
-        },
-    },
-    {
-        path: '/profesional/verification',
+        path: '/profesional/verificar',
         name: 'VerifyProfessionalAccount',
         component: VerifyProfessionalAccountComponent,
         meta: {
@@ -105,7 +93,7 @@ const routes = [
         },
     },
     {
-        path: '/preview-clinic',
+        path: '/previa-clinica',
         name: 'PreviewClinic',
         component: ClinicaPreview,
         meta: {
@@ -113,8 +101,8 @@ const routes = [
         }
     },
     {
-        path: '/plans/patients',
-        name: 'PatientsSubscriptionPlans',
+        path: '/planes/profesionales',
+        name: 'ProfessionalSubscriptionPlans',
         component: SubscriptionPlansComponent,
         meta: {
             hideHeader: true

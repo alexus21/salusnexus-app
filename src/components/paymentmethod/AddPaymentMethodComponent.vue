@@ -5,7 +5,12 @@
         <div class="decorative-element decorative-element-2"></div>
         <div class="decorative-element decorative-element-3"></div>
 
-        <div class="payment-container">
+        <div v-if="isLoading" class="loading-container">
+            <div class="spinner"></div>
+            <p class="loading-text">Verificando tu suscripción...</p>
+        </div>
+
+        <div v-if="!isLoading && showPaymentForm" class="payment-container">
             <!-- Panel izquierdo - Configuración de pago -->
             <div class="left-panel">
                 <h2 class="panel-title">Configuración</h2>
@@ -92,7 +97,7 @@
 
                     <div class="action-buttons">
                         <button type="submit" class="confirm-btn">Confirmar</button>
-                        <button type="button" class="cancel-btn">Cancelar</button>
+                        <button type="button" class="cancel-btn" @click="goToHome">Cancelar</button>
                     </div>
                 </form>
             </div>
@@ -179,6 +184,8 @@ export default {
     name: 'AddPaymentMethodComponent',
     data() {
         return {
+            isLoading: true,
+            showPaymentForm: true,
             selectedPaymentMethod: 'visa',
             card_form: {
                 card_number: '',
@@ -199,12 +206,79 @@ export default {
             errors: {},
         }
     },
+    async mounted() {
+        await this.fetchMySubscription();
+    },
     computed: {
         getPaymentMethodIcon() {
             return this.paymentIcons[this.selectedPaymentMethod] || this.paymentIcons['visa'];
         }
     },
     methods: {
+        async fetchMySubscription() {
+            this.isLoading = true;
+            try {
+                const response = await fetch(API_URL + '/subscriptions', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+
+                const data = await response.json();
+                console.log(data);
+                this.isLoading = false;
+
+                /*if (!data.status) {
+                    // No hay suscripción activa, mostrar alerta para confirmar
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message,
+                        showCancelButton: true,
+                        showConfirmButton: true,
+                        confirmButtonText: 'Sí, suscribirme',
+                        cancelButtonText: 'Cancelar',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Usuario confirma querer suscribirse, mostrar formulario
+                            this.showPaymentForm = true;
+                        } else {
+                            // Usuario cancela, redirigir a Home
+                            this.goToHome();
+                        }
+                    });
+                    return;
+                }*/
+
+                // Ya está suscrito, mostrar alerta y redirigir a Home
+                if(data.success){
+                    swal.fire({
+                        icon: 'success',
+                        title: 'Ya estás suscrito',
+                        text: data.message,
+                    }).then(() => {
+                        this.showPaymentForm = false;
+                        this.goToHome();
+                    });
+                }
+
+            } catch (error) {
+                this.isLoading = false;
+                console.error('Error fetching subscription:', error);
+                swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ocurrió un error al verificar tu suscripción. Por favor, intenta nuevamente.',
+                }).then(() => {
+                    this.goToHome();
+                });
+            }
+        },
+        goToHome() {
+            this.$router.push({name: 'Home'});
+        },
         formatName() {
             // Eliminar cualquier carácter que no sea letra o espacio
             this.card_form.cardholder_name =
@@ -404,7 +478,7 @@ export default {
                     title: 'Éxito',
                     text: 'Método de pago agregado correctamente.',
                 }).then(() => {
-                    this.$router.push({name: 'Home'});
+                    this.goToHome();
                 })
             } catch (error) {
                 console.error('Error al agregar el método de pago:', error);
@@ -430,6 +504,40 @@ export default {
     position: relative;
     overflow: hidden;
     padding: 20px;
+}
+
+/* Loading container styles */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #0d6efd;
+    border-radius: 50%;
+    animation: spin 1.5s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    font-size: 18px;
+    color: #4a5568;
+    margin: 0;
 }
 
 /* Elementos decorativos de fondo */

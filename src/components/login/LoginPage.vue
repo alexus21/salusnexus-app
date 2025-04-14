@@ -141,7 +141,7 @@ export default {
                 });
         },
         forgotPassword() {
-            this.$router.push('/home');
+            this.$router.push({name: 'Home'});
         }
     }
 };

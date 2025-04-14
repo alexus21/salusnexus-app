@@ -1,22 +1,22 @@
 <template>
-    <HeaderComponent v-if="!hideHeader" @open-register-component="showRegisterModal" @open-login-component="showLoginModal"></HeaderComponent>
-    <RegisterComponent v-if="showRegisterComponent" @close="showRegisterComponent = false"></RegisterComponent>
-    <LoginComponent v-if="showLoginComponent" @close="showLoginComponent = false"></LoginComponent>
+    <HeaderComponent v-if="!hideHeader" @open-register-component="showRegisterModal" @open-login-component="showLoginModal" />
+    <RegisterComponent v-if="showRegisterComponent" @close="showRegisterComponent = false" />
+    <LoginComponent v-if="showLoginComponent" @close="showLoginComponent = false" />
     <router-view></router-view>
 </template>
 
 <script>
 
 import HeaderComponent from "@/components/header/HeaderComponent.vue";
-import RegisterPatientsComponent from "@/components/register/RegisterPatientsComponent.vue";
-import LoginComponent from "@/components/login/LoginComponent.vue";
+import LoginPage from "@/components/login/LoginPage.vue";
+import RegisterPage from "@/components/register/RegisterPage.vue";
 
 export default {
     name: 'App',
     components: {
         HeaderComponent,
-        RegisterComponent: RegisterPatientsComponent,
-        LoginComponent
+        RegisterComponent: RegisterPage,
+        LoginComponent: LoginPage
     },
     data(){
         return {
@@ -34,7 +34,7 @@ export default {
             this.showRegisterComponent = true;
         },
         showLoginModal() {
-            this.$router.push('/login');
+            this.$router.push({name: 'Login'});
         },
     }
 }

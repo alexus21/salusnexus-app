@@ -237,7 +237,7 @@ export default {
                 password: '',
                 confirm_password: '',
                 accept_terms: false,
-                user_rol: 'paciente'
+                user_rol: 'profesional',
             },
             errors: {},
             showTermsModal: false,

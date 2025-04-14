@@ -152,7 +152,7 @@ export default {
             console.log('More Info button clicked');
         },
         handleStartNowClick() {
-            this.$router.push('/plans/patients');
+            this.$router.push({name: 'ProfessionalSubscriptionPlans'});
         }
     }
 }
