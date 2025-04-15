@@ -30,7 +30,7 @@
 
                     <div class="user-profile dropdown">
                         <img
-                            src="https://salusnexus-app.s3.us-east-2.amazonaws.com/images/e565a505-8601-403a-8649-cb9fd7bdb77c.png"
+                            :src="profilePicImage"
                             alt="Dr. Mario García"
                             class="profile-img dropdown-toggle"
                             id="profileDropdown"
@@ -62,7 +62,7 @@
         <!-- Contenido principal -->
         <div class="dashboard-content">
             <div class="dashboard-header">
-                <h1 class="welcome-title">¡Bienvenido, {{user && user.first_name && user.last_name ? (partialName + '!') : 'Cargando...'}}</h1>
+                <h1 class="welcome-title">¡Bienvenido, Dr. {{user && user.first_name && user.last_name ? (partialName + '!') : 'Cargando...'}}</h1>
                 <p class="welcome-subtitle">Aquí tienes pacientes potenciales cercanos a tu ubicación que coinciden con
                     tu especialidad en Cardiología</p>
             </div>
@@ -219,6 +219,8 @@
 </template>
 
 <script>
+const API_IMAGES_URL = process.env.VUE_APP_API_URL_IMAGE;
+
 export default {
     name: 'LoginHome',
     data() {
@@ -278,6 +280,7 @@ export default {
             user: null,
             fullName: null,
             partialName: null,
+            profilePicImage: null
         }
     },
 
@@ -288,6 +291,7 @@ export default {
         }
         this.fullName = this.getFullName();
         this.partialName = this.getPartalNme();
+        this.setProfilePic();
     },
     methods: {
         getFullName() {
@@ -296,7 +300,13 @@ export default {
             }
             return 'Cargando...';
         },
-
+        setProfilePic(){
+            if (this.user && this.user.profile_photo_path) {
+                this.profilePicImage = API_IMAGES_URL + '/' + this.user.profile_photo_path;
+            } else {
+                this.profilePicImage = 'https://salusnexus-app.s3.us-east-2.amazonaws.com/images/2868b57e-c141-4948-97eb-84475e246755.png';
+            }
+        },
         getPartalNme(){
             //Obtener solo primer nombre y primer apellido
             if (this.user && this.user.first_name && this.user.last_name) {
