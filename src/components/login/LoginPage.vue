@@ -92,7 +92,8 @@ export default {
         return {
             form: {
                 email: '',
-                password: ''
+                password: '',
+                user_rol: 'profesional'
             },
             errors: {}
         };
