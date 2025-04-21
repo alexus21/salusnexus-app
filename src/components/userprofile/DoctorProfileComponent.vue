@@ -4,16 +4,18 @@
         <div class="decorative-element decorative-element-1"></div>
         <div class="decorative-element decorative-element-2"></div>
         <div class="decorative-element decorative-element-3"></div>
-        
+
         <!-- Profile Header Section -->
         <div class="profile-header">
             <div class="profile-avatar-container">
                 <img :src="profile_photo" alt="profile picture" class="profile-avatar">
             </div>
             <div class="profile-header-content">
-                <h1 class="profile-name">Dr. {{ user && user.first_name && user.last_name	 ? user.first_name.split(' ')[0] + ' ' + user.last_name.split(' ')[0] : 'Cargando...' }}</h1>
+                <h1 class="profile-name">Dr. {{
+                        user && user.first_name && user.last_name ? user.first_name.split(' ')[0] + ' ' + user.last_name.split(' ')[0] : 'Cargando...'
+                    }}</h1>
                 <div class="profile-location">
-                    <i class="material-icons location-icon">location_on</i> 
+                    <i class="material-icons location-icon">location_on</i>
                     {{ user && user.home_address ? user.home_address.split(',').slice(-2).join(', ') : 'Cargando...' }}
                 </div>
                 <div class="profile-specialties">
@@ -31,13 +33,13 @@
 
         <!-- Navigation Tabs -->
         <div class="profile-tabs">
-            <div class="tab" :class="{ 'active': activeTab === 'personal' }" @click="activeTab = 'personal'">
+            <div :class="{ 'active': activeTab === 'personal' }" class="tab" @click="activeTab = 'personal'">
                 Información Personal
             </div>
-            <div class="tab" :class="{ 'active': activeTab === 'horarios' }" @click="activeTab = 'horarios'">
+            <div :class="{ 'active': activeTab === 'horarios' }" class="tab" @click="activeTab = 'horarios'">
                 Horarios
             </div>
-            <div class="tab" :class="{ 'active': activeTab === 'servicios' }" @click="activeTab = 'servicios'">
+            <div :class="{ 'active': activeTab === 'servicios' }" class="tab" @click="activeTab = 'servicios'">
                 Servicios
             </div>
         </div>
@@ -54,10 +56,13 @@
                         </div>
                         <div class="info-card-content">
                             <div class="info-card-title">Nombre Completo</div>
-                            <div class="info-card-value">{{ user && user.first_name && user.last_name ? user.first_name + ' ' + user.last_name : 'Cargando...' }}</div>
+                            <div class="info-card-value">{{
+                                    user && user.first_name && user.last_name ? user.first_name + ' ' + user.last_name : 'Cargando...'
+                                }}
+                            </div>
                         </div>
                     </div>
-                    
+
                     <div class="info-card" title="Fecha de Nacimiento">
                         <div class="info-card-icon bg-purple-soft">
                             <i class="material-icons">cake</i>
@@ -65,11 +70,13 @@
                         <div class="info-card-content">
                             <div class="info-card-title">Fecha de Nacimiento</div>
                             <div class="info-card-value">
-                                {{ user && user.date_of_birth ? new Date(user.date_of_birth + 'T00:00:00Z').toLocaleDateString('es-ES', {timeZone: 'UTC'}) : 'Cargando...' }}
+                                {{
+                                    user && user.date_of_birth ? new Date(user.date_of_birth + 'T00:00:00Z').toLocaleDateString('es-ES', {timeZone: 'UTC'}) : 'Cargando...'
+                                }}
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="info-card" title="Identificación">
                         <div class="info-card-icon bg-teal-soft">
                             <i class="material-icons">credit_card</i>
@@ -79,7 +86,7 @@
                             <div class="info-card-value">{{ user ? (user.phone || '45678902') : 'Cargando...' }}</div>
                         </div>
                     </div>
-                    
+
                     <div class="info-card" title="Correo Electrónico">
                         <div class="info-card-icon bg-info-soft">
                             <i class="material-icons">email</i>
@@ -89,7 +96,7 @@
                             <div class="info-card-value">{{ user ? user.email : 'Cargando...' }}</div>
                         </div>
                     </div>
-                    
+
                     <div class="info-card" title="Teléfono">
                         <div class="info-card-icon bg-orange-soft">
                             <i class="material-icons">phone</i>
@@ -99,7 +106,7 @@
                             <div class="info-card-value">{{ user ? user.phone : 'Cargando...' }}</div>
                         </div>
                     </div>
-                    
+
                     <div class="info-card" title="Dirección">
                         <div class="info-card-icon bg-success-soft">
                             <i class="material-icons">home</i>
@@ -109,7 +116,7 @@
                             <div class="info-card-value">{{ user ? user.home_address : 'Cargando...' }}</div>
                         </div>
                     </div>
-                    
+
                     <div class="info-card" title="Título Profesional">
                         <div class="info-card-icon bg-indigo-soft">
                             <i class="material-icons">school</i>
@@ -135,7 +142,7 @@
                             <div class="schedule-status-indicator active" title="Activo"></div>
                         </div>
                     </div>
-                    
+
                     <div class="schedule-card weekend" title="Horario de Sábados">
                         <div class="schedule-card-icon">
                             <i class="material-icons">weekend</i>
@@ -146,7 +153,7 @@
                             <div class="schedule-status-indicator active" title="Activo"></div>
                         </div>
                     </div>
-                    
+
                     <div class="schedule-card sunday inactive" title="Horario de Domingos">
                         <div class="schedule-card-icon">
                             <i class="material-icons">today</i>
@@ -169,33 +176,36 @@
                         </div>
                         <div class="service-card-content">
                             <h3 class="service-card-title">Consulta General</h3>
-                            <p class="service-card-description">Diagnóstico y evaluación médica integral para pacientes de todas las edades</p>
+                            <p class="service-card-description">Diagnóstico y evaluación médica integral para pacientes
+                                de todas las edades</p>
                             <div class="service-card-duration">
                                 <i class="material-icons">schedule</i> 30 min
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="service-card examination" title="Examen Físico">
                         <div class="service-card-icon">
                             <i class="material-icons">monitor_heart</i>
                         </div>
                         <div class="service-card-content">
                             <h3 class="service-card-title">Examen Físico</h3>
-                            <p class="service-card-description">Evaluación completa del estado físico y signos vitales del paciente</p>
+                            <p class="service-card-description">Evaluación completa del estado físico y signos vitales
+                                del paciente</p>
                             <div class="service-card-duration">
                                 <i class="material-icons">schedule</i> 45 min
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="service-card specialized" title="Consulta Especializada">
                         <div class="service-card-icon">
                             <i class="material-icons">medical_information</i>
                         </div>
                         <div class="service-card-content">
                             <h3 class="service-card-title">Consulta Especializada</h3>
-                            <p class="service-card-description">Atención médica enfocada en áreas específicas según la especialidad del médico</p>
+                            <p class="service-card-description">Atención médica enfocada en áreas específicas según la
+                                especialidad del médico</p>
                             <div class="service-card-duration">
                                 <i class="material-icons">schedule</i> 60 min
                             </div>
@@ -210,7 +220,7 @@
 <script>
 import swal from "sweetalert2";
 
-// const API_URL = process.env.VUE_APP_API_URL;
+const API_URL = process.env.VUE_APP_API_URL;
 const API_URL_IMAGE = process.env.VUE_APP_API_URL_IMAGE;
 
 export default {
@@ -225,19 +235,47 @@ export default {
         }
     },
     async mounted() {
-        await this.loadUserData();
+        await this.fetchUserProfile().then(async () => {
+            this.loadUserData();
+            this.showAlertIsNotVerified();
+        });
     },
     methods: {
-        async loadUserData() {
+        loadUserData() {
             this.user = JSON.parse(localStorage.getItem('user'));
             console.log(this.user);
             //Esperar un segundo para simular la carga de datos
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            new Promise(resolve => setTimeout(resolve, 1000));
             this.isVerified = this.user.verified;
             this.profile_photo = API_URL_IMAGE + '/' + this.user.profile_photo_path;
-            await this.showAlertIsNotVerified();
         },
-        async showAlertIsNotVerified() {
+        async fetchUserProfile() {
+            try {
+                const response = await fetch(API_URL + '/userprofile', {
+                    method: "GET",
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al obtener el perfil del usuario');
+                }
+
+                const data = await response.json();
+
+                this.user = data.user;
+                this.isVerified = data.user.verified;
+                this.profile_photo = API_URL_IMAGE + '/' + data.user.profile_photo_path;
+                this.loading = false;
+                localStorage.setItem('user', JSON.stringify(this.user));
+            } catch (error) {
+                console.error('Error fetching user profile:', error);
+                this.loading = false;
+            }
+        },
+        showAlertIsNotVerified() {
             if (!this.isVerified) {
                 swal.fire({
                     icon: 'warning',
@@ -298,7 +336,7 @@ export default {
     font-family: var(--font-family);
     position: relative;
     overflow: hidden;
-    
+
 }
 
 /* Elementos decorativos de fondo - similares al HomeComponent */
@@ -936,7 +974,7 @@ export default {
         padding: 1.25rem;
         width: calc(100% - 2rem);
     }
-    
+
     .profile-header {
         flex-direction: column;
         align-items: center;
@@ -944,19 +982,19 @@ export default {
         gap: 1rem;
         padding-bottom: 1.25rem;
     }
-    
+
     .profile-header-content {
         width: 100%;
     }
-    
+
     .profile-specialties {
         justify-content: center;
     }
-    
+
     .profile-actions {
         margin: 1rem auto 0;
     }
-    
+
     .profile-tabs {
         overflow-x: auto;
         white-space: nowrap;
@@ -964,21 +1002,21 @@ export default {
         justify-content: flex-start;
         width: 100%;
     }
-    
+
     .tab {
         padding: 0.75rem 1rem;
         flex: 0 0 auto;
     }
-    
+
     .info-row {
         flex-direction: column;
         gap: 0.25rem;
     }
-    
+
     .info-label {
         flex-basis: auto;
     }
-    
+
     .info-value {
         min-width: auto;
     }
@@ -991,40 +1029,40 @@ export default {
         width: calc(100% - 1.5rem);
         border-radius: 0.75rem;
     }
-    
+
     .info-cards-container,
     .schedule-cards-container,
     .services-cards-container {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
-    
+
     .info-card,
     .schedule-card,
     .service-card {
         padding: 1rem;
     }
-    
+
     .info-card-icon,
     .service-card-icon {
         width: 40px;
         height: 40px;
     }
-    
+
     .info-card-icon i,
     .service-card-icon i {
         font-size: 1.25rem;
     }
-    
+
     .schedule-card-icon {
         width: 42px;
         height: 42px;
     }
-    
+
     .schedule-card-icon i {
         font-size: 1.5rem;
     }
-    
+
     .service-card-description {
         font-size: 0.9rem;
         margin-bottom: 0.75rem;
@@ -1038,56 +1076,56 @@ export default {
         width: calc(100% - 1rem);
         border-radius: 0.5rem;
     }
-    
+
     .profile-name {
         font-size: 1.5rem;
     }
-    
+
     .profile-avatar {
         width: 100px;
         height: 100px;
     }
-    
+
     .btn-edit {
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
     }
-    
+
     .decorative-element {
         opacity: 0.1;
     }
-    
+
     .tab {
         padding: 0.6rem 0.8rem;
         font-size: 0.9rem;
     }
-    
+
     .info-card-title {
         font-size: 0.8rem;
     }
-    
+
     .info-card-value {
         font-size: 0.95rem;
     }
-    
+
     .schedule-card-day {
         font-size: 1rem;
     }
-    
+
     .schedule-card-time {
         font-size: 1.1rem;
     }
-    
+
     .service-card-title {
         font-size: 1.1rem;
         margin-bottom: 0.5rem;
     }
-    
+
     .service-card-description {
         font-size: 0.85rem;
         line-height: 1.4;
     }
-    
+
     .service-card-duration {
         font-size: 0.8rem;
     }
@@ -1100,25 +1138,25 @@ export default {
         padding: 0.5rem;
         width: calc(100% - 0.5rem);
     }
-    
+
     .profile-avatar {
         width: 80px;
         height: 80px;
     }
-    
+
     .profile-name {
         font-size: 1.25rem;
     }
-    
+
     .profile-location {
         font-size: 0.85rem;
     }
-    
+
     .specialty-tag {
         font-size: 0.75rem;
         padding: 0.25rem 0.5rem;
     }
-    
+
     .info-card,
     .schedule-card,
     .service-card {
@@ -1248,16 +1286,16 @@ export default {
     .info-cards-container {
         grid-template-columns: 1fr;
     }
-    
+
     .info-card {
         padding: 1rem;
     }
-    
+
     .info-card-icon {
         width: 40px;
         height: 40px;
     }
-    
+
     .info-card-icon i {
         font-size: 1.25rem;
     }
@@ -1269,17 +1307,17 @@ export default {
     .services-cards-container {
         grid-template-columns: 1fr;
     }
-    
+
     .schedule-card,
     .service-card {
         padding: 1.25rem;
     }
-    
+
     .service-card-icon {
         width: 50px;
         height: 50px;
     }
-    
+
     .service-card-icon i {
         font-size: 1.5rem;
     }
