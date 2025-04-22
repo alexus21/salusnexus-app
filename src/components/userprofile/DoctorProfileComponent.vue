@@ -235,20 +235,11 @@ export default {
         }
     },
     async mounted() {
-        await this.fetchUserProfile().then(async () => {
-            this.loadUserData();
+        await this.fetchUserProfile().then(() => {
             this.showAlertIsNotVerified();
         });
     },
     methods: {
-        loadUserData() {
-            this.user = JSON.parse(localStorage.getItem('user'));
-            console.log(this.user);
-            //Esperar un segundo para simular la carga de datos
-            new Promise(resolve => setTimeout(resolve, 1000));
-            this.isVerified = this.user.verified;
-            this.profile_photo = API_URL_IMAGE + '/' + this.user.profile_photo_path;
-        },
         async fetchUserProfile() {
             try {
                 const response = await fetch(API_URL + '/userprofile', {
@@ -265,9 +256,9 @@ export default {
 
                 const data = await response.json();
 
-                this.user = data.user;
-                this.isVerified = data.user.verified;
-                this.profile_photo = API_URL_IMAGE + '/' + data.user.profile_photo_path;
+                this.user = data.data;
+                this.profile_photo = API_URL_IMAGE + '/' + this.user.profile_photo_path;
+                this.isVerified = this.user.verified;
                 this.loading = false;
                 localStorage.setItem('user', JSON.stringify(this.user));
             } catch (error) {
