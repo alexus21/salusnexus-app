@@ -166,12 +166,12 @@
                                 @click="activeTab = 'horarios'">
                                 Horarios
                             </button>
-                            <button
-                                class="d-none"
+<!--                            <button
+                                :class="['flex-1 py-3 px-4 text-center font-medium', activeTab === 'servicios' ?
+                                'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600']"
                                 @click="activeTab = 'servicios'">
-                                <!--                                :class="['flex-1 py-3 px-4 text-center font-medium', activeTab === 'servicios' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600']"-->
                                 Servicios
-                            </button>
+                            </button>-->
                         </div>
 
                         <!-- Tab Content -->
@@ -254,9 +254,10 @@
                                     <h3 class="text-lg font-semibold">Horarios de atención</h3>
                                 </div>
 
-                                <div class="border-b pb-4 flex justify-between" v-for="schedule in schedules" :key="schedule.id">
+                                <div v-for="schedule in schedules" :key="schedule.id"
+                                     class="border-b pb-4 flex justify-between">
                                     <span class="font-medium">{{ schedule.day_of_the_week }}</span>
-                                    <span>{{ schedule.start_time }} - {{ schedule.end_time }}</span>
+                                    <span>{{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}</span>
                                 </div>
 
                             </div>
@@ -398,6 +399,12 @@ export default {
         })
     },
     methods: {
+        formatTime(time) {
+            const [hours, minutes] = time.split(':');
+            const period = hours >= 12 ? 'PM' : 'AM';
+            const formattedHours = hours % 12 || 12; // Convert 0 to 12 for AM/PM
+            return `${formattedHours}:${minutes} ${period}`;
+        },
         async fetchMyClinic() {
             try {
                 const response = await fetch(`${API_URL}/medical-clinics/me`, {
@@ -431,7 +438,7 @@ export default {
                 console.error('Error:', error);
             }
         },
-        async fetchSchedules(){
+        async fetchSchedules() {
             try {
                 const response = await fetch(`${API_URL}/schedules/get/clinic/` + this.myClinic.clinic_id, {
                     method: 'GET',

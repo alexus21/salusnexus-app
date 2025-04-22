@@ -36,12 +36,12 @@
             <div :class="{ 'active': activeTab === 'personal' }" class="tab" @click="activeTab = 'personal'">
                 Información Personal
             </div>
-            <div :class="{ 'active': activeTab === 'horarios' }" class="tab" @click="activeTab = 'horarios'">
+<!--            <div :class="{ 'active': activeTab === 'horarios' }" class="tab" @click="activeTab = 'horarios'">
                 Horarios
             </div>
             <div :class="{ 'active': activeTab === 'servicios' }" class="tab" @click="activeTab = 'servicios'">
                 Servicios
-            </div>
+            </div>-->
         </div>
 
         <!-- Tab Content Sections -->
