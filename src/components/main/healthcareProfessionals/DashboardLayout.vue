@@ -17,7 +17,7 @@
                 <i class="fas fa-bars"></i>
             </button>
 
-            <DashboardHome />
+            <component :is="mainComponent" />
         </div>
 
     </div>
@@ -26,18 +26,33 @@
 <script>
 import AppSidebar from '@/components/main/healthcareProfessionals/Sidebar.vue';
 import DashboardHome from '@/components/main/healthcareProfessionals/DashboardHome.vue';
+import ReviewsView from '@/components/main/healthcareProfessionals/ReviewsView.vue';
+import PatientsView from '@/components/main/healthcareProfessionals/PatientsView.vue';
 
 export default {
     name: 'DashboardLayout',
     components: {
         AppSidebar,
         DashboardHome,
+        ReviewsView,
+        PatientsView
     },
     data() {
         return {
             currentView: 'Inicio',
             isSidebarOpen: false, // Estado inicial cerrado en móvil
             isMobile: false // Para detectar si es vista móvil
+        }
+    },
+    computed: {
+        mainComponent() {
+            if (this.currentView === 'Resenas') {
+                return 'ReviewsView';
+            }
+            if (this.currentView === 'Pacientes') {
+                return 'PatientsView';
+            }
+            return 'DashboardHome';
         }
     },
     methods: {

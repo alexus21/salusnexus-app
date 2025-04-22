@@ -1,7 +1,10 @@
 import {createRouter, createWebHistory} from "vue-router";
 import HomeComponent from "@/components/home/HomeComponent.vue";
 import LoginHome from "@/components/dashboard/LoginHome.vue";
+// import DashboardHome from "@/components/main/healthcareProfessionals/DashboardHome.vue";
 import DashboardLayout from "@/components/main/healthcareProfessionals/DashboardLayout.vue";
+import ReviewsView from '@/components/main/healthcareProfessionals/ReviewsView.vue';
+import PatientsView from '@/components/main/healthcareProfessionals/PatientsView.vue';
 import DoctorProfileComponent from "@/components/userprofile/DoctorProfileComponent.vue";
 import SubscriptionPlansComponent
     from "@/components/subscriptionplan/SubscriptionPlansComponent.vue";
@@ -76,6 +79,15 @@ const routes = [
         },
     },
     {
+        path: '/reseñas',
+        name: 'Reviews',
+        component: ReviewsView,
+        meta: {
+            requiresAuth: true,
+            hideHeader: true
+        }
+    },
+    {
         path: '/perfil',
         name: 'UserProfile',
         // component: UserProfileComponent,
@@ -92,6 +104,15 @@ const routes = [
         meta: {
             requiresAuth: true
         },
+    },
+    {
+        path: '/pacientes',
+        name: 'Patients',
+        component: PatientsView,
+        meta: {
+            requiresAuth: true,
+            hideHeader: true
+        }
     },
     {
         path: '/previa-clinica',
