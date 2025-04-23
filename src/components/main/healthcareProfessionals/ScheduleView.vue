@@ -5,32 +5,36 @@
             <div v-for="day in days" :key="day.name" class="schedule-row">
                 <div class="day-label">{{ day.label }}</div>
                 <input
-                    type="time"
                     v-model="schedule[day.name].from"
                     :disabled="!schedule[day.name].open"
                     class="time-input"
+                    type="time"
                 />
                 <span class="a-label">a</span>
                 <input
-                    type="time"
                     v-model="schedule[day.name].to"
                     :disabled="!schedule[day.name].open"
                     class="time-input"
+                    type="time"
                 />
                 <label class="switch">
-                    <input type="checkbox" v-model="schedule[day.name].open"/>
+                    <input v-model="schedule[day.name].open" type="checkbox"/>
                     <span class="slider round"></span>
                 </label>
-                <span class="status-label" :class="{ closed: !schedule[day.name].open }">
+                <span :class="{ closed: !schedule[day.name].open }" class="status-label">
                     {{ schedule[day.name].open ? 'Abierto' : 'Cerrado' }}
                 </span>
             </div>
-            <button type="button" class="save-btn" @click="saveSchedule">Guardar horario</button>
+            <button class="save-btn" type="button" @click="saveSchedule">Guardar horario</button>
         </form>
     </div>
 </template>
 
 <script>
+import swal from "sweetalert2";
+
+const API_URL = process.env.VUE_APP_API_URL;
+
 export default {
     name: 'ScheduleView',
     data() {
@@ -52,13 +56,116 @@ export default {
                 viernes: {from: '08:00', to: '15:00', open: true},
                 sabado: {from: '09:00', to: '12:00', open: true},
                 domingo: {from: '09:00', to: '12:00', open: false}
+            },
+            schedules: {
+                clinic_id: null,
+                days: [
+                    {day_of_the_week: 'Lunes', start_time: null, end_time: null, open: null},
+                    {day_of_the_week: 'Martes', start_time: null, end_time: null, open: null},
+                    {day_of_the_week: 'Miércoles', start_time: null, end_time: null, open: null},
+                    {day_of_the_week: 'Jueves', start_time: null, end_time: null, open: null},
+                    {day_of_the_week: 'Viernes', start_time: null, end_time: null, open: null},
+                    {day_of_the_week: 'Sábado', start_time: null, end_time: null, open: null},
+                    {day_of_the_week: 'Domingo', start_time: null, end_time: null, open: null},
+                ],
             }
         }
     },
     methods: {
-        saveSchedule() {
-            // Aquí se puede hacer un POST a una API con this.schedule
-            console.log('Horario a guardar:', this.schedule);
+        async saveSchedule() {
+            const clinic = JSON.parse(localStorage.getItem('clinics'));
+
+            // Create a new schedule object instead of overwriting `this.schedule`
+            const newSchedule = {
+                clinic_id: clinic[0].id,
+                days: [
+                    {
+                        day_of_the_week: 'Lunes',
+                        start_time: this.schedule.lunes.from,
+                        end_time: this.schedule.lunes.to,
+                        open: this.schedule.lunes.open
+                    },
+                    {
+                        day_of_the_week: 'Martes',
+                        start_time: this.schedule.martes.from,
+                        end_time: this.schedule.martes.to,
+                        open: this.schedule.martes.open
+                    },
+                    {
+                        day_of_the_week: 'Miércoles',
+                        start_time: this.schedule.miercoles.from,
+                        end_time: this.schedule.miercoles.to,
+                        open: this.schedule.miercoles.open
+                    },
+                    {
+                        day_of_the_week: 'Jueves',
+                        start_time: this.schedule.jueves.from,
+                        end_time: this.schedule.jueves.to,
+                        open: this.schedule.jueves.open
+                    },
+                    {
+                        day_of_the_week: 'Viernes',
+                        start_time: this.schedule.viernes.from,
+                        end_time: this.schedule.viernes.to,
+                        open: this.schedule.viernes.open
+                    },
+                    {
+                        day_of_the_week: 'Sábado',
+                        start_time: this.schedule.sabado.from,
+                        end_time: this.schedule.sabado.to,
+                        open: this.schedule.sabado.open
+                    },
+                    {
+                        day_of_the_week: 'Domingo',
+                        start_time: this.schedule.domingo.from,
+                        end_time: this.schedule.domingo.to,
+                        open: this.schedule.domingo.open
+                    }
+                ]
+            };
+
+            // Use `newSchedule` for API calls or further processing
+            try {
+                const response = await fetch(`${API_URL}/schedules/add`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(newSchedule)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al guardar el horario');
+                }
+
+                const data = await response.json();
+
+                if(!data || !data.status){
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message,
+                        confirmButtonText: 'Aceptar'
+                    });
+                    return;
+                }
+
+                swal.fire({
+                    icon: 'success',
+                    title: 'Horarios guardado',
+                    text: 'Los horarios se ha guardado correctamente.',
+                    confirmButtonText: 'Aceptar'
+                });
+            } catch (error) {
+                console.error('Error al guardar el horario:', error);
+                swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudo guardar el horario. Intente nuevamente.',
+                    confirmButtonText: 'Aceptar'
+                });
+            }
         }
     }
 }
