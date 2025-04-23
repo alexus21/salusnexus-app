@@ -11,6 +11,7 @@ import SubscriptionPlansComponent
 import LoginPage from "@/components/login/LoginPage.vue";
 import RegisterPage from "@/components/register/RegisterPage.vue";
 import AddPaymentMethodComponent from "@/components/paymentmethod/AddPaymentMethodComponent.vue";
+import ScheduleView from '@/components/main/healthcareProfessionals/ScheduleView.vue';
 
 import {validateAuth} from "@/utils/auth";
 import VerifyProfessionalAccountComponent from "@/components/verifyaccount/VerifyProfessionalAccountComponent.vue";
@@ -130,7 +131,15 @@ const routes = [
           requiresAuth: true // Si necesitas autenticación
         }
       },
-
+    {
+        path: '/horario',
+        name: 'Schedule',
+        component: ScheduleView,
+        meta: {
+            requiresAuth: true,
+            hideHeader: true
+        }
+    },
     {
         path: '/planes/profesionales',
         name: 'ProfessionalSubscriptionPlans',

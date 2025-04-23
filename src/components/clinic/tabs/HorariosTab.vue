@@ -166,7 +166,7 @@
                 </div>
                 <div class="col-md-2 text-md-end">
                     <div class="form-check form-switch d-flex justify-content-end">
-                        <span class="me-2">Abierto</span>
+                        <span class="me-2">Cerrado</span>
                         <input class="form-check-input" type="checkbox" v-model="localHorarios.domingo.abierto">
                     </div>
                 </div>

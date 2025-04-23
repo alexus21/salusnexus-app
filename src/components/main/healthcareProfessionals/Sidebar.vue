@@ -49,19 +49,18 @@ export default {
         return {
             navigationItems: [
                 { name: 'Inicio', label: 'Inicio', href: '#', icon: 'fas fa-house' },
-                { name: 'Horario', label: 'Mi horario', href: '#', icon: 'fas fa-clock' },
+                { name: 'Horario', label: 'Mi horario', href: '/horario', icon: 'fas fa-clock' },
                 { name: 'Agenda', label: 'Agenda', href: '#', icon: 'fas fa-calendar-alt' },
                 { name: 'Pacientes', label: 'Pacientes', href: '/pacientes', icon: 'fas fa-users' },
                 { name: 'Citas', label: 'Citas', href: '#', icon: 'fas fa-clipboard-list' },
                 { name: 'Estadisticas', label: 'Estadísticas', href: '#', icon: 'fas fa-chart-line' },
                 { name: 'Resenas', label: 'Reseñas', href: '#', icon: 'fas fa-star' },
                 { name: 'Mensajes', label: 'Mensajes', href: '#', icon: 'fas fa-comments' },
-                { name: 'Perfil', label: 'Mi Perfil', href: '#', icon: 'fas fa-user-edit' },
+                // { name: 'Perfil', label: 'Mi Perfil', href: '#', icon: 'fas fa-user-edit' },
                 { name: 'Suscripcion', label: 'Suscripción', href: '#', icon: 'fas fa-rocket' },
             ],
             footerItems: [
                 { name: 'Configuracion', label: 'Configuración', href: '#', icon: 'fas fa-cog' },
-                { name: 'Ayuda', label: 'Ayuda', href: '#', icon: 'fas fa-question-circle' },
                 { name: 'Logout', label: 'Cerrar Sesión', href: '#', icon: 'fas fa-sign-out-alt' },
             ],
         };
