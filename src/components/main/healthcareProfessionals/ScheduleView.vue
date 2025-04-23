@@ -74,10 +74,12 @@ export default {
     methods: {
         async saveSchedule() {
             const clinic = JSON.parse(localStorage.getItem('clinics'));
+            console.log(clinic);
+            console.log(clinic.professional_id);
 
             // Create a new schedule object instead of overwriting `this.schedule`
             const newSchedule = {
-                clinic_id: clinic[0].id,
+                clinic_id: clinic.professional_id,
                 days: [
                     {
                         day_of_the_week: 'Lunes',

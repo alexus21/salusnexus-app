@@ -219,7 +219,10 @@
 </template>
 
 <script>
+import swal from "sweetalert2";
+
 const API_IMAGES_URL = process.env.VUE_APP_API_URL_IMAGE;
+const API_URL = process.env.VUE_APP_API_URL;
 
 export default {
     name: 'LoginHome',
@@ -292,8 +295,43 @@ export default {
         this.fullName = this.getFullName();
         this.partialName = this.getPartalNme();
         this.setProfilePic();
+        this.fetchMyClinic();
     },
     methods: {
+        async fetchMyClinic() {
+            try {
+                const response = await fetch(`${API_URL}/medical-clinics/me`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error fetching clinic data');
+                }
+
+                const data = await response.json();
+
+                if (!data.status) {
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message,
+                        confirmButtonText: 'Aceptar'
+                    });
+                    return;
+                }
+
+                console.log(data.data);
+
+                localStorage.setItem('clinics', JSON.stringify(data.data));
+                // console.log(this.myClinic);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        },
         getFullName() {
             if (this.user && this.user.first_name && this.user.last_name) {
                 return `${this.user.first_name} ${this.user.last_name}`;
