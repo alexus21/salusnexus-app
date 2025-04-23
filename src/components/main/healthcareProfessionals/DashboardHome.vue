@@ -1,7 +1,9 @@
 <template>
     <main class="main-content">
         <header class="main-header">
-            <h1>Bienvenido, {{ professionalName }}</h1>
+            <h1>
+                {{ saludo }}
+            </h1>
             <p>Aquí tienes un resumen de tu actividad hoy.</p>
         </header>
 
@@ -54,7 +56,8 @@ export default {
     },
     data() {
         return {
-            professionalName: 'Dr. García',
+            professionalName: JSON.parse(localStorage.getItem('user')).first_name,
+            professionalGender: JSON.parse(localStorage.getItem('user')).gender,
             stats: [
                 { title: 'Citas Hoy', value: 5 },
                 { title: 'Nuevas Reseñas', value: 2, subValue: 'Promedio: 4.8', icon: 'fas fa-star' },
@@ -67,8 +70,15 @@ export default {
                 { id: 1, time: '10:30 AM', patientName: 'Ana Martínez', type: 'Consulta General' },
                 { id: 2, time: '11:00 AM', patientName: 'Carlos López', type: 'Revisión Dental' },
                 { id: 3, time: '11:45 AM', patientName: 'Luisa Fernández', type: 'Seguimiento' },
+                { id: 4, time: '12:30 PM', patientName: 'Marta Rodríguez', type: 'Consulta General' },
+                { id: 5, time: '13:00 PM', patientName: 'Pedro Rodríguez', type: 'Revisión Dental' }
             ],
         };
+    },
+    computed: {
+        saludo() {
+            return (this.professionalGender === 'femenino' ? 'Bienvenida' : 'Bienvenido') + ', ' + this.professionalName;
+        },
     },
     methods: {
         fetchDashboardData() {
