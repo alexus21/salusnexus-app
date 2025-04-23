@@ -37,6 +37,9 @@ const API_URL = process.env.VUE_APP_API_URL;
 
 export default {
     name: 'ScheduleView',
+    mounted() {
+        this.fetchSchedules();
+    },
     data() {
         return {
             days: [
@@ -57,6 +60,8 @@ export default {
                 sabado: {from: '09:00', to: '12:00', open: true},
                 domingo: {from: '09:00', to: '12:00', open: false}
             },
+
+            // Objeto para enviar a la API:
             schedules: {
                 clinic_id: null,
                 days: [
@@ -74,12 +79,10 @@ export default {
     methods: {
         async saveSchedule() {
             const clinic = JSON.parse(localStorage.getItem('clinics'));
-            console.log(clinic);
-            console.log(clinic.professional_id);
 
             // Create a new schedule object instead of overwriting `this.schedule`
             const newSchedule = {
-                clinic_id: clinic.professional_id,
+                clinic_id: clinic.clinic_id,
                 days: [
                     {
                         day_of_the_week: 'Lunes',
@@ -163,6 +166,75 @@ export default {
                     text: 'No se pudo guardar el horario. Intente nuevamente.',
                     confirmButtonText: 'Aceptar'
                 });
+            }
+        },
+        async fetchSchedules() {
+            const clinic = JSON.parse(localStorage.getItem('clinics'));
+
+            try {
+                const response = await fetch(`${API_URL}/schedules/get/clinic/` + clinic.clinic_id, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+
+                if (data.data.length === 0) {
+                    console.log('No hay horarios disponibles');
+                    return;
+                }
+
+                if (!data.status) {
+                    console.log('Error', data);
+                    return;
+                }
+
+                const defaultSchedule = () => ({
+                    from: null,
+                    to: null,
+                    open: false
+                });
+
+                const daysMap = {
+                    Lunes: 'lunes',
+                    Martes: 'martes',
+                    Miércoles: 'miercoles',
+                    Jueves: 'jueves',
+                    Viernes: 'viernes',
+                    Sábado: 'sabado',
+                    Domingo: 'domingo'
+                };
+
+                // Initialize schedule with independent default objects
+                this.schedule = {
+                    lunes: defaultSchedule(),
+                    martes: defaultSchedule(),
+                    miercoles: defaultSchedule(),
+                    jueves: defaultSchedule(),
+                    viernes: defaultSchedule(),
+                    sabado: defaultSchedule(),
+                    domingo: defaultSchedule()
+                };
+
+                data.data.forEach(day => {
+                    const dayKey = daysMap[day.day_of_the_week];
+                    if (dayKey) {
+                        this.schedule[dayKey] = {
+                            from: day.start_time,
+                            to: day.end_time,
+                            open: day.open
+                        };
+                    }
+                });
+            } catch (error) {
+                console.error("Error fetching schedules:", error);
             }
         }
     }
