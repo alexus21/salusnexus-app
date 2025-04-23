@@ -135,13 +135,9 @@ export default {
                     body: JSON.stringify(newSchedule)
                 });
 
-                if (!response.ok) {
-                    throw new Error('Error al guardar el horario');
-                }
-
                 const data = await response.json();
 
-                if(!data || !data.status){
+                if(!data.status){
                     swal.fire({
                         icon: 'error',
                         title: 'Error',
