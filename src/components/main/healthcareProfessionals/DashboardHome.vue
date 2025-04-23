@@ -2,7 +2,7 @@
     <main class="main-content">
         <header class="main-header">
             <h1>
-                {{ saludo }}
+                {{ greeting }}
             </h1>
             <p>Aquí tienes un resumen de tu actividad hoy.</p>
         </header>
@@ -76,7 +76,7 @@ export default {
         };
     },
     computed: {
-        saludo() {
+        greeting() {
             return (this.professionalGender === 'femenino' ? 'Bienvenida' : 'Bienvenido') + ', ' + this.professionalName;
         },
     },
