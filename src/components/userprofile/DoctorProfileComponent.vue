@@ -26,7 +26,10 @@
             </div>
             <div class="profile-actions">
                 <button class="btn-edit rounded-pill" @click="handleEditClick">
-                    <i class="material-icons">edit</i> Editar
+                    <i class="fas fa-pencil-alt me-2"></i>{{ readonly ? 'Editar' : 'Cancelar' }}
+                </button>
+                <button class="btn-edit rounded-pill" @click="fetchUpdate" v-if="!readonly">
+                    <i class="fas fa-pencil-alt me-2"></i>Actualizar
                 </button>
             </div>
         </div>
@@ -36,12 +39,15 @@
             <div :class="{ 'active': activeTab === 'personal' }" class="tab" @click="activeTab = 'personal'">
                 Información Personal
             </div>
-<!--            <div :class="{ 'active': activeTab === 'horarios' }" class="tab" @click="activeTab = 'horarios'">
+
+            <div :class="{ 'active': activeTab === 'horarios' }" class="tab" @click="activeTab = 'horarios'">
                 Horarios
             </div>
+<!--
             <div :class="{ 'active': activeTab === 'servicios' }" class="tab" @click="activeTab = 'servicios'">
                 Servicios
-            </div>-->
+            </div>
+-->
         </div>
 
         <!-- Tab Content Sections -->
@@ -49,84 +55,102 @@
             <!-- Información Personal Tab -->
             <div v-if="activeTab === 'personal'" class="personal-info-tab">
                 <!-- Interfaz visual moderna de datos personales -->
-                <div class="info-cards-container">
-                    <div class="info-card" title="Nombre Completo">
-                        <div class="info-card-icon bg-primary-soft">
-                            <i class="material-icons">person</i>
+                <form action="">
+                    <div class="info-cards-container">
+                        <div class="info-card" title="Nombre Completo">
+                            <div class="info-card-icon bg-primary-soft">
+                                <i class="material-icons">person</i>
+                            </div>
+                            <div class="info-card-content">
+                                <div class="info-card-title">Nombre Completo</div>
+                                <div class="info-card-inputs">
+                                    <input type="text"
+                                           class="info-card-value"
+                                           v-model="user.first_name"
+                                           :readonly="readonly"
+                                           placeholder="Nombre"
+                                           required>
+                                    <input type="text"
+                                           class="info-card-value"
+                                           v-model="user.last_name"
+                                           :readonly="readonly"
+                                           placeholder="Apellido"
+                                           required>
+                                </div>
+                            </div>
                         </div>
-                        <div class="info-card-content">
-                            <div class="info-card-title">Nombre Completo</div>
-                            <div class="info-card-value">{{
-                                    user && user.first_name && user.last_name ? user.first_name + ' ' + user.last_name : 'Cargando...'
-                                }}
+
+                        <div class="info-card" title="Fecha de Nacimiento">
+                            <div class="info-card-icon bg-purple-soft">
+                                <i class="material-icons">cake</i>
+                            </div>
+                            <div class="info-card-content">
+                                <div class="info-card-title">Fecha de Nacimiento</div>
+                                <input type="date"
+                                       class="info-card-value"
+                                       v-model="user.date_of_birth"
+                                       :readonly="readonly"
+                                       required>
+                            </div>
+                        </div>
+
+                        <div class="info-card" title="Identificación">
+                            <div class="info-card-icon bg-teal-soft">
+                                <i class="material-icons">credit_card</i>
+                            </div>
+                            <div class="info-card-content">
+                                <div class="info-card-title">Identificación</div>
+                                <input type="text"
+                                       class="info-card-value"
+                                       v-model="user.dui"
+                                       readonly
+                                       required>
+                            </div>
+                        </div>
+
+                        <div class="info-card" title="Correo Electrónico">
+                            <div class="info-card-icon bg-info-soft">
+                                <i class="material-icons">email</i>
+                            </div>
+                            <div class="info-card-content">
+                                <div class="info-card-title">Correo Electrónico</div>
+                                <input type="text"
+                                       class="info-card-value"
+                                       v-model="user.email"
+                                       readonly
+                                       required>
+                            </div>
+                        </div>
+
+                        <div class="info-card" title="Teléfono">
+                            <div class="info-card-icon bg-orange-soft">
+                                <i class="material-icons">phone</i>
+                            </div>
+                            <div class="info-card-content">
+                                <div class="info-card-title">Teléfono</div>
+                                <input type="text"
+                                       class="info-card-value"
+                                       v-model="user.phone"
+                                       :readonly="readonly"
+                                       required>
+                            </div>
+                        </div>
+
+                        <div class="info-card" title="Dirección">
+                            <div class="info-card-icon bg-success-soft">
+                                <i class="material-icons">home</i>
+                            </div>
+                            <div class="info-card-content">
+                                <div class="info-card-title">Dirección</div>
+                                <input type="text"
+                                       class="info-card-value"
+                                       v-model="user.home_address"
+                                       :readonly="readonly"
+                                       required>
                             </div>
                         </div>
                     </div>
-
-                    <div class="info-card" title="Fecha de Nacimiento">
-                        <div class="info-card-icon bg-purple-soft">
-                            <i class="material-icons">cake</i>
-                        </div>
-                        <div class="info-card-content">
-                            <div class="info-card-title">Fecha de Nacimiento</div>
-                            <div class="info-card-value">
-                                {{
-                                    user && user.date_of_birth ? new Date(user.date_of_birth + 'T00:00:00Z').toLocaleDateString('es-ES', {timeZone: 'UTC'}) : 'Cargando...'
-                                }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="info-card" title="Identificación">
-                        <div class="info-card-icon bg-teal-soft">
-                            <i class="material-icons">credit_card</i>
-                        </div>
-                        <div class="info-card-content">
-                            <div class="info-card-title">Identificación</div>
-                            <div class="info-card-value">{{ user ? (user.phone || '45678902') : 'Cargando...' }}</div>
-                        </div>
-                    </div>
-
-                    <div class="info-card" title="Correo Electrónico">
-                        <div class="info-card-icon bg-info-soft">
-                            <i class="material-icons">email</i>
-                        </div>
-                        <div class="info-card-content">
-                            <div class="info-card-title">Correo Electrónico</div>
-                            <div class="info-card-value">{{ user ? user.email : 'Cargando...' }}</div>
-                        </div>
-                    </div>
-
-                    <div class="info-card" title="Teléfono">
-                        <div class="info-card-icon bg-orange-soft">
-                            <i class="material-icons">phone</i>
-                        </div>
-                        <div class="info-card-content">
-                            <div class="info-card-title">Teléfono</div>
-                            <div class="info-card-value">{{ user ? user.phone : 'Cargando...' }}</div>
-                        </div>
-                    </div>
-
-                    <div class="info-card" title="Dirección">
-                        <div class="info-card-icon bg-success-soft">
-                            <i class="material-icons">home</i>
-                        </div>
-                        <div class="info-card-content">
-                            <div class="info-card-title">Dirección</div>
-                            <div class="info-card-value">{{ user ? user.home_address : 'Cargando...' }}</div>
-                        </div>
-                    </div>
-
-                    <div class="info-card" title="Título Profesional">
-                        <div class="info-card-icon bg-indigo-soft">
-                            <i class="material-icons">school</i>
-                        </div>
-                        <div class="info-card-content">
-                            <div class="info-card-title">Título Profesional</div>
-                            <div class="info-card-value">{{ user && user.title ? user.title : 'Cargando...' }}</div>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
 
             <!-- Horarios Tab -->
@@ -227,11 +251,20 @@ export default {
     name: 'DoctorProfileComponent',
     data() {
         return {
-            user: null,
+            user: {
+                first_name: '',
+                last_name: '',
+                date_of_birth: '',
+                phone: '',
+                home_address: '',
+                email: '',
+                profile_photo_path: ''
+            },
             loading: true,
             isVerified: null,
             profile_photo: null,
             activeTab: 'personal', // Default active tab
+            readonly: true,
         }
     },
     async mounted() {
@@ -287,10 +320,56 @@ export default {
             }
         },
         handleEditClick() {
-            // Handle edit profile action
-            console.log('Edit profile clicked');
-            // Future implementation for edit functionality
-        }
+            this.readonly = !this.readonly;
+        },
+        async fetchUpdate(){
+            try {
+                this.readonly = !this.readonly;
+
+                const response = await fetch(API_URL + '/professionals/update/' + this.user.user_id, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(this.user)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al editar el perfil');
+                }
+
+                const data = await response.json();
+
+                console.log(data);
+
+                if(!data.status){
+                    swal.fire({
+                        icon: 'error',
+                        iconColor: '#D69656',
+                        title: 'Error',
+                        text: data.message,
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#d65656',
+                    });
+                    return;
+                }
+
+                swal.fire({
+                    icon: 'success',
+                    iconColor: '#D69656',
+                    title: 'Éxito',
+                    text: data.message,
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#5660d6',
+                });
+
+                console.log(data);
+
+            } catch (error) {
+                console.error('Error al editar el perfil:', error);
+            }
+        },
     },
 }
 </script>
@@ -500,6 +579,46 @@ export default {
 }
 
 .btn-edit:hover::after {
+    transform: translateX(0);
+}
+
+.btn-cancel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #fd0d55 0%, #d70b0b 100%);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.625rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+.btn-cancel::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: -1;
+}
+
+.btn-cancel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(253, 13, 13, 0.2);
+}
+
+.btn-cancel:hover::after {
     transform: translateX(0);
 }
 
