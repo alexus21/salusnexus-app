@@ -50,7 +50,7 @@ export default {
             navigationItems: [
                 { name: 'Inicio', label: 'Inicio', href: '#', icon: 'fas fa-house' },
                 { name: 'Horario', label: 'Mi horario', href: '/horario', icon: 'fas fa-clock' },
-                { name: 'Agenda', label: 'Agenda', href: '#', icon: 'fas fa-calendar-alt' },
+                { name: 'Agenda', label: 'Agenda', href: '/agenda', icon: 'fas fa-calendar-alt' },
                 { name: 'Pacientes', label: 'Pacientes', href: '/pacientes', icon: 'fas fa-users' },
                 { name: 'Citas', label: 'Citas', href: '#', icon: 'fas fa-clipboard-list' },
                 { name: 'Estadisticas', label: 'Estadísticas', href: '#', icon: 'fas fa-chart-line' },

@@ -12,6 +12,7 @@ import LoginPage from "@/components/login/LoginPage.vue";
 import RegisterPage from "@/components/register/RegisterPage.vue";
 import AddPaymentMethodComponent from "@/components/paymentmethod/AddPaymentMethodComponent.vue";
 import ScheduleView from '@/components/main/healthcareProfessionals/ScheduleView.vue';
+import AgendaView from '@/components/main/healthcareProfessionals/AgendaView.vue';
 
 import {validateAuth} from "@/utils/auth";
 import VerifyProfessionalAccountComponent from "@/components/verifyaccount/VerifyProfessionalAccountComponent.vue";
@@ -135,6 +136,15 @@ const routes = [
         path: '/horario',
         name: 'Schedule',
         component: ScheduleView,
+        meta: {
+            requiresAuth: true,
+            hideHeader: true
+        }
+    },
+    {
+        path: '/agenda',
+        name: 'Agenda',
+        component: AgendaView,
         meta: {
             requiresAuth: true,
             hideHeader: true

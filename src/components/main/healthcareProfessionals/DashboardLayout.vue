@@ -29,6 +29,7 @@ import DashboardHome from '@/components/main/healthcareProfessionals/DashboardHo
 import ReviewsView from '@/components/main/healthcareProfessionals/ReviewsView.vue';
 import PatientsView from '@/components/main/healthcareProfessionals/PatientsView.vue';
 import ScheduleView from '@/components/main/healthcareProfessionals/ScheduleView.vue';
+import AgendaView from '@/components/main/healthcareProfessionals/AgendaView.vue';
 
 export default {
     name: 'DashboardLayout',
@@ -37,7 +38,8 @@ export default {
         DashboardHome,
         ReviewsView,
         PatientsView,
-        ScheduleView
+        ScheduleView,
+        AgendaView
     },
     data() {
         return {
@@ -56,6 +58,9 @@ export default {
             }
             if (this.currentView === 'Horario'){
                 return 'ScheduleView';
+            }
+            if (this.currentView === 'Agenda'){
+                return 'AgendaView';
             }
             return 'DashboardHome';
         }
