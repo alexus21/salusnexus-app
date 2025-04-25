@@ -13,6 +13,7 @@ import RegisterPage from "@/components/register/RegisterPage.vue";
 import AddPaymentMethodComponent from "@/components/paymentmethod/AddPaymentMethodComponent.vue";
 import ScheduleView from '@/components/main/healthcareProfessionals/ScheduleView.vue';
 import AgendaView from '@/components/main/healthcareProfessionals/AgendaView.vue';
+import PasswordResetView from '@/components/auth/PasswordResetView.vue';
 
 import {validateAuth} from "@/utils/auth";
 import VerifyProfessionalAccountComponent from "@/components/verifyaccount/VerifyProfessionalAccountComponent.vue";
@@ -58,6 +59,18 @@ const routes = [
         path: '/register',
         name: 'Register',
         component: RegisterPage,
+        meta: {
+            hideHeader: true
+        }
+    },
+    {
+        path: '/restablecer-password/:token',
+        name: 'PasswordReset',
+        component: PasswordResetView,
+        props: (route) => ({
+            token: route.params.token,
+            email: route.query.email
+        }),
         meta: {
             hideHeader: true
         }

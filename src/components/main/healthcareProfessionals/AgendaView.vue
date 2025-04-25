@@ -441,17 +441,15 @@ export default {
             
             let errorMessage = defaultMessage;
             
-            // Si el error tiene estructura de API con mensaje
             if (error.response && error.response.data && error.response.data.message) {
                 errorMessage = error.response.data.message;
             } else if (error.message) {
                 errorMessage = error.message;
             }
             
-            // Mostrar el error en la consola en lugar de en un SweetAlert
+            
             console.error(`${defaultMessage}: ${errorMessage}`);
             
-            // Descomentar esta parte si se quiere volver a usar SweetAlert
             /* 
             Swal.fire({
                 title: 'Error',
