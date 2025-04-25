@@ -8,37 +8,43 @@
             <div class="filter-controls">
                 <div class="search-container">
                     <i class="fas fa-search search-icon"></i>
-                    <input type="text" placeholder="Buscar por nombre o especialidad..." v-model="searchQuery" class="search-input" />
+                    <input type="text" placeholder="Buscar por nombre o especialidad..." v-model="searchQuery"
+                           class="search-input"/>
                 </div>
                 <div class="filter-dropdown">
                     <select v-model="statusFilter" class="filter-select">
                         <option value="all">Todos los estados</option>
-                        <option value="pending">Pendientes</option>
-                        <option value="approved">Aprobadas</option>
-                        <option value="rejected">Rechazadas</option>
+                        <option value="pendiente_confirmacion">Pendientes</option>
+                        <option value="programada">Aprobadas</option>
+                        <option value="cancelada_paciente">Canceladas</option>
+                        <option value="cancelada_profesional">Rechazadas</option>
                         <option value="rescheduled">Reprogramadas</option>
                     </select>
                 </div>
             </div>
         </header>
 
-        <section class="card-container" v-if="filteredAppointments.length > 0">
-            <AppointmentCard 
-                v-for="appointment in filteredAppointments" 
-                :key="appointment.id" 
-                :appointment="appointment"
-                @approve="approveAppointment"
-                @reschedule="openRescheduleModal"
-                @reject="rejectAppointment"
+        <section class="card-container" v-if="!isLoading && filteredAppointments.length > 0">
+            <AppointmentCard
+                    v-for="appointment in filteredAppointments"
+                    :key="appointment.id"
+                    :appointment="appointment"
+                    @approve="approveAppointment"
+                    @reschedule="openRescheduleModal"
+                    @reject="rejectAppointment"
             />
         </section>
 
-        <section class="empty-state" v-else>
+        <section class="empty-state" v-else-if="!isLoading">
             <div class="empty-illustration">
                 <i class="fas fa-calendar-times empty-icon"></i>
             </div>
             <h3>No hay solicitudes de citas</h3>
             <p>No se encontraron solicitudes de citas que coincidan con los filtros seleccionados.</p>
+        </section>
+
+        <section v-else class="loading-state">
+            <p>Cargando citas...</p>
         </section>
 
         <!-- Modal para reprogramar cita -->
@@ -58,7 +64,7 @@
                             <p>{{ selectedAppointment.serviceType }}</p>
                         </div>
                     </div>
-                    
+
                     <div class="reschedule-form">
                         <div class="form-group">
                             <label>Nueva fecha</label>
@@ -66,7 +72,8 @@
                         </div>
                         <div class="form-group">
                             <label>Motivo del cambio</label>
-                            <textarea v-model="rescheduleReason" class="form-control" rows="3" placeholder="Explica brevemente el motivo del cambio..."></textarea>
+                            <textarea v-model="rescheduleReason" class="form-control" rows="3"
+                                      placeholder="Explica brevemente el motivo del cambio..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -99,7 +106,8 @@ export default {
             rescheduleReason: '',
             isLoading: false,
             pagination: {},
-            appointments: [
+            appointments: [],
+            /*appointments: [
                 {
                     id: 1,
                     patientName: 'María González',
@@ -173,27 +181,40 @@ export default {
                     notes: 'Lesión cutánea en brazo izquierdo',
                     contactPhone: '+503 7651-3489'
                 }
-            ]
+            ]*/
         };
+    },
+    async mounted() {
+        // Obtener citas al montar el componente
+        await this.fetchAppointments().then(() => {
+            // Inicializar datos de carga y paginación
+            this.isLoading = false;
+            this.pagination = {
+                total: 0,
+                currentPage: 1,
+                lastPage: 1,
+                perPage: 10
+            };
+        });
     },
     computed: {
         filteredAppointments() {
             let result = this.appointments;
-            
+
             // Filtrar por estado
             if (this.statusFilter !== 'all') {
                 result = result.filter(appt => appt.status === this.statusFilter);
             }
-            
+
             // Filtrar por búsqueda
             if (this.searchQuery.trim()) {
                 const query = this.searchQuery.toLowerCase();
-                result = result.filter(appt => 
-                    appt.patientName.toLowerCase().includes(query) || 
+                result = result.filter(appt =>
+                    appt.patientName.toLowerCase().includes(query) ||
                     appt.serviceType.toLowerCase().includes(query)
                 );
             }
-            
+
             return result;
         }
     },
@@ -215,12 +236,12 @@ export default {
                     if (appointmentIndex !== -1) {
                         this.appointments[appointmentIndex].status = 'approved';
                         // Llamar a la API para actualizar la cita
-                        this.updateAppointmentStatus(appointmentId, 'approved');
+                        this.updateAppointmentStatus();
                     }
                 }
             });
         },
-        
+
         rejectAppointment(appointmentId) {
             Swal.fire({
                 title: '¿Rechazar solicitud?',
@@ -246,12 +267,12 @@ export default {
                         this.appointments[appointmentIndex].status = 'rejected';
                         this.appointments[appointmentIndex].rejectionReason = result.value;
                         // Llamar a la API para actualizar la cita
-                        this.updateAppointmentStatus(appointmentId, 'rejected', { rejectionReason: result.value });
+                        this.updateAppointmentStatus();
                     }
                 }
             });
         },
-        
+
         openRescheduleModal(appointmentId) {
             const appointment = this.appointments.find(appt => appt.id === appointmentId);
             if (appointment) {
@@ -262,11 +283,11 @@ export default {
                 this.showRescheduleModal = true;
             }
         },
-        
+
         closeRescheduleModal() {
             this.showRescheduleModal = false;
         },
-        
+
         confirmReschedule() {
             if (!this.rescheduleDate) {
                 Swal.fire({
@@ -277,7 +298,7 @@ export default {
                 });
                 return;
             }
-            
+
             // Encontrar y actualizar el estado de la cita
             const appointmentIndex = this.appointments.findIndex(appt => appt.id === this.selectedAppointment.id);
             if (appointmentIndex !== -1) {
@@ -289,143 +310,90 @@ export default {
                     rescheduleDate: this.rescheduleDate,
                     rescheduleReason: this.rescheduleReason
                 };
-                
+
                 this.appointments[appointmentIndex] = updatedAppointment;
-                
+
                 // Llamar a la API para actualizar la cita
-                this.updateAppointmentStatus(this.selectedAppointment.id, 'rescheduled', {
-                    rescheduleDate: this.rescheduleDate,
-                    rescheduleReason: this.rescheduleReason
-                });
-                
+                this.updateAppointmentStatus();
+
                 this.closeRescheduleModal();
             }
         },
-        
+
         // Métodos para consumo de API REST
-        
+
         async fetchAppointments() {
             try {
                 this.isLoading = true;
                 const token = localStorage.getItem('token');
-                
+
                 if (!token) {
                     console.error('No se encontró token de autenticación');
                     return;
                 }
-                
-                const API_URL = process.env.VUE_APP_API_URL || 'https://api.example.com';
-                const response = await fetch(`${API_URL}/appointments`, {
+
+                const API_URL = process.env.VUE_APP_API_URL;
+                const response = await fetch(`${API_URL}/appointments/get`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     }
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`Error al obtener citas: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
-                
+                console.log(data);
+
                 // Transformar la respuesta de la API al formato que espera el componente
                 this.appointments = this.transformApiResponse(data);
-                
+
             } catch (error) {
                 this.handleApiError(error, 'Error al cargar las citas');
             } finally {
                 this.isLoading = false;
             }
         },
-        
-        async updateAppointmentStatus(appointmentId, newStatus, additionalData = {}) {
+
+        async updateAppointmentStatus() {
             try {
-                const token = localStorage.getItem('token');
-                
-                if (!token) {
-                    console.error('No se encontró token de autenticación');
-                    return false;
-                }
-                
-                const API_URL = process.env.VUE_APP_API_URL || 'https://api.example.com';
-                const response = await fetch(`${API_URL}/appointments/${appointmentId}/status`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        status: newStatus,
-                        ...additionalData
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`Error al actualizar estado de cita: ${response.status}`);
-                }
-                
-                // eslint-disable-next-line no-unused-vars
-                const data = await response.json();
-                
-                // Mostrar mensaje de éxito según el tipo de actualización
-                let successTitle, successMessage;
-                
-                switch (newStatus) {
-                    case 'approved':
-                        successTitle = '¡Confirmada!';
-                        successMessage = 'La cita ha sido confirmada exitosamente.';
-                        break;
-                    case 'rejected':
-                        successTitle = 'Rechazada';
-                        successMessage = 'La solicitud ha sido rechazada.';
-                        break;
-                    case 'rescheduled':
-                        successTitle = '¡Reprogramada!';
-                        successMessage = 'La cita ha sido reprogramada exitosamente.';
-                        break;
-                    default:
-                        successTitle = '¡Actualizada!';
-                        successMessage = 'La cita ha sido actualizada exitosamente.';
-                }
-                
-                Swal.fire(
-                    successTitle,
-                    successMessage,
-                    'success'
-                );
-                
+                await this.fetchAppointments();
+
                 return true;
-                
+
             } catch (error) {
                 this.handleApiError(error, 'Error al actualizar la cita');
                 return false;
             }
         },
-        
+
         transformApiResponse(apiResponse) {
             // Este método transforma la respuesta de la API al formato que espera el componente
             // Adaptar según la estructura real de la API
-            
+            const API_IMAGES_URL = process.env.VUE_APP_API_URL_IMAGE;
+
             if (!apiResponse || !apiResponse.data) {
                 return [];
             }
-            
+
             return apiResponse.data.map(item => {
                 return {
-                    id: item.id,
-                    patientName: item.patient?.name || 'Paciente sin nombre',
-                    patientAge: item.patient?.age || 'N/A',
-                    avatar: item.patient?.avatar || 'https://via.placeholder.com/48',
+                    id: item.appointment_id,
+                    patientName: item.first_name + ' ' + item.last_name || 'Paciente sin nombre',
+                    patientAge: this.getAge(item.date_of_birth) || 'N/A',
+                    avatar: API_IMAGES_URL + '/' + item.profile_photo_path,
                     serviceType: item.service_type || item.serviceType || 'Consulta general',
                     requestDate: item.created_at || item.requestDate || new Date().toISOString().split('T')[0],
-                    preferredDate: item.preferred_date || item.preferredDate || new Date().toISOString().split('T')[0],
+                    preferredDate: item.appointment_date || item.preferredDate || new Date().toISOString().split('T')[0],
                     preferredTime: item.preferred_time || item.preferredTime || '10:00',
-                    status: item.status || 'pending',
+                    status: item.appointment_status || 'pending',
                     notes: item.notes || '',
-                    contactPhone: item.patient?.phone || item.contactPhone || 'Sin teléfono',
+                    contactPhone: item.phone || item.contactPhone || 'Sin teléfono',
                     rejectionReason: item.rejection_reason || item.rejectionReason || '',
-                    
+
                     // Campos para citas reprogramadas
                     originalDate: item.original_date || item.originalDate || '',
                     originalTime: item.original_time || item.originalTime || '',
@@ -435,21 +403,32 @@ export default {
                 };
             });
         },
-        
+
+        getAge(dateString) {
+            let today = new Date();
+            let birthDate = new Date(dateString);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            let m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        },
+
         handleApiError(error, defaultMessage = 'Error en la operación') {
             console.error('API Error:', error);
-            
+
             let errorMessage = defaultMessage;
-            
+
             if (error.response && error.response.data && error.response.data.message) {
                 errorMessage = error.response.data.message;
             } else if (error.message) {
                 errorMessage = error.message;
             }
-            
-            
+
+
             console.error(`${defaultMessage}: ${errorMessage}`);
-            
+
             /* 
             Swal.fire({
                 title: 'Error',
@@ -459,24 +438,24 @@ export default {
             });
             */
         },
-        
+
         async getPaginatedAppointments(page = 1, limit = 10, filters = {}) {
             try {
                 this.isLoading = true;
                 const token = localStorage.getItem('token');
-                
+
                 if (!token) {
                     console.error('No se encontró token de autenticación');
                     return;
                 }
-                
+
                 // Construir query params para filtros
                 const queryParams = new URLSearchParams({
                     page: page.toString(),
                     limit: limit.toString(),
                     ...this.constructFilterParams(filters)
                 }).toString();
-                
+
                 const API_URL = process.env.VUE_APP_API_URL || 'https://api.example.com';
                 const response = await fetch(`${API_URL}/appointments?${queryParams}`, {
                     method: 'GET',
@@ -485,16 +464,16 @@ export default {
                         'Authorization': `Bearer ${token}`
                     }
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`Error al obtener citas: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
-                
+
                 // Actualizar estado con la respuesta paginada
                 this.appointments = this.transformApiResponse(data);
-                
+
                 // Si la API devuelve metadatos de paginación, actualizarlos
                 if (data.meta) {
                     this.pagination = {
@@ -504,37 +483,37 @@ export default {
                         perPage: data.meta.per_page || limit
                     };
                 }
-                
+
             } catch (error) {
                 this.handleApiError(error, 'Error al cargar las citas');
             } finally {
                 this.isLoading = false;
             }
         },
-        
+
         constructFilterParams(filters) {
             // Construye los parámetros de filtro para la API
             const params = {};
-            
+
             if (filters.status && filters.status !== 'all') {
                 params.status = filters.status;
             }
-            
+
             if (filters.search) {
                 params.search = filters.search;
             }
-            
+
             if (filters.dateFrom) {
                 params.date_from = filters.dateFrom;
             }
-            
+
             if (filters.dateTo) {
                 params.date_to = filters.dateTo;
             }
-            
+
             return params;
         },
-        
+
         applyFilters() {
             // Crear objeto de filtros basado en estado actual
             const filters = {
@@ -542,34 +521,20 @@ export default {
                 search: this.searchQuery,
                 // Puedes agregar más filtros aquí según se necesite
             };
-            
+
             // Llamar a la API con los filtros aplicados
             this.getPaginatedAppointments(1, 10, filters);
         },
-        
+
         resetFilters() {
             this.statusFilter = 'all';
             this.searchQuery = '';
             // Reiniciar otros filtros si existen
-            
+
             // Recargar citas sin filtros
             this.fetchAppointments();
         }
     },
-    
-    mounted() {
-        // Inicializar datos de carga y paginación
-        this.isLoading = false;
-        this.pagination = {
-            total: 0,
-            currentPage: 1,
-            lastPage: 1,
-            perPage: 10
-        };
-        
-        // Obtener citas al montar el componente
-        this.fetchAppointments();
-    }
 };
 </script>
 
@@ -820,20 +785,20 @@ export default {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .filter-controls {
         flex-direction: column;
         width: 100%;
     }
-    
+
     .search-input {
         width: 100%;
     }
-    
+
     .filter-select {
         width: 100%;
     }
-    
+
     .card-container {
         grid-template-columns: 1fr;
     }
