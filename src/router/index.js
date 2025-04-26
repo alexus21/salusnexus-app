@@ -109,7 +109,7 @@ const routes = [
         component: DoctorProfileComponent,
         meta: {
             requiresAuth: true,
-            // hideHeader: true
+            hideHeader: true
         },
     },
     {
@@ -134,7 +134,8 @@ const routes = [
         name: 'PreviewClinic',
         component: ClinicaPreview,
         meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            hideHeader: true
         }
     },
     {

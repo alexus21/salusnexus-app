@@ -61,8 +61,10 @@
                 <div class="w-full md:w-1/3 lg:w-1/4 bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="bg-blue-600 h-24"></div>
                     <div class="flex justify-center -mt-12">
-                        <img :src="profile_photo" alt="Doctor"
-                             class="rounded-full h-24 w-24 border-4 border-white object-cover">
+                        <router-link to="/home">
+                            <img :src="profile_photo" alt="Doctor"
+                                 class="rounded-full h-24 w-24 border-4 border-white object-cover">
+                        </router-link>
                     </div>
                     <div class="text-center p-4">
                         <h2 class="text-xl font-bold">Dr. {{ myClinic.first_name + " " + myClinic.last_name }}</h2>

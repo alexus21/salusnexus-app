@@ -2,7 +2,7 @@
     <div class="container-fluid py-4">
         <div class="card shadow">
             <div class="card-header bg-white d-flex align-items-center py-3">
-                <router-link to="/dashboard" class="me-3">
+                <router-link to="/previa-clinica" class="me-3">
                     <i class="fas fa-arrow-left text-primary"></i>
                 </router-link>
                 <h5 class="mb-0">Editar Mi Clínica</h5>

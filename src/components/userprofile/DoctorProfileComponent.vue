@@ -1,254 +1,408 @@
 <template>
-    <div class="profile-container">
-        <!-- Elementos decorativos de fondo -->
-        <div class="decorative-element decorative-element-1"></div>
-        <div class="decorative-element decorative-element-2"></div>
-        <div class="decorative-element decorative-element-3"></div>
-
-        <!-- Profile Header Section -->
-        <div class="profile-header">
-            <div class="profile-avatar-container">
-                <img :src="profile_photo" alt="profile picture" class="profile-avatar">
-            </div>
-            <div class="profile-header-content">
-                <h1 class="profile-name">Dr. {{
-                        user && user.first_name && user.last_name ? user.first_name.split(' ')[0] + ' ' + user.last_name.split(' ')[0] : 'Cargando...'
-                    }}</h1>
-                <div class="profile-location">
-                    <i class="material-icons location-icon">location_on</i>
-                    {{ user && user.home_address ? user.home_address.split(',').slice(-2).join(', ') : 'Cargando...' }}
+    <div class="profile-main-container">
+        <!-- Sidebar izquierdo con foto de perfil y navegación -->
+        <div class="profile-sidebar">
+            <div class="profile-user">
+                <div class="profile-avatar-wrapper" @click="navigateToHome" title="Ir a inicio">
+                    <img :src="profile_photo" alt="Foto de perfil" class="profile-avatar">
                 </div>
-                <div class="profile-specialties">
-                    <span class="specialty-tag">Medicina General</span>
-                    <span class="specialty-tag">Pediatría</span>
-                    <span class="specialty-tag">Cardiología</span>
-                </div>
-            </div>
-            <div class="profile-actions">
-                <button class="btn-edit rounded-pill" @click="handleEditClick">
-                    <i class="fas fa-pencil-alt me-2"></i>{{ readonly ? 'Editar' : 'Cancelar' }}
+                <h2 class="user-name">{{ user.first_name + ' ' + user.last_name }}</h2>
+                <p class="user-email">{{ user.email }}</p>
+                <button class="edit-profile-btn" @click="handleEditClick">
+                    <i class="fas fa-pencil-alt"></i> {{ readonly ? 'Editar perfil' : 'Cancelar' }}
                 </button>
-                <button class="btn-edit rounded-pill" @click="fetchUpdate" v-if="!readonly">
-                    <i class="fas fa-pencil-alt me-2"></i>Actualizar
+                <button class="update-profile-btn" @click="fetchUpdate" v-if="!readonly">
+                    <i class="fas fa-save"></i> Actualizar
+                </button>
+            </div>
+            
+            <div class="sidebar-nav">
+                <ul>
+                    <li :class="{ active: activeTab === 'personal' }" @click="activeTab = 'personal'">
+                        <i class="fas fa-user"></i> Mi Perfil
+                    </li>
+                    <li :class="{ active: activeTab === 'horarios' }" @click="activeTab = 'horarios'">
+                        <i class="fas fa-clock"></i> Horarios
+                    </li>
+                    <li :class="{ active: activeTab === 'seguridad' }" @click="activeTab = 'seguridad'">
+                        <i class="fas fa-shield-alt"></i> Seguridad
+                    </li>
+                    <li>
+                        <i class="fas fa-bell"></i> Notificaciones
+                    </li>
+                    <li>
+                        <i class="fas fa-cog"></i> Configuración
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-footer">
+                <button class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar sesión
                 </button>
             </div>
         </div>
 
-        <!-- Navigation Tabs -->
-        <div class="profile-tabs">
-            <div :class="{ 'active': activeTab === 'personal' }" class="tab" @click="activeTab = 'personal'">
-                Información Personal
-            </div>
-
-            <div :class="{ 'active': activeTab === 'horarios' }" class="tab" @click="activeTab = 'horarios'">
-                Horarios
-            </div>
-<!--
-            <div :class="{ 'active': activeTab === 'servicios' }" class="tab" @click="activeTab = 'servicios'">
-                Servicios
-            </div>
--->
-        </div>
-
-        <!-- Tab Content Sections -->
-        <div class="tab-content">
-            <!-- Información Personal Tab -->
-            <div v-if="activeTab === 'personal'" class="personal-info-tab">
-                <!-- Interfaz visual moderna de datos personales -->
-                <form action="">
-                    <div class="info-cards-container">
-                        <div class="info-card" title="Nombre Completo">
-                            <div class="info-card-icon bg-primary-soft">
-                                <i class="material-icons">person</i>
+        <!-- Contenido principal -->
+        <div class="profile-content">
+            <transition name="fade" mode="out-in">
+                <!-- Pestaña Información Personal -->
+                <div v-if="activeTab === 'personal'" class="content-section" key="personal">
+                    <div class="content-header">
+                        <h3>
+                            <i class="fas fa-id-card"></i>
+                            Información Personal
+                        </h3>
+                        <p class="subtitle">Gestiona tu información personal</p>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <!-- Nombre y apellido -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstname">NOMBRE</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-user icon-prefix"></i>
+                                    <input 
+                                        type="text" 
+                                        id="firstname" 
+                                        v-model="user.first_name" 
+                                        :readonly="readonly" 
+                                        class="form-control"
+                                    />
+                                </div>
                             </div>
-                            <div class="info-card-content">
-                                <div class="info-card-title">Nombre Completo</div>
-                                <div class="info-card-inputs">
-                                    <input type="text"
-                                           class="info-card-value"
-                                           v-model="user.first_name"
-                                           :readonly="readonly"
-                                           placeholder="Nombre"
-                                           required>
-                                    <input type="text"
-                                           class="info-card-value"
-                                           v-model="user.last_name"
-                                           :readonly="readonly"
-                                           placeholder="Apellido"
-                                           required>
+                            <div class="form-group">
+                                <label for="lastname">APELLIDO</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-user icon-prefix"></i>
+                                    <input 
+                                        type="text" 
+                                        id="lastname" 
+                                        v-model="user.last_name" 
+                                        :readonly="readonly" 
+                                        class="form-control"
+                                    />
                                 </div>
                             </div>
                         </div>
-
-                        <div class="info-card" title="Fecha de Nacimiento">
-                            <div class="info-card-icon bg-purple-soft">
-                                <i class="material-icons">cake</i>
+                        
+                        <!-- Email y teléfono -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">CORREO ELECTRÓNICO</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-envelope icon-prefix"></i>
+                                    <input 
+                                        type="email" 
+                                        id="email" 
+                                        v-model="user.email" 
+                                        readonly 
+                                        class="form-control"
+                                    />
+                                </div>
                             </div>
-                            <div class="info-card-content">
-                                <div class="info-card-title">Fecha de Nacimiento</div>
-                                <input type="date"
-                                       class="info-card-value"
-                                       v-model="user.date_of_birth"
-                                       :readonly="readonly"
-                                       required>
-                            </div>
-                        </div>
-
-                        <div class="info-card" title="Identificación">
-                            <div class="info-card-icon bg-teal-soft">
-                                <i class="material-icons">credit_card</i>
-                            </div>
-                            <div class="info-card-content">
-                                <div class="info-card-title">Identificación</div>
-                                <input type="text"
-                                       class="info-card-value"
-                                       v-model="user.dui"
-                                       readonly
-                                       required>
-                            </div>
-                        </div>
-
-                        <div class="info-card" title="Correo Electrónico">
-                            <div class="info-card-icon bg-info-soft">
-                                <i class="material-icons">email</i>
-                            </div>
-                            <div class="info-card-content">
-                                <div class="info-card-title">Correo Electrónico</div>
-                                <input type="text"
-                                       class="info-card-value"
-                                       v-model="user.email"
-                                       readonly
-                                       required>
+                            <div class="form-group">
+                                <label for="phone">TELÉFONO</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-phone-alt icon-prefix"></i>
+                                    <input 
+                                        type="tel" 
+                                        id="phone" 
+                                        v-model="user.phone" 
+                                        :readonly="readonly" 
+                                        class="form-control"
+                                    />
+                                </div>
                             </div>
                         </div>
-
-                        <div class="info-card" title="Teléfono">
-                            <div class="info-card-icon bg-orange-soft">
-                                <i class="material-icons">phone</i>
+                        
+                        <!-- Identificación y fecha de nacimiento -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="dui">DUI (DOCUMENTO ÚNICO DE IDENTIDAD)</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-id-card icon-prefix"></i>
+                                    <input 
+                                        type="text" 
+                                        id="dui" 
+                                        v-model="user.dui" 
+                                        readonly 
+                                        class="form-control"
+                                    />
+                                </div>
                             </div>
-                            <div class="info-card-content">
-                                <div class="info-card-title">Teléfono</div>
-                                <input type="text"
-                                       class="info-card-value"
-                                       v-model="user.phone"
-                                       :readonly="readonly"
-                                       required>
-                            </div>
-                        </div>
-
-                        <div class="info-card" title="Dirección">
-                            <div class="info-card-icon bg-success-soft">
-                                <i class="material-icons">home</i>
-                            </div>
-                            <div class="info-card-content">
-                                <div class="info-card-title">Dirección</div>
-                                <input type="text"
-                                       class="info-card-value"
-                                       v-model="user.home_address"
-                                       :readonly="readonly"
-                                       required>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Horarios Tab -->
-            <div v-if="activeTab === 'horarios'" class="horarios-tab">
-                <div class="schedule-cards-container">
-                    <div class="schedule-card weekday" title="Horario de Lunes a Viernes">
-                        <div class="schedule-card-icon">
-                            <i class="material-icons">date_range</i>
-                        </div>
-                        <div class="schedule-card-content">
-                            <div class="schedule-card-day">Lunes a Viernes</div>
-                            <div class="schedule-card-time">8:00 AM - 5:00 PM</div>
-                            <div class="schedule-status-indicator active" title="Activo"></div>
-                        </div>
-                    </div>
-
-                    <div class="schedule-card weekend" title="Horario de Sábados">
-                        <div class="schedule-card-icon">
-                            <i class="material-icons">weekend</i>
-                        </div>
-                        <div class="schedule-card-content">
-                            <div class="schedule-card-day">Sábados</div>
-                            <div class="schedule-card-time">9:00 AM - 1:00 PM</div>
-                            <div class="schedule-status-indicator active" title="Activo"></div>
-                        </div>
-                    </div>
-
-                    <div class="schedule-card sunday inactive" title="Horario de Domingos">
-                        <div class="schedule-card-icon">
-                            <i class="material-icons">today</i>
-                        </div>
-                        <div class="schedule-card-content">
-                            <div class="schedule-card-day">Domingos</div>
-                            <div class="schedule-card-time">No disponible</div>
-                            <div class="schedule-status-indicator" title="Inactivo"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Servicios Tab -->
-            <div v-if="activeTab === 'servicios'" class="servicios-tab">
-                <div class="services-cards-container">
-                    <div class="service-card consultation" title="Consulta General">
-                        <div class="service-card-icon">
-                            <i class="material-icons">healing</i>
-                        </div>
-                        <div class="service-card-content">
-                            <h3 class="service-card-title">Consulta General</h3>
-                            <p class="service-card-description">Diagnóstico y evaluación médica integral para pacientes
-                                de todas las edades</p>
-                            <div class="service-card-duration">
-                                <i class="material-icons">schedule</i> 30 min
+                            <div class="form-group">
+                                <label for="dob">FECHA DE NACIMIENTO</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-calendar-alt icon-prefix"></i>
+                                    <input 
+                                        type="date" 
+                                        id="dob" 
+                                        v-model="user.date_of_birth" 
+                                        :readonly="readonly" 
+                                        class="form-control"
+                                    />
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="service-card examination" title="Examen Físico">
-                        <div class="service-card-icon">
-                            <i class="material-icons">monitor_heart</i>
-                        </div>
-                        <div class="service-card-content">
-                            <h3 class="service-card-title">Examen Físico</h3>
-                            <p class="service-card-description">Evaluación completa del estado físico y signos vitales
-                                del paciente</p>
-                            <div class="service-card-duration">
-                                <i class="material-icons">schedule</i> 45 min
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="service-card specialized" title="Consulta Especializada">
-                        <div class="service-card-icon">
-                            <i class="material-icons">medical_information</i>
-                        </div>
-                        <div class="service-card-content">
-                            <h3 class="service-card-title">Consulta Especializada</h3>
-                            <p class="service-card-description">Atención médica enfocada en áreas específicas según la
-                                especialidad del médico</p>
-                            <div class="service-card-duration">
-                                <i class="material-icons">schedule</i> 60 min
+                        
+                        <!-- Dirección -->
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="address">DIRECCIÓN</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-map-marker-alt icon-prefix"></i>
+                                    <input 
+                                        type="text" 
+                                        id="address" 
+                                        v-model="user.home_address" 
+                                        :readonly="readonly" 
+                                        class="form-control"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                
+                <!-- Pestaña Horarios -->
+                <div v-else-if="activeTab === 'horarios'" class="content-section" key="horarios">
+                    <div class="content-header">
+                        <h3>
+                            <i class="fas fa-clock"></i>
+                            Horarios
+                        </h3>
+                        <p class="subtitle">Administra tus horarios de atención</p>
+                    </div>
+                    
+                    <div class="schedule-container">
+                        <schedule-day-card
+                            v-for="(day, index) in weekDays"
+                            :key="day.dayName"
+                            :day-name="day.dayName"
+                            :schedule-text="day.scheduleText"
+                            :is-active="day.isActive"
+                            @edit="editSchedule(index)"
+                        />
+                    </div>
+                </div>
+
+                <!-- Pestaña Seguridad -->
+                <div v-else-if="activeTab === 'seguridad'" class="content-section" key="seguridad">
+                    <div class="content-header">
+                        <span class="security-badge">Protección de cuenta</span>
+                        <h3>
+                            <i class="fas fa-shield-alt"></i>
+                            Seguridad
+                        </h3>
+                        <p class="subtitle">Configura opciones de seguridad</p>
+                    </div>
+                    
+                    <div class="security-container">
+                        <!-- Banner informativo -->
+                        <div class="security-banner">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Administra la seguridad de tu cuenta y protege tu información personal</span>
+                        </div>
+                        
+                        <!-- Sección cambiar contraseña -->
+                        <div class="security-section">
+                            <div class="security-section-header">
+                                <div class="icon-container">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <div class="header-text">
+                                    <h4>Cambiar contraseña</h4>
+                                    <p>Actualiza tu contraseña periódicamente para mayor seguridad</p>
+                                </div>
+                            </div>
+                            
+                            <div class="security-section-content">
+                                <div class="form-group password-group">
+                                    <label for="current-password">Contraseña actual</label>
+                                    <div class="password-input-container">
+                                        <input 
+                                            type="password" 
+                                            id="current-password" 
+                                            v-model="passwords.current"
+                                            class="form-control"
+                                        />
+                                        <button type="button" class="password-toggle">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group password-group">
+                                    <label for="new-password">Nueva contraseña</label>
+                                    <div class="password-input-container">
+                                        <input 
+                                            type="password" 
+                                            id="new-password" 
+                                            v-model="passwords.new"
+                                            class="form-control"
+                                        />
+                                        <button type="button" class="password-toggle">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group password-group">
+                                    <label for="confirm-password">Confirmar nueva contraseña</label>
+                                    <div class="password-input-container">
+                                        <input 
+                                            type="password" 
+                                            id="confirm-password" 
+                                            v-model="passwords.confirm"
+                                            class="form-control"
+                                        />
+                                        <button type="button" class="password-toggle">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <button type="button" class="update-password-btn">
+                                    <i class="fas fa-key"></i>
+                                    Actualizar contraseña
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Sección autenticación de dos factores -->
+                        <div class="security-section">
+                            <div class="security-section-header two-factor">
+                                <div class="icon-container purple">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <div class="header-text">
+                                    <h4>Autenticación de dos factores</h4>
+                                    <p>Añade una capa adicional de seguridad a tu cuenta</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" v-model="twoFactorEnabled">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="security-features">
+                                <div class="security-feature" :class="{ 'disabled': !twoFactorEnabled }">
+                                    <i class="fas fa-comment-alt"></i>
+                                    <span>Recibe un código de verificación en tu teléfono cada vez que inicies sesión</span>
+                                </div>
+                                <div class="security-feature" :class="{ 'disabled': !twoFactorEnabled }">
+                                    <i class="fas fa-lock"></i>
+                                    <span>Protege tu cuenta incluso si tu contraseña es comprometida</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sección notificaciones de seguridad -->
+                        <div class="security-section">
+                            <div class="security-section-header two-factor">
+                                <div class="icon-container green">
+                                    <i class="fas fa-bell"></i>
+                                </div>
+                                <div class="header-text">
+                                    <h4>Notificaciones de seguridad</h4>
+                                    <p>Recibe alertas sobre actividades sospechosas</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" v-model="securityNotificationsEnabled">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="security-features">
+                                <div class="security-feature" :class="{ 'disabled': !securityNotificationsEnabled }">
+                                    <i class="fas fa-desktop"></i>
+                                    <span>Recibe notificaciones cuando se detecte un inicio de sesión desde un dispositivo desconocido</span>
+                                </div>
+                                <div class="security-feature" :class="{ 'disabled': !securityNotificationsEnabled }">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Alertas de ubicaciones inusuales para inicios de sesión</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Zona de peligro -->
+                        <div class="danger-zone">
+                            <div class="danger-header">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Zona de peligro</span>
+                            </div>
+                            
+                            <div class="danger-content">
+                                <h4>Acciones irreversibles para tu cuenta</h4>
+                                <p>Las siguientes acciones son permanentes y no se pueden deshacer. Por favor, procede con precaución.</p>
+                                
+                                <button type="button" class="delete-account-btn" @click="showDeleteAccountModal">
+                                    <i class="fas fa-trash-alt"></i>
+                                    Eliminar mi cuenta
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+        </div>
+    </div>
+
+    <!-- Añadir el modal de confirmación para eliminar cuenta -->
+    <div class="delete-account-modal" v-if="showDeleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <h3>Eliminar cuenta</h3>
+                <button class="close-button" @click="closeDeleteModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-text">¿Estás seguro de que deseas eliminar tu cuenta? Esta acción es irreversible y perderás todos tus datos.</p>
+                <div class="confirmation-input">
+                    <p>Escribe "ELIMINAR" para confirmar:</p>
+                    <input 
+                        type="text" 
+                        v-model="deleteConfirmText" 
+                        class="form-control delete-confirm" 
+                        placeholder="ELIMINAR"
+                    />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" @click="closeDeleteModal">Cancelar</button>
+                <button 
+                    class="confirm-delete-btn" 
+                    :disabled="deleteConfirmText !== 'ELIMINAR'"
+                    @click="confirmDeleteAccount"
+                >
+                    Eliminar permanentemente
+                </button>
             </div>
         </div>
     </div>
+
+    <!-- Añadir overlay para el modal -->
+    <div class="modal-overlay" v-if="showDeleteModal" @click="closeDeleteModal"></div>
 </template>
 
 <script>
 import swal from "sweetalert2";
+import ScheduleDayCard from './ScheduleDayCard.vue';
 
 const API_URL = process.env.VUE_APP_API_URL;
 const API_URL_IMAGE = process.env.VUE_APP_API_URL_IMAGE;
 
 export default {
     name: 'DoctorProfileComponent',
+    components: {
+        ScheduleDayCard
+    },
     data() {
         return {
             user: {
@@ -265,6 +419,24 @@ export default {
             profile_photo: null,
             activeTab: 'personal', // Default active tab
             readonly: true,
+            weekDays: [
+                { dayName: 'Lunes', scheduleText: '8:00 AM - 5:00 PM', isActive: true },
+                { dayName: 'Martes', scheduleText: '8:00 AM - 5:00 PM', isActive: true },
+                { dayName: 'Miércoles', scheduleText: '8:00 AM - 5:00 PM', isActive: true },
+                { dayName: 'Jueves', scheduleText: '8:00 AM - 5:00 PM', isActive: true },
+                { dayName: 'Viernes', scheduleText: '8:00 AM - 5:00 PM', isActive: true },
+                { dayName: 'Sábado', scheduleText: '9:00 AM - 1:00 PM', isActive: true },
+                { dayName: 'Domingo', scheduleText: 'No disponible', isActive: false },
+            ],
+            passwords: {
+                current: '',
+                new: '',
+                confirm: ''
+            },
+            twoFactorEnabled: false,
+            securityNotificationsEnabled: true,
+            showDeleteModal: false,
+            deleteConfirmText: '',
         }
     },
     async mounted() {
@@ -273,6 +445,13 @@ export default {
         });
     },
     methods: {
+        editSchedule(index) {
+            console.log(`Editando horario para ${this.weekDays[index].dayName}`);
+            // Aquí se implementaría la lógica para editar el horario seleccionado
+        },
+        navigateToHome() {
+            this.$router.push({ name: 'Home' });
+        },
         async fetchUserProfile() {
             try {
                 const response = await fetch(API_URL + '/userprofile', {
@@ -370,1066 +549,870 @@ export default {
                 console.error('Error al editar el perfil:', error);
             }
         },
+        showDeleteAccountModal() {
+            this.showDeleteModal = true;
+            this.deleteConfirmText = '';
+        },
+        closeDeleteModal() {
+            this.showDeleteModal = false;
+        },
+        confirmDeleteAccount() {
+            if (this.deleteConfirmText === 'ELIMINAR') {
+                // Aquí iría la lógica para eliminar la cuenta
+                swal.fire({
+                    icon: 'success',
+                    title: 'Cuenta eliminada',
+                    text: 'Tu cuenta ha sido eliminada correctamente.',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#3b82f6',
+                }).then(() => {
+                    // Redirigir al usuario a la página de inicio o login
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    this.$router.push({ name: 'Login' });
+                });
+                this.closeDeleteModal();
+            }
+        },
     },
 }
 </script>
 
 <style scoped>
-/* Base Styles and Variables */
-:root {
-    --primary-color: #0d6efd;
-    --primary-light: rgba(13, 110, 253, 0.1);
-    --primary-dark: #0b5ed7;
-    --secondary-color: #6c757d;
-    --success-color: #198754;
-    --info-color: #0dcaf0;
-    --warning-color: #ffc107;
-    --danger-color: #dc3545;
-    --light-color: #f8f9fa;
-    --dark-color: #212529;
-    --border-color: #dee2e6;
-    --border-radius: 0.375rem;
-    --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-    --transition: all 0.3s ease;
-    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* Estilos generales */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-/* Container Styles with gradient background like HomeComponent */
-.profile-container {
-
-    width: 100%;
-    height: 98vh;
-    padding: 1.5rem;
-    background: linear-gradient(135deg, #F0F8FF 0%, #FFFFFF 50%, #F8FBFF 100%);
-    /* border-radius: 1rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); */
-    font-family: var(--font-family);
-    position: relative;
-    overflow: hidden;
-
+.profile-main-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f5f7fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Elementos decorativos de fondo - similares al HomeComponent */
-.decorative-element {
-    position: absolute;
-    border-radius: 50%;
-    opacity: 0.2;
-    background: linear-gradient(45deg, #0d6efd, #36b9cc);
-    z-index: 0;
+/* Sidebar izquierdo */
+.profile-sidebar {
+    width: 280px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    z-index: 10;
 }
 
-.decorative-element-1 {
-    width: 300px;
-    height: 300px;
-    top: -150px;
-    left: -150px;
+.profile-user {
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: 1px solid #e9ecef;
 }
 
-.decorative-element-2 {
+.profile-avatar-wrapper {
     width: 100px;
     height: 100px;
-    bottom: 50px;
-    left: 15%;
-}
-
-.decorative-element-3 {
-    width: 200px;
-    height: 200px;
-    bottom: -100px;
-    right: 10%;
-}
-
-/* Profile Header Section con efectos mejorados */
-.profile-header {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-    flex-wrap: wrap;
-    position: relative;
-    z-index: 2;
-    animation: fadeInUp 0.8s;
-}
-
-.profile-avatar-container {
-    flex-shrink: 0;
-    position: relative;
-}
-
-.profile-avatar-container::before {
-    content: '';
-    position: absolute;
-    width: 140px;
-    height: 140px;
-    background: linear-gradient(135deg, rgba(13, 110, 253, 0.2) 0%, rgba(54, 185, 204, 0.1) 100%);
     border-radius: 50%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: -1;
-    animation: pulseBlob 4s infinite alternate;
+    overflow: hidden;
+    margin-bottom: 15px;
+    border: 3px solid #f0f2f5;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.profile-avatar-wrapper:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
 
 .profile-avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    border: 3px solid white;
-    transition: transform 0.5s ease;
 }
 
-.profile-avatar:hover {
-    transform: scale(1.05);
-}
-
-.profile-header-content {
-    flex: 1;
-    min-width: 200px;
-    animation: fadeInUp 0.9s;
-}
-
-.profile-name {
-    font-size: 2rem;
-    font-weight: 700;
-    margin: 0 0 0.5rem 0;
-    color: var(--dark-color);
-    font-family: "Georgia", Times, serif;
-}
-
-.profile-location {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.75rem;
-    color: var(--secondary-color);
-    font-size: 0.95rem;
-}
-
-.location-icon {
+.user-name {
     font-size: 1.2rem;
-    margin-right: 0.35rem;
-    color: var(--primary-color);
-}
-
-.profile-specialties {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.specialty-tag {
-    background-color: rgba(13, 110, 253, 0.1);
-    color: var(--primary-color);
-    padding: 0.35rem 0.75rem;
-    border-radius: 50px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: var(--transition);
-}
-
-.specialty-tag:hover {
-    background-color: rgba(13, 110, 253, 0.2);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-}
-
-.profile-actions {
-    margin-left: auto;
-    display: flex;
-    flex-shrink: 0;
-    animation: fadeInUp 1s;
-}
-
-.btn-edit {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius);
-    padding: 0.625rem 1.25rem;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    overflow: hidden;
-    position: relative;
-    z-index: 1;
-}
-
-.btn-edit::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    z-index: -1;
-}
-
-.btn-edit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(13, 110, 253, 0.2);
-}
-
-.btn-edit:hover::after {
-    transform: translateX(0);
-}
-
-.btn-cancel {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: linear-gradient(135deg, #fd0d55 0%, #d70b0b 100%);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius);
-    padding: 0.625rem 1.25rem;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    overflow: hidden;
-    position: relative;
-    z-index: 1;
-}
-
-.btn-cancel::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    z-index: -1;
-}
-
-.btn-cancel:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(253, 13, 13, 0.2);
-}
-
-.btn-cancel:hover::after {
-    transform: translateX(0);
-}
-
-/* Navigation Tabs con animación y estilo mejorado */
-.profile-tabs {
-    display: flex;
-    border-bottom: 1px solid var(--border-color);
-    margin: 1.5rem 0 0;
-    position: relative;
-    z-index: 2;
-    animation: fadeInUp 1.1s;
-}
-
-.tab {
-    padding: 1rem 1.5rem;
-    font-weight: 500;
-    color: var(--secondary-color);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-}
-
-.tab:hover {
-    color: var(--primary-color);
-}
-
-.tab.active {
-    color: var(--primary-color);
-    border-bottom-color: var(--primary-color);
-}
-
-.tab::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(13, 110, 253, 0.05);
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
-    z-index: -1;
-}
-
-.tab:hover::before {
-    transform: translateY(0);
-}
-
-/* Tab Content Sections */
-.tab-content {
-    padding: 1.5rem 0;
-    position: relative;
-    z-index: 2;
-    animation: fadeIn 1.2s;
-}
-
-/* Information Sections con efectos de gradiente */
-.info-section {
-    margin-bottom: 2rem;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-    border-top: 4px solid transparent;
-}
-
-.info-section:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
-}
-
-.person-section {
-    border-top-color: #0d6efd;
-}
-
-.contact-section {
-    border-top-color: #36b9cc;
-}
-
-.specialty-section {
-    border-top-color: #6f42c1;
-}
-
-.info-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%230d6efd' fill-opacity='0.03' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
-    opacity: 0.3;
-    z-index: -1;
-}
-
-.info-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1.25rem;
-    gap: 0.75rem;
-}
-
-.info-icon {
-    color: var(--primary-color);
-    font-size: 1.5rem;
-    background-color: rgba(13, 110, 253, 0.1);
-    padding: 0.75rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.info-title {
-    font-size: 1.25rem;
-    margin: 0;
     font-weight: 600;
-    color: var(--dark-color);
+    color: #2d3748;
+    margin-bottom: 5px;
 }
 
-.info-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+.user-email {
+    font-size: 0.9rem;
+    color: #718096;
+    margin-bottom: 20px;
 }
 
-.info-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    transition: var(--transition);
-}
-
-.info-row:hover {
-    background-color: rgba(13, 110, 253, 0.05);
-}
-
-.info-label {
-    flex-basis: 180px;
+.edit-profile-btn, .update-profile-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
     font-weight: 500;
-    color: var(--secondary-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
 }
 
-.info-value {
-    flex: 1;
-    min-width: 200px;
-    font-weight: 400;
-    color: var(--dark-color);
+.edit-profile-btn {
+    background-color: #3b82f6;
+    color: white;
 }
 
-/* Schedule Styles mejorados con gradientes */
-.schedule-cards-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
+.edit-profile-btn:hover {
+    background-color: #2563eb;
 }
 
-.schedule-card {
-    position: relative;
-    background: white;
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+.update-profile-btn {
+    background-color: #10b981;
+    color: white;
+}
+
+.update-profile-btn:hover {
+    background-color: #059669;
+}
+
+.sidebar-nav {
+    flex-grow: 1;
+    padding: 20px 15px;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+}
+
+.sidebar-nav li {
+    padding: 12px 20px 12px 16px;
     display: flex;
     align-items: center;
-    gap: 1.25rem;
-    overflow: hidden;
+    color: #64748b;
+    cursor: pointer;
     transition: all 0.3s ease;
+    position: relative;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-weight: 500;
+    border-left: 4px solid transparent;
 }
 
-.schedule-card::before {
+.sidebar-nav li:hover, 
+.sidebar-nav li.active {
+    background-color: #eaf2ff;
+    color: #3b82f6;
+    border-left: 4px solid #3b82f6;
+    box-shadow: 0 2px 5px rgba(59, 130, 246, 0.1);
+}
+
+.sidebar-nav li i {
+    margin-right: 12px;
+    min-width: 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+    color: inherit;
+}
+
+/* Añadir una pequeña marca indicadora a la izquierda */
+.sidebar-nav li::before {
     content: '';
     position: absolute;
-    top: 0;
     left: 0;
+    top: 0;
     height: 100%;
     width: 4px;
-    background: linear-gradient(to bottom, var(--primary-color), var(--primary-dark));
-    z-index: 1;
-}
-
-.schedule-card.weekday::before {
-    background: linear-gradient(to bottom, #0d6efd, #0a58ca);
-}
-
-.schedule-card.weekend::before {
-    background: linear-gradient(to bottom, #6f42c1, #6610f2);
-}
-
-.schedule-card.sunday::before {
-    background: linear-gradient(to bottom, #6c757d, #495057);
-}
-
-.schedule-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-}
-
-.schedule-card-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(54, 185, 204, 0.1) 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    background-color: transparent;
+    border-radius: 0 2px 2px 0;
     transition: all 0.3s ease;
 }
 
-.schedule-card.weekday .schedule-card-icon {
-    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
-    color: white;
+.sidebar-nav li:hover::before,
+.sidebar-nav li.active::before {
+    background-color: #3b82f6;
 }
 
-.schedule-card.weekend .schedule-card-icon {
-    background: linear-gradient(135deg, #6f42c1, #6610f2);
-    color: white;
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid #e9ecef;
 }
 
-.schedule-card.sunday .schedule-card-icon {
-    background: linear-gradient(135deg, #6c757d, #495057);
-    color: white;
-}
-
-.schedule-card:hover .schedule-card-icon {
-    transform: scale(1.1);
-}
-
-.schedule-card-icon i {
-    font-size: 1.75rem;
-}
-
-.schedule-card-content {
-    flex: 1;
-    position: relative;
-}
-
-.schedule-card-day {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--dark-color);
-    margin-bottom: 0.5rem;
-}
-
-.schedule-card-time {
-    font-size: 1.25rem;
-    font-weight: 500;
-    color: var(--primary-color);
-    margin-bottom: 0.25rem;
-}
-
-.schedule-card.inactive .schedule-card-time {
-    color: var(--secondary-color);
-    font-style: italic;
-}
-
-.schedule-status-indicator {
-    position: absolute;
-    top: 0.5rem;
-    right: 0;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: var(--secondary-color);
-}
-
-.schedule-status-indicator.active {
-    background-color: var(--success-color);
-    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.2);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.4);
-    }
-    70% {
-        box-shadow: 0 0 0 5px rgba(25, 135, 84, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(25, 135, 84, 0);
-    }
-}
-
-/* Services Styles con efectos de hover mejorados */
-.services-cards-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-}
-
-.service-card {
-    background: white;
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.service-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
+.logout-btn {
     width: 100%;
-    height: 6px;
-    background-image: linear-gradient(90deg, var(--primary-color), var(--info-color));
-    z-index: 1;
-}
-
-.service-card.consultation::before {
-    background-image: linear-gradient(90deg, #0d6efd, #0dcaf0);
-}
-
-.service-card.examination::before {
-    background-image: linear-gradient(90deg, #6f42c1, #0dcaf0);
-}
-
-.service-card.specialized::before {
-    background-image: linear-gradient(90deg, #d63384, #fd7e14);
-}
-
-.service-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
-}
-
-.service-card-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 15px;
-    background: white;
+    padding: 10px;
+    background-color: #f1f5f9;
+    border: none;
+    border-radius: 8px;
+    color: #64748b;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1.25rem;
-    position: relative;
-    z-index: 1;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.service-card.consultation .service-card-icon {
-    color: #0d6efd;
-    background: linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(13, 202, 240, 0.1) 100%);
+.logout-btn:hover {
+    background-color: #fef2f2;
+    color: #ef4444;
 }
 
-.service-card.examination .service-card-icon {
-    color: #6f42c1;
-    background: linear-gradient(135deg, rgba(111, 66, 193, 0.1) 0%, rgba(13, 202, 240, 0.1) 100%);
+.logout-btn i {
+    margin-right: 8px;
 }
 
-.service-card.specialized .service-card-icon {
-    color: #d63384;
-    background: linear-gradient(135deg, rgba(214, 51, 132, 0.1) 0%, rgba(253, 126, 20, 0.1) 100%);
+/* Área de contenido principal */
+.profile-content {
+    flex-grow: 1;
+    padding: 30px;
+    max-width: calc(100% - 280px);
 }
 
-.service-card:hover .service-card-icon {
-    transform: scale(1.1) translateY(-5px);
+.content-section {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
 }
 
-.service-card-icon i {
-    font-size: 2rem;
+.content-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid #e9ecef;
 }
 
-.service-card-content {
-    position: relative;
-    z-index: 1;
-}
-
-.service-card-title {
-    font-size: 1.25rem;
+.content-header h3 {
+    font-size: 1.3rem;
     font-weight: 600;
-    color: var(--dark-color);
-    margin-bottom: 0.75rem;
-}
-
-.service-card-description {
-    font-size: 0.95rem;
-    color: var(--secondary-color);
-    margin-bottom: 1rem;
-    line-height: 1.5;
-}
-
-.service-card-duration {
+    color: #2d3748;
+    margin-bottom: 8px;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+}
+
+.content-header h3 i {
+    margin-right: 10px;
+    color: #3b82f6;
+}
+
+.subtitle {
+    color: #718096;
     font-size: 0.9rem;
-    color: var(--primary-color);
+}
+
+.form-grid {
+    padding: 25px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.form-group {
+    flex: 1;
+    min-width: 300px;
+}
+
+.form-group.full-width {
+    flex-basis: 100%;
+    max-width: 100%;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-bottom: 6px;
     font-weight: 500;
+    letter-spacing: 0.5px;
 }
 
-.service-card.consultation .service-card-duration {
-    color: #0d6efd;
+.input-with-icon {
+    position: relative;
 }
 
-.service-card.examination .service-card-duration {
-    color: #6f42c1;
+.icon-prefix {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
 }
 
-.service-card.specialized .service-card-duration {
-    color: #d63384;
+.form-control {
+    width: 100%;
+    padding: 12px 15px 12px 40px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #1e293b;
+    transition: all 0.3s ease;
 }
 
-.service-card-duration i {
-    font-size: 1rem;
+.form-control:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Animaciones */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
+.form-control[readonly] {
+    background-color: #f8fafc;
+    cursor: not-allowed;
+}
+
+.emergency-contact-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+.emergency-contact-section h4 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #2d3748;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.emergency-contact-section h4 i {
+    margin-right: 10px;
+    color: #ef4444;
+}
+
+/* Estilos para la sección de horarios */
+.schedule-container {
+    padding: 25px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+    .form-group {
+        min-width: 250px;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes pulseBlob {
-    0% {
-        transform: translate(-50%, -50%) scale(1);
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(1.05);
-    }
-}
-
-/* Media queries más completos para responsive design */
-@media (max-width: 1200px) {
-    .profile-container {
-        margin: 1.5rem;
-        width: calc(100% - 3rem);
-    }
-}
-
-@media (max-width: 991px) {
-    .profile-container {
-        margin: 1rem;
-        padding: 1.25rem;
-        width: calc(100% - 2rem);
-    }
-
-    .profile-header {
+@media (max-width: 768px) {
+    .profile-main-container {
         flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 1rem;
-        padding-bottom: 1.25rem;
     }
-
-    .profile-header-content {
+    
+    .profile-sidebar {
         width: 100%;
+        height: auto;
+        position: relative;
     }
-
-    .profile-specialties {
-        justify-content: center;
+    
+    .profile-user {
+        padding: 20px;
     }
-
-    .profile-actions {
-        margin: 1rem auto 0;
-    }
-
-    .profile-tabs {
-        overflow-x: auto;
-        white-space: nowrap;
-        padding-bottom: 0.5rem;
-        justify-content: flex-start;
-        width: 100%;
-    }
-
-    .tab {
-        padding: 0.75rem 1rem;
-        flex: 0 0 auto;
-    }
-
-    .info-row {
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-
-    .info-label {
-        flex-basis: auto;
-    }
-
-    .info-value {
-        min-width: auto;
-    }
-}
-
-@media (max-width: 767px) {
-    .profile-container {
-        margin: 0.75rem;
-        padding: 1rem;
-        width: calc(100% - 1.5rem);
-        border-radius: 0.75rem;
-    }
-
-    .info-cards-container,
-    .schedule-cards-container,
-    .services-cards-container {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .info-card,
-    .schedule-card,
-    .service-card {
-        padding: 1rem;
-    }
-
-    .info-card-icon,
-    .service-card-icon {
-        width: 40px;
-        height: 40px;
-    }
-
-    .info-card-icon i,
-    .service-card-icon i {
-        font-size: 1.25rem;
-    }
-
-    .schedule-card-icon {
-        width: 42px;
-        height: 42px;
-    }
-
-    .schedule-card-icon i {
-        font-size: 1.5rem;
-    }
-
-    .service-card-description {
-        font-size: 0.9rem;
-        margin-bottom: 0.75rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .profile-container {
-        margin: 0.5rem;
-        padding: 0.75rem;
-        width: calc(100% - 1rem);
-        border-radius: 0.5rem;
-    }
-
-    .profile-name {
-        font-size: 1.5rem;
-    }
-
-    .profile-avatar {
-        width: 100px;
-        height: 100px;
-    }
-
-    .btn-edit {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-    }
-
-    .decorative-element {
-        opacity: 0.1;
-    }
-
-    .tab {
-        padding: 0.6rem 0.8rem;
-        font-size: 0.9rem;
-    }
-
-    .info-card-title {
-        font-size: 0.8rem;
-    }
-
-    .info-card-value {
-        font-size: 0.95rem;
-    }
-
-    .schedule-card-day {
-        font-size: 1rem;
-    }
-
-    .schedule-card-time {
-        font-size: 1.1rem;
-    }
-
-    .service-card-title {
-        font-size: 1.1rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .service-card-description {
-        font-size: 0.85rem;
-        line-height: 1.4;
-    }
-
-    .service-card-duration {
-        font-size: 0.8rem;
-    }
-}
-
-/* Corregir comportamiento para pantallas muy pequeñas */
-@media (max-width: 360px) {
-    .profile-container {
-        margin: 0.25rem;
-        padding: 0.5rem;
-        width: calc(100% - 0.5rem);
-    }
-
-    .profile-avatar {
+    
+    .profile-avatar-wrapper {
         width: 80px;
         height: 80px;
     }
-
-    .profile-name {
-        font-size: 1.25rem;
+    
+    .sidebar-nav {
+        padding: 10px 0;
     }
-
-    .profile-location {
-        font-size: 0.85rem;
+    
+    .sidebar-nav ul {
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 10px;
     }
-
-    .specialty-tag {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
+    
+    .sidebar-nav li {
+        padding: 10px 15px;
     }
-
-    .info-card,
-    .schedule-card,
-    .service-card {
-        padding: 0.75rem;
+    
+    .sidebar-footer {
+        display: none;
+    }
+    
+    .profile-content {
+        max-width: 100%;
+        padding: 20px;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .form-group {
+        flex: auto;
+        min-width: 100%;
+    }
+    
+    .schedule-container {
+        grid-template-columns: 1fr;
     }
 }
 
-/* Nuevos estilos para tarjetas de información */
-.info-cards-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.25rem;
-    margin-top: 1rem;
+@media (max-width: 480px) {
+    .profile-content {
+        padding: 15px;
+    }
+    
+    .content-header {
+        padding: 15px;
+    }
+    
+    .form-grid, .schedule-container {
+        padding: 15px;
+    }
 }
 
-.info-card {
+/* Transiciones entre pestañas */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Estilos para la sección de seguridad */
+.security-badge {
+    display: inline-block;
+    background-color: #2563eb;
+    color: white;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    font-weight: 500;
+    float: left;
+    margin-right: 15px;
+}
+
+.security-container {
+    padding: 25px;
+}
+
+.security-banner {
     display: flex;
     align-items: center;
-    background-color: #ffffff;
-    border-radius: 0.75rem;
-    padding: 1.25rem;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    gap: 1rem;
+    background-color: white;
+    color: #4b5563;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border-top: 4px solid #3b82f6;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.info-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%230d6efd' fill-opacity='0.03' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
-    opacity: 0.25;
-    z-index: 0;
+.security-banner i {
+    font-size: 1.5rem;
+    margin-right: 15px;
+    color: #3b82f6;
 }
 
-.info-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-}
-
-.info-card-icon {
-    flex-shrink: 0;
-    width: 48px;
-    height: 48px;
+.security-section {
+    background-color: white;
     border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+
+.security-section-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.security-section-header.two-factor {
+    border-bottom: none;
+}
+
+.icon-container {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: #ebf5ff;
+    margin-right: 15px;
+}
+
+.icon-container i {
+    font-size: 1.3rem;
+    color: #3b82f6;
+}
+
+.icon-container.purple {
+    background-color: #f3e8ff;
+}
+
+.icon-container.purple i {
+    color: #8b5cf6;
+}
+
+.icon-container.green {
+    background-color: #dcfce7;
+}
+
+.icon-container.green i {
+    color: #10b981;
+}
+
+.header-text {
+    flex-grow: 1;
+}
+
+.header-text h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 5px;
+}
+
+.header-text p {
+    color: #718096;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.security-section-content {
+    padding: 20px;
+}
+
+.password-group {
+    margin-bottom: 15px;
+    max-width: 500px;
+}
+
+.password-input-container {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.update-password-btn {
+    background-color: #3b82f6;
     color: white;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 1;
-}
-
-.info-card:hover .info-card-icon {
-    transform: scale(1.1);
-}
-
-.info-card-icon i {
-    font-size: 1.5rem;
-}
-
-.info-card-content {
-    flex: 1;
-    position: relative;
-    z-index: 1;
-}
-
-.info-card-title {
-    font-size: 0.875rem;
-    color: var(--secondary-color);
-    margin-bottom: 0.35rem;
-    position: relative;
-    transition: all 0.3s ease;
-    transform-origin: left;
-}
-
-.info-card:hover .info-card-title {
-    transform: scale(0.9);
-    opacity: 0.8;
-}
-
-.info-card-value {
-    font-size: 1.05rem;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
     font-weight: 500;
-    color: var(--dark-color);
-    word-break: break-word;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Colores de fondo para los iconos */
-.bg-primary-soft {
-    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+.update-password-btn i {
+    margin-right: 8px;
 }
 
-.bg-purple-soft {
-    background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+.update-password-btn:hover {
+    background-color: #2563eb;
 }
 
-.bg-teal-soft {
-    background: linear-gradient(135deg, #20c997 0%, #198754 100%);
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
 }
 
-.bg-info-soft {
-    background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%);
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
-.bg-orange-soft {
-    background: linear-gradient(135deg, #fd7e14 0%, #d56512 100%);
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e2e8f0;
+    transition: .4s;
+    border-radius: 34px;
 }
 
-.bg-success-soft {
-    background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
 }
 
-.bg-indigo-soft {
-    background: linear-gradient(135deg, #6610f2 0%, #520dc2 100%);
+input:checked + .toggle-slider {
+    background-color: #3b82f6;
 }
 
-/* Mejora para el responsive de las tarjetas */
-@media (max-width: 767px) {
-    .info-cards-container {
-        grid-template-columns: 1fr;
-    }
-
-    .info-card {
-        padding: 1rem;
-    }
-
-    .info-card-icon {
-        width: 40px;
-        height: 40px;
-    }
-
-    .info-card-icon i {
-        font-size: 1.25rem;
-    }
+input:checked + .toggle-slider:before {
+    transform: translateX(22px);
 }
 
-/* Responsive para las nuevas tarjetas */
-@media (max-width: 767px) {
-    .schedule-cards-container,
-    .services-cards-container {
-        grid-template-columns: 1fr;
-    }
+.security-features {
+    padding: 15px 20px;
+}
 
-    .schedule-card,
-    .service-card {
-        padding: 1.25rem;
-    }
+.security-feature {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
 
-    .service-card-icon {
-        width: 50px;
-        height: 50px;
-    }
+.security-feature:last-child {
+    margin-bottom: 0;
+}
 
-    .service-card-icon i {
-        font-size: 1.5rem;
-    }
+.security-feature i {
+    color: #3b82f6;
+    font-size: 1rem;
+    margin-right: 12px;
+    width: 20px;
+    text-align: center;
+}
+
+.security-feature span {
+    color: #4b5563;
+    font-size: 0.9rem;
+}
+
+.danger-zone {
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 30px;
+    border-top: 4px solid #ef4444;
+}
+
+.danger-header {
+    background-color: #fee2e2;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #fecaca;
+}
+
+.danger-header i {
+    color: #ef4444;
+    margin-right: 10px;
+}
+
+.danger-header span {
+    color: #b91c1c;
+    font-weight: 600;
+}
+
+.danger-content {
+    padding: 20px;
+}
+
+.danger-content h4 {
+    color: #dc2626;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.danger-content p {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+.delete-account-btn {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.delete-account-btn i {
+    margin-right: 8px;
+}
+
+.delete-account-btn:hover {
+    background-color: #dc2626;
+}
+
+/* Estilo para elementos deshabilitados */
+.security-feature.disabled {
+    opacity: 0.5;
+    filter: grayscale(0.5);
+}
+
+/* Estilos para el modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+}
+
+.delete-account-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 101;
+    width: 90%;
+    max-width: 500px;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modal-header {
+    position: relative;
+    padding: 20px;
+    background-color: #fef2f2;
+    display: flex;
+    align-items: center;
+}
+
+.modal-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+}
+
+.modal-icon i {
+    color: #ef4444;
+    font-size: 24px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #b91c1c;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #6b7280;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-text {
+    margin-bottom: 20px;
+    color: #4b5563;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.confirmation-input p {
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+.delete-confirm {
+    padding: 12px 15px;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.cancel-btn, .confirm-delete-btn {
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancel-btn {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+}
+
+.cancel-btn:hover {
+    background-color: #e5e7eb;
+}
+
+.confirm-delete-btn {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+}
+
+.confirm-delete-btn:hover {
+    background-color: #dc2626;
+}
+
+.confirm-delete-btn:disabled {
+    background-color: #fca5a5;
+    cursor: not-allowed;
 }
 </style> 
