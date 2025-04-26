@@ -218,7 +218,7 @@ export default {
         async fetchMySubscription() {
             this.isLoading = true;
             try {
-                const response = await fetch(API_URL + '/subscriptions', {
+                const response = await fetch(API_URL + '/subscriptions/me', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
