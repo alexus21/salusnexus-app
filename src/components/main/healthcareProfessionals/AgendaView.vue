@@ -29,9 +29,9 @@
                     v-for="appointment in filteredAppointments"
                     :key="appointment.id"
                     :appointment="appointment"
-                    @approve="approveAppointment"
-                    @reschedule="openRescheduleModal"
-                    @reject="rejectAppointment"
+                    @approve="approveAppointment(appointment)"
+                    @reschedule="openRescheduleModal(appointment)"
+                    @reject="rejectAppointment(appointment)"
             />
         </section>
 
@@ -79,7 +79,7 @@
                 </div>
                 <div class="modal-footer">
                     <button class="cancel-button" @click="closeRescheduleModal">Cancelar</button>
-                    <button class="confirm-button" @click="confirmReschedule">Confirmar cambio</button>
+                    <button class="confirm-button" @click="confirmReschedule(selectedAppointment)">Confirmar cambio</button>
                 </div>
             </div>
         </div>
@@ -89,6 +89,7 @@
 <script>
 import AppointmentCard from './AppointmentCard.vue';
 import Swal from 'sweetalert2';
+import swal from "sweetalert2";
 
 export default {
     name: 'AgendaView',
@@ -107,81 +108,6 @@ export default {
             isLoading: false,
             pagination: {},
             appointments: [],
-            /*appointments: [
-                {
-                    id: 1,
-                    patientName: 'María González',
-                    patientAge: 42,
-                    avatar: 'https://randomuser.me/api/portraits/women/32.jpg',
-                    serviceType: 'Consulta General',
-                    requestDate: '2023-10-01',
-                    preferredDate: '2023-10-10',
-                    preferredTime: '09:30',
-                    status: 'pending',
-                    notes: 'Paciente con historial de hipertensión. Solicita revisión de medicación actual.',
-                    contactPhone: '+503 7256-8901'
-                },
-                {
-                    id: 2,
-                    patientName: 'Roberto Flores',
-                    patientAge: 35,
-                    avatar: 'https://randomuser.me/api/portraits/men/45.jpg',
-                    serviceType: 'Evaluación Cardiológica',
-                    requestDate: '2023-10-02',
-                    preferredDate: '2023-10-11',
-                    preferredTime: '11:00',
-                    status: 'approved',
-                    approvedDate: '2023-10-11',
-                    approvedTime: '11:00',
-                    notes: 'Paciente nuevo, refiere molestias en el pecho al hacer ejercicio.',
-                    contactPhone: '+503 7902-4532'
-                },
-                {
-                    id: 3,
-                    patientName: 'Sandra Vásquez',
-                    patientAge: 29,
-                    avatar: 'https://randomuser.me/api/portraits/women/67.jpg',
-                    serviceType: 'Control Prenatal',
-                    requestDate: '2023-10-03',
-                    preferredDate: '2023-10-12',
-                    preferredTime: '10:00',
-                    status: 'rejected',
-                    rejectionReason: 'Agenda completa para esa fecha',
-                    notes: 'Embarazo de 6 meses, control rutinario',
-                    contactPhone: '+503 7812-5690'
-                },
-                {
-                    id: 4,
-                    patientName: 'Jorge Mendoza',
-                    patientAge: 58,
-                    avatar: 'https://randomuser.me/api/portraits/men/22.jpg',
-                    serviceType: 'Control de Diabetes',
-                    requestDate: '2023-10-03',
-                    preferredDate: '2023-10-15',
-                    preferredTime: '14:30',
-                    status: 'rescheduled',
-                    originalDate: '2023-10-15',
-                    originalTime: '14:30',
-                    rescheduleDate: '2023-10-18',
-                    rescheduleTime: '16:00',
-                    rescheduleReason: 'Emergencia médica del doctor',
-                    notes: 'Paciente con diabetes tipo 2, control de glucemia',
-                    contactPhone: '+503 7346-9012'
-                },
-                {
-                    id: 5,
-                    patientName: 'Carolina Domínguez',
-                    patientAge: 33,
-                    avatar: 'https://randomuser.me/api/portraits/women/46.jpg',
-                    serviceType: 'Revisión Dermatológica',
-                    requestDate: '2023-10-04',
-                    preferredDate: '2023-10-20',
-                    preferredTime: '11:30',
-                    status: 'pending',
-                    notes: 'Lesión cutánea en brazo izquierdo',
-                    contactPhone: '+503 7651-3489'
-                }
-            ]*/
         };
     },
     async mounted() {
@@ -219,7 +145,7 @@ export default {
         }
     },
     methods: {
-        approveAppointment(appointmentId) {
+        approveAppointment(appointment) {
             Swal.fire({
                 title: '¿Confirmar cita?',
                 text: "Se notificará al paciente que su cita ha sido confirmada",
@@ -232,17 +158,17 @@ export default {
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Encontrar y actualizar el estado de la cita
-                    const appointmentIndex = this.appointments.findIndex(appt => appt.id === appointmentId);
+                    const appointmentIndex = this.appointments.findIndex(appt => appt.id === appointment.id);
                     if (appointmentIndex !== -1) {
                         this.appointments[appointmentIndex].status = 'approved';
                         // Llamar a la API para actualizar la cita
-                        this.updateAppointmentStatus();
+                        this.approveOrCancel('programada', appointment);
                     }
                 }
             });
         },
 
-        rejectAppointment(appointmentId) {
+        rejectAppointment(appointment) {
             Swal.fire({
                 title: '¿Rechazar solicitud?',
                 text: "Por favor indique el motivo",
@@ -262,19 +188,19 @@ export default {
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Encontrar y actualizar el estado de la cita
-                    const appointmentIndex = this.appointments.findIndex(appt => appt.id === appointmentId);
+                    const appointmentIndex = this.appointments.findIndex(appt => appt.id === appointment.id);
                     if (appointmentIndex !== -1) {
                         this.appointments[appointmentIndex].status = 'rejected';
                         this.appointments[appointmentIndex].rejectionReason = result.value;
                         // Llamar a la API para actualizar la cita
-                        this.updateAppointmentStatus();
+                        this.approveOrCancel('cancelada_profesional', appointment);
                     }
                 }
             });
         },
 
-        openRescheduleModal(appointmentId) {
-            const appointment = this.appointments.find(appt => appt.id === appointmentId);
+        openRescheduleModal(apmnt) {
+            const appointment = this.appointments.find(appt => appt.id === apmnt.id);
             if (appointment) {
                 this.selectedAppointment = appointment;
                 this.rescheduleDate = appointment.preferredDate;
@@ -314,7 +240,7 @@ export default {
                 this.appointments[appointmentIndex] = updatedAppointment;
 
                 // Llamar a la API para actualizar la cita
-                this.updateAppointmentStatus();
+                this.rescheduleAppointment();
 
                 this.closeRescheduleModal();
             }
@@ -346,7 +272,6 @@ export default {
                 }
 
                 const data = await response.json();
-                console.log(data);
 
                 // Transformar la respuesta de la API al formato que espera el componente
                 this.appointments = this.transformApiResponse(data);
@@ -358,15 +283,115 @@ export default {
             }
         },
 
-        async updateAppointmentStatus() {
+        async approveOrCancel(appointment_status, appointment) {
+            const API_URL = process.env.VUE_APP_API_URL;
+
+            const clinic = JSON.parse(localStorage.getItem('clinics'));
+
+            let url = '';
+
+            appointment_status === 'programada' ?
+                url = `${API_URL}/appointments/confirm/${appointment.id}` :
+                url = `${API_URL}/appointments/cancel/${appointment.id}`;
+
             try {
-                await this.fetchAppointments();
+                const response = await fetch(url, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({
+                        appointment_status: appointment_status,
+                        cancellation_reason: appointment.rejectionReason,
+                        service_type: appointment.serviceType,
+                        appointment_date: appointment.preferredDate,
+                        clinic_name: clinic.clinic_name,
+                        patient_name: appointment.patientName,
+                        doctor_name: "Dr. " + clinic.first_name + ' ' + clinic.last_name,
+                        clinic_address: clinic.address + ', ' + clinic.city_name,
+                        email: appointment.email,
+                    })
+                });
 
-                return true;
+                if (!response.ok) {
+                    throw new Error('Error al actualizar la cita');
+                }
 
+                const data = await response.json();
+
+                if(!data.status){
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message,
+                        confirmButtonText: 'Aceptar'
+                    });
+                    return;
+                }
+
+                swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: data.message,
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    this.fetchAppointments();
+                })
             } catch (error) {
-                this.handleApiError(error, 'Error al actualizar la cita');
-                return false;
+                console.error('Error al actualizar la cita:', error);
+            }
+        },
+
+        async rescheduleAppointment() {
+            const API_URL = process.env.VUE_APP_API_URL;
+
+            const clinic = JSON.parse(localStorage.getItem('clinics'));
+
+            try {
+                const response = await fetch(API_URL + '/appointments/reschedule/' + this.selectedAppointment.id, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({
+                        appointment_date: this.rescheduleDate,
+                        reschedule_reason: this.rescheduleReason,
+                        clinic_name: clinic.clinic_name,
+                        patient_name: this.selectedAppointment.patientName,
+                        doctor_name: "Dr. " + clinic.first_name + ' ' + clinic.last_name,
+                        clinic_address: clinic.address + ', ' + clinic.city_name,
+                        email: this.selectedAppointment.email,
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al actualizar la cita');
+                }
+
+                const data = await response.json();
+
+                if(!data.status){
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message,
+                        confirmButtonText: 'Aceptar'
+                    });
+                    return;
+                }
+
+                swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: data.message,
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    this.fetchAppointments();
+                })
+            } catch (error) {
+                console.error('Error al actualizar la cita:', error);
             }
         },
 
@@ -393,6 +418,7 @@ export default {
                     notes: item.notes || '',
                     contactPhone: item.phone || item.contactPhone || 'Sin teléfono',
                     rejectionReason: item.rejection_reason || item.rejectionReason || '',
+                    email: item.email,
 
                     // Campos para citas reprogramadas
                     originalDate: item.original_date || item.originalDate || '',

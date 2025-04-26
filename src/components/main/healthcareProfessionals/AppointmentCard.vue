@@ -69,21 +69,21 @@
                 <span>{{ appointment.contactPhone }}</span>
             </div>
             <div class="action-buttons" v-if="appointment.status === 'pendiente_confirmacion'">
-                <button class="action-btn approve" @click="fetchConfirmOrCancel('programada')">
+                <button class="action-btn approve" @click="$emit('approve', appointment)">
                     <i class="fas fa-check"></i> Aceptar
                 </button>
-                <button class="action-btn reschedule" @click="$emit('reschedule', appointment.id)">
+                <button class="action-btn reschedule" @click="$emit('reschedule', appointment)">
                     <i class="fas fa-calendar-alt"></i> Reprogramar
                 </button>
-                <button class="action-btn reject" @click="fetchConfirmOrCancel('cancelada_profesional')">
+                <button class="action-btn reject" @click="$emit('reject', appointment)">
                     <i class="fas fa-times"></i> Rechazar
                 </button>
             </div>
-            <div class="action-buttons" v-else-if="appointment.status === 'approved'">
-                <button class="action-btn reschedule" @click="$emit('reschedule', appointment.id)">
+            <div class="action-buttons" v-else-if="appointment.status === 'programada'">
+                <button class="action-btn reschedule" @click="$emit('reschedule', appointment.id, appointment.email)">
                     <i class="fas fa-calendar-alt"></i> Reprogramar
                 </button>
-                <button class="action-btn reject" @click="$emit('reject', appointment.id)">
+                <button class="action-btn reject" @click="$emit('reject', appointment.id, appointment.email)">
                     <i class="fas fa-times"></i> Cancelar
                 </button>
             </div>
@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import swal from "sweetalert2";
+import app from "@/App.vue";
 
 export default {
     name: 'AppointmentCard',
@@ -103,6 +103,9 @@ export default {
         }
     },
     computed: {
+        app() {
+            return app
+        },
         statusClass() {
             return {
                 'status-pending': this.appointment.status === 'pendiente_confirmacion',
@@ -131,59 +134,6 @@ export default {
         formatTime(timeString) {
             return timeString;
         },
-        async fetchConfirmOrCancel(appointment_status){
-            const API_URL = process.env.VUE_APP_API_URL;
-
-            const clinic = JSON.parse(localStorage.getItem('clinics'));
-            const user = JSON.parse(localStorage.getItem('user'));
-
-            try {
-                const response = await fetch(API_URL + '/appointments/confirm/' + this.appointment.id, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + localStorage.getItem('token')
-                    },
-                    body: JSON.stringify({
-                        appointment_status: appointment_status,
-                        service_type: this.appointment.serviceType,
-                        appointment_date: this.appointment.preferredDate,
-                        clinic_name: clinic.clinic_name,
-                        patient_name: this.appointment.patientName,
-                        doctor_name: "Dr. " + clinic.first_name + ' ' + clinic.last_name,
-                        clinic_address: clinic.address + ', ' + clinic.city_name,
-                        email: user.email,
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error('Error al actualizar la cita');
-                }
-
-                const data = await response.json();
-
-                if(!data.status){
-                    swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: data.message,
-                        confirmButtonText: 'Aceptar'
-                    });
-                    return;
-                }
-
-                swal.fire({
-                    icon: 'success',
-                    title: 'Éxito',
-                    text: data.message,
-                    confirmButtonText: 'Aceptar'
-                }).then(() => {
-                    window.location.reload();
-                })
-            } catch (error) {
-                console.error('Error al actualizar la cita:', error);
-            }
-        }
     }
 };
 </script>
