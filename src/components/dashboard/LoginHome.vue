@@ -59,6 +59,17 @@
             </div>
         </header>
 
+        <!-- Banner de cuenta no verificada -->
+        <div v-if="!isVerified && showVerificationBanner" class="verification-banner">
+            <div class="verification-banner-content">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Tu cuenta no está verificada. Para acceder a todas las funciones, por favor <router-link :to="{ name: 'VerifyProfessionalAccount' }" class="verify-link">verifica tu cuenta</router-link>.</span>
+            </div>
+            <button @click="dismissVerificationBanner" class="dismiss-btn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
         <!-- Contenido principal -->
         <div class="dashboard-content">
             <div class="dashboard-header">
@@ -283,11 +294,13 @@ export default {
             user: null,
             fullName: null,
             partialName: null,
-            profilePicImage: null
+            profilePicImage: null,
+            isVerified: null,
+            showVerificationBanner: true
         }
     },
 
-    mounted() {
+    async mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));
         if (!this.user) {
             this.$router.push({name: 'Login'});
@@ -296,6 +309,9 @@ export default {
         this.partialName = this.getPartalNme();
         this.setProfilePic();
         this.fetchMyClinic();
+        
+        // Añadir verificación de cuenta
+        await this.fetchUserProfile();
     },
     methods: {
         async fetchMyClinic() {
@@ -373,6 +389,32 @@ export default {
         },
         goToDashboard() {
             this.$router.push({name: 'Dashboard'});
+        },
+        async fetchUserProfile() {
+            try {
+                const response = await fetch(API_URL + '/userprofile', {
+                    method: "GET",
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al obtener el perfil del usuario');
+                }
+
+                const data = await response.json();
+
+                if (data.data) {
+                    this.isVerified = data.data.verified;
+                }
+            } catch (error) {
+                console.error('Error fetching user profile:', error);
+            }
+        },
+        dismissVerificationBanner() {
+            this.showVerificationBanner = false;
         }
     }
 }
@@ -1139,5 +1181,58 @@ export default {
 
 .dropdown-item:hover i {
     color: #3b82f6;
+}
+
+/* Estilos para el banner de verificación */
+.verification-banner {
+    width: 100%;
+    background-color: #fff6e6;
+    border-bottom: 1px solid #fcd34d;
+    padding: 12px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.verification-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #92400e;
+    font-size: 15px;
+}
+
+.verification-banner-content i {
+    color: #f59e0b;
+    font-size: 18px;
+}
+
+.verify-link {
+    color: #2563eb;
+    font-weight: 500;
+    text-decoration: underline;
+    transition: all 0.2s;
+}
+
+.verify-link:hover {
+    color: #1d4ed8;
+}
+
+.dismiss-btn {
+    background: none;
+    border: none;
+    color: #92400e;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+}
+
+.dismiss-btn:hover {
+    background-color: rgba(250, 204, 21, 0.2);
 }
 </style> 
