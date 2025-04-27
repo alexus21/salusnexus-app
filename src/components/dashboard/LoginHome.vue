@@ -9,12 +9,12 @@
                         <span class="logo-text">Salus Nexus</span>
                     </router-link>
 
-                    <nav class="main-nav">
+                    <!-- <nav class="main-nav">
                         <router-link to="/" class="nav-link active">Inicio</router-link>
                         <router-link to="/pacientes" class="nav-link">Pacientes</router-link>
                         <router-link to="/agenda" class="nav-link">Agenda</router-link>
                         <router-link to="/consultas" class="nav-link">Consultas</router-link>
-                    </nav>
+                    </nav> -->
                 </div>
 
                 <div class="header-right">
@@ -29,21 +29,31 @@
                     </div>
 
                     <div class="user-profile dropdown">
-                        <img
-                            :src="profilePicImage"
-                            alt="Dr. Mario García"
-                            class="profile-img dropdown-toggle"
+                        <template v-if="isVerified">
+                            <img
+                                :src="profilePicImage"
+                                alt="Dr. Mario García"
+                                class="profile-img dropdown-toggle"
+                                id="profileDropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            />
+                        </template>
+                        <div v-else 
+                            class="profile-initials dropdown-toggle"
                             id="profileDropdown"
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
-                        />
+                        >
+                            {{ getUserInitials() }}
+                        </div>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                            <li>
+                            <li v-if="isVerified">
                                 <a class="dropdown-item" href="#" @click.prevent="goToProfile">
                                     <i class="fas fa-user-circle"></i> Ir al perfil
                                 </a>
                             </li>
-                            <li>
+                            <li v-if="isVerified">
                                 <a class="dropdown-item" href="#" @click.prevent="goToClinic">
                                     <i class="fa-solid fa-house-chimney-medical"></i> Mi clínica
                                 </a>
@@ -60,20 +70,17 @@
         </header>
 
         <!-- Banner de cuenta no verificada -->
-        <div v-if="!isVerified && showVerificationBanner" class="verification-banner">
+        <div v-if="!isVerified" class="verification-banner">
             <div class="verification-banner-content">
                 <i class="fas fa-exclamation-triangle"></i>
                 <span>Tu cuenta no está verificada. Para acceder a todas las funciones, por favor <router-link :to="{ name: 'VerifyProfessionalAccount' }" class="verify-link">verifica tu cuenta</router-link>.</span>
             </div>
-            <button @click="dismissVerificationBanner" class="dismiss-btn">
-                <i class="fas fa-times"></i>
-            </button>
         </div>
 
         <!-- Contenido principal -->
         <div class="dashboard-content">
             <div class="dashboard-header">
-                <h1 class="welcome-title">¡Bienvenido, Dr. {{user && user.first_name && user.last_name ? (partialName + '!') : 'Cargando...'}}</h1>
+                <h1 class="welcome-title">¡Bienvenido/a, Dr. {{user && user.first_name && user.last_name ? (partialName + '!') : 'Cargando...'}}</h1>
                 <p class="welcome-subtitle">Aquí tienes pacientes potenciales cercanos a tu ubicación que coinciden con
                     tu especialidad en Cardiología</p>
             </div>
@@ -137,13 +144,13 @@
                         >
                             Cercanos a ti
                         </button>
-                        <button
+                        <!-- <button
                             class="filter-btn"
                             :class="{ active: activeFilter === 'all' }"
                             @click="setActiveFilter('all')"
                         >
                             Todos los coincidentes
-                        </button>
+                        </button> -->
                     </div>
                 </div>
 
@@ -413,8 +420,13 @@ export default {
                 console.error('Error fetching user profile:', error);
             }
         },
-        dismissVerificationBanner() {
-            this.showVerificationBanner = false;
+        getUserInitials() {
+            if (this.user && this.user.first_name && this.user.last_name) {
+                const firstInitial = this.user.first_name.charAt(0).toUpperCase();
+                const lastInitial = this.user.last_name.charAt(0).toUpperCase();
+                return `${firstInitial}${lastInitial}`;
+            }
+            return 'UN'; // User Name default
         }
     }
 }
@@ -1190,7 +1202,7 @@ export default {
     border-bottom: 1px solid #fcd34d;
     padding: 12px 25px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
 }
 
@@ -1218,21 +1230,18 @@ export default {
     color: #1d4ed8;
 }
 
-.dismiss-btn {
-    background: none;
-    border: none;
-    color: #92400e;
-    cursor: pointer;
-    padding: 5px;
+/* Estilo para mostrar iniciales en lugar de imagen de perfil */
+.profile-initials {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #3b82f6;
+    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-}
-
-.dismiss-btn:hover {
-    background-color: rgba(250, 204, 21, 0.2);
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
 }
 </style> 

@@ -22,7 +22,7 @@
                 </div>
             </div>
             <div class="flex items-center">
-                <button class="bg-blue-600 text-white border border-white rounded-md px-4 py-1 mr-2 flex items-center">
+                <button class="bg-blue-600 text-white rounded-md px-4 py-1 mr-2 flex items-center">
                     <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                          xmlns="http://www.w3.org/2000/svg">
                         <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"
