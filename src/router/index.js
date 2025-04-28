@@ -14,6 +14,7 @@ import AddPaymentMethodComponent from "@/components/paymentmethod/AddPaymentMeth
 import ScheduleView from '@/components/main/healthcareProfessionals/ScheduleView.vue';
 import AgendaView from '@/components/main/healthcareProfessionals/AgendaView.vue';
 import PasswordResetView from '@/components/auth/PasswordResetView.vue';
+import SubscriptionView from '@/components/main/healthcareProfessionals/SubscriptionView.vue';
 
 import {validateAuth} from "@/utils/auth";
 import VerifyProfessionalAccountComponent from "@/components/verifyaccount/VerifyProfessionalAccountComponent.vue";
@@ -169,6 +170,15 @@ const routes = [
         name: 'ProfessionalSubscriptionPlans',
         component: SubscriptionPlansComponent,
         meta: {
+            hideHeader: true
+        }
+    },
+    {
+        path: '/suscripcion',
+        name: 'Subscription',
+        component: SubscriptionView,
+        meta: {
+            requiresAuth: true,
             hideHeader: true
         }
     },

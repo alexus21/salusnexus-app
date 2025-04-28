@@ -30,6 +30,7 @@ import ReviewsView from '@/components/main/healthcareProfessionals/ReviewsView.v
 import PatientsView from '@/components/main/healthcareProfessionals/PatientsView.vue';
 import ScheduleView from '@/components/main/healthcareProfessionals/ScheduleView.vue';
 import AgendaView from '@/components/main/healthcareProfessionals/AgendaView.vue';
+import SubscriptionView from '@/components/main/healthcareProfessionals/SubscriptionView.vue';
 
 export default {
     name: 'DashboardLayout',
@@ -39,7 +40,8 @@ export default {
         ReviewsView,
         PatientsView,
         ScheduleView,
-        AgendaView
+        AgendaView,
+        SubscriptionView
     },
     data() {
         return {
@@ -61,6 +63,9 @@ export default {
             }
             if (this.currentView === 'Agenda'){
                 return 'AgendaView';
+            }
+            if (this.currentView === 'Suscripcion'){
+                return 'SubscriptionView';
             }
             return 'DashboardHome';
         }
