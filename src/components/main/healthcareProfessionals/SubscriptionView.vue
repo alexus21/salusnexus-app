@@ -50,7 +50,7 @@
                     Plan Actual
                 </button>
                 <div v-else>
-                    <button class="btn-primary">
+                    <button class="btn-primary" @click="handleStartTrial">
                         <i class="fas fa-rocket"></i>
                         Comenzar prueba gratuita de 14 días
                     </button>
@@ -95,19 +95,27 @@ export default {
     },
     methods: {
         handlePlanSwitch() {
-            const newPlan = this.subscriptionData.subscription_type.includes('avanzado') ? 'gratis' : 'avanzado';
-            localStorage.setItem('selected_plan', newPlan);
-            this.fetchSubscriptionData();
+            this.$router.push({ name: 'AddPaymentMethod' });
+        },
+        handleStartTrial() {
+            this.$router.push({ name: 'AddPaymentMethod' });
         },
         fetchSubscriptionData() {
             this.loading = true;
             this.error = null;
-
-            const selectedPlan = localStorage.getItem('selected_plan') || 'gratis';
-            const apiPlanType = `paciente_${selectedPlan}`;
-            const apiBaseUrl = process.env.VUE_APP_API_URL || 'http://localhost:8000/api';
+            
+            let apiPlanType = 'paciente_gratis';
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                if (user && user.subscription_type) {
+                    apiPlanType = user.subscription_type;
+                }
+            } catch (e) {
+                apiPlanType = 'paciente_gratis';
+            }
+            const apiBaseUrl = process.env.VUE_APP_API_URL;
             const apiUrl = `${apiBaseUrl}/subscription-plan/${apiPlanType}`;
-
+            
             fetch(apiUrl)
                 .then(response => {
                     if (!response.ok) {
@@ -123,7 +131,7 @@ export default {
                     console.error('Error al obtener datos de suscripción:', error);
                     this.error = 'No se pudo cargar la información del plan. Por favor, intenta nuevamente.';
                     this.loading = false;
-
+                    
                     if (process.env.NODE_ENV === 'development') {
                         this.subscriptionData = {
                             id: 1,
