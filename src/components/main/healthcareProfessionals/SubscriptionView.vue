@@ -2,62 +2,101 @@
     <div class="subscription-container">
         <h1 class="page-title">Plan de Suscripción</h1>
 
-        <div class="subscription-card" v-if="subscriptionData"
-             :class="{'subscription-card-premium': subscriptionData.subscription_type.includes('avanzado')}">
-            <div class="subscription-header">
-                <div class="header-content"
-                     :class="{'premium-gradient': subscriptionData.subscription_type.includes('avanzado')}">
-          <span class="badge" v-if="subscriptionData.subscription_type.includes('avanzado')">
-            <i class="fas fa-crown"></i> RECOMENDADO
-          </span>
-                    <h2 class="plan-title">
-                        Plan {{ subscriptionData.subscription_type.includes('avanzado') ? 'Premium' : 'Básico' }}
-                    </h2>
-                    <div class="price-container">
-            <span class="price" v-if="subscriptionData.price_monthly">
-              ${{ subscriptionData.price_monthly }}
-              <span class="price-period">/ Por miembro</span>
-            </span>
-                        <span class="price" v-else>Gratis</span>
+        <div class="subscription-cards-container" v-if="subscriptionData">
+            <!-- Plan Básico -->
+            <div 
+                class="subscription-card" 
+                :class="{
+                    'subscription-card-current': !subscriptionData.subscription_type.includes('avanzado'),
+                    'subscription-card-alternate': subscriptionData.subscription_type.includes('avanzado')
+                }"
+            >
+                <div class="subscription-header">
+                    <div class="header-content">
+                        <h2 class="plan-title">Plan Profesional Básico</h2>
+                        <div class="price-container">
+                            <span class="price">Gratis</span>
+                        </div>
                     </div>
+                </div>
+                
+                <div class="subscription-features">
+                    <ul>
+                        <li v-for="feature in basicFeatures" :key="feature.id" class="feature-item">
+                            <i class="fas fa-check-circle feature-icon"></i>
+                            {{ feature.feature }}
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="subscription-footer">
+                    <button 
+                        v-if="subscriptionData.subscription_type === 'profesional_avanzado'"
+                        class="btn-switch-plan"
+                        @click="handlePlanSwitch"
+                    >
+                        <i class="fas fa-arrow-down"></i>
+                        Cambiar a Plan Básico
+                    </button>
+                    <button 
+                        v-else
+                        class="btn-current"
+                    >
+                        Plan Actual
+                    </button>
                 </div>
             </div>
 
-            <div class="subscription-features">
-                <ul>
-                    <li v-for="feature in subscriptionData.features" :key="feature.id" class="feature-item">
-                        <i class="fas fa-check-circle feature-icon"></i>
-                        {{ feature.feature }}
-                    </li>
-                </ul>
-            </div>
-
-            <div class="subscription-footer">
-                <button
-                    class="btn-switch-plan"
-                    @click="handlePlanSwitch"
-                    :class="{'btn-switch-premium': !subscriptionData.subscription_type.includes('avanzado')}"
-                >
-                    <i class="fas"
-                       :class="subscriptionData.subscription_type.includes('avanzado') ? 'fa-arrow-down' : 'fa-arrow-up'"></i>
-                    Cambiar a Plan {{ subscriptionData.subscription_type.includes('avanzado') ? 'Básico' : 'Premium' }}
-                </button>
-
-                <button
-                    class="btn-current"
-                    v-if="subscriptionData.subscription_type.includes('gratis')"
-                >
-                    Plan Actual
-                </button>
-                <div v-else>
-                    <button class="btn-primary" @click="handleStartTrial">
-                        <i class="fas fa-rocket"></i>
-                        Comenzar prueba gratuita de 14 días
+            <!-- Plan Premium -->
+            <div 
+                class="subscription-card" 
+                :class="{
+                    'subscription-card-premium': true,
+                    'subscription-card-current': subscriptionData.subscription_type === 'profesional_avanzado',
+                    'subscription-card-alternate': subscriptionData.subscription_type !== 'profesional_avanzado'
+                }"
+            >
+                <div class="subscription-header">
+                    <div class="header-content premium-gradient">
+                        <span class="badge">
+                            <i class="fas fa-crown"></i> RECOMENDADO
+                        </span>
+                        <h2 class="plan-title">Plan Profesional Premium</h2>
+                        <div class="price-container">
+                            <span class="price">
+                                ${{ premiumPrice }}
+                                <span class="price-period">/ Por miembro</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="subscription-features">
+                    <ul>
+                        <li v-for="feature in premiumFeatures" :key="feature.id" class="feature-item">
+                            <i class="fas fa-check-circle feature-icon"></i>
+                            {{ feature.feature }}
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="subscription-footer">
+                    <div v-if="subscriptionData.subscription_type !== 'profesional_avanzado'">
+                        <button class="btn-primary" @click="handleStartTrial">
+                            <i class="fas fa-rocket"></i>
+                            Comenzar prueba gratuita de 14 días
+                        </button>
+                        <span class="payment-note">
+                            <i class="fas fa-lock"></i>
+                            Se requiere tarjeta de débito/crédito
+                        </span>
+                    </div>
+                    <button 
+                        v-else
+                        class="btn-current"
+                    >
+                        Plan Actual
                     </button>
-                    <span class="payment-note">
-            <i class="fas fa-lock"></i>
-            Se requiere tarjeta de débito/crédito
-          </span>
                 </div>
             </div>
         </div>
@@ -87,7 +126,26 @@ export default {
         return {
             subscriptionData: null,
             loading: true,
-            error: null
+            error: null,
+            premiumPrice: '7.99',
+            basicFeatures: [
+                { id: 14, feature: "Creación y personalización de perfil profesional" },
+                { id: 15, feature: "Publicación y visibilidad de tu negocio" },
+                { id: 16, feature: "Recepción de calificaciones de pacientes" },
+                { id: 17, feature: "Monitoreo de visualizaciones de pacientes" },
+                { id: 18, feature: "Notificaciones de nuevas reseñas" },
+                { id: 19, feature: "Búsqueda en el directorio de pacientes" }
+            ],
+            premiumFeatures: [
+                { id: 20, feature: "Todas las ventajas del plan gratuito" },
+                { id: 21, feature: "Habilitación para agendar citas" },
+                { id: 22, feature: "Historial de citas" },
+                { id: 23, feature: "Soporte técnico prioritario" },
+                { id: 24, feature: "Habilitación de servicio a domicilio" },
+                { id: 25, feature: "Exportación de historiales de pacientes" },
+                { id: 26, feature: "Recordatorios personalizados" },
+                { id: 27, feature: "Chat integrado para comunicación con pacientes" }
+            ]
         }
     },
     created() {
@@ -104,15 +162,17 @@ export default {
             this.loading = true;
             this.error = null;
             
-            let apiPlanType = 'paciente_gratis';
+            let apiPlanType = 'profesional_gratis';
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
                 if (user && user.subscription_type) {
                     apiPlanType = user.subscription_type;
                 }
             } catch (e) {
-                apiPlanType = 'paciente_gratis';
+                console.error('Error al obtener el tipo de suscripción:', e);
+                apiPlanType = 'profesional_gratis';
             }
+            
             const apiBaseUrl = process.env.VUE_APP_API_URL;
             const apiUrl = `${apiBaseUrl}/subscription-plan/${apiPlanType}`;
             
@@ -131,32 +191,6 @@ export default {
                     console.error('Error al obtener datos de suscripción:', error);
                     this.error = 'No se pudo cargar la información del plan. Por favor, intenta nuevamente.';
                     this.loading = false;
-                    
-                    if (process.env.NODE_ENV === 'development') {
-                        this.subscriptionData = {
-                            id: 1,
-                            name: "Plan profesional",
-                            subscription_type: "paciente_avanzado",
-                            price_monthly: "5.99",
-                            price_annual: null,
-                            currency: "USD",
-                            description: "Plan profesional para pacientes",
-                            is_active: true,
-                            discount_percent: null,
-                            features: [
-                                {id: 1, feature: "Todas las ventajas del plan básico"},
-                                {id: 2, feature: "Acceso a reseñas públicas de otros pacientes"},
-                                {id: 3, feature: "Historial de citas"},
-                                {id: 4, feature: "Soporte prioritario para la gestión de citas"},
-                                {id: 5, feature: "Consejos de salud personalizados según perfil"},
-                                {id: 6, feature: "Detalles de medicamentos recetados"},
-                                {id: 7, feature: "Notificaciones de citas futuras"},
-                                {id: 8, feature: "Recordatorios personalizados para ti"}
-                            ]
-                        };
-                        this.error = null;
-                        this.loading = false;
-                    }
                 });
         }
     }
@@ -171,6 +205,14 @@ export default {
     max-width: 1200px;
     margin: 0 auto;
     font-family: 'Inter', sans-serif;
+}
+
+.subscription-cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 0 auto;
+    max-width: 1000px;
 }
 
 .page-title {
@@ -190,11 +232,12 @@ export default {
     border-radius: 24px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     overflow: hidden;
-    max-width: 500px;
-    margin: 0 auto;
     transform: translateY(0);
     transition: all 0.3s ease;
     animation: slideUp 0.6s ease-out;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .subscription-card:hover {
@@ -206,6 +249,15 @@ export default {
     border: 2px solid transparent;
     background: linear-gradient(#fff, #fff) padding-box,
     linear-gradient(135deg, #3B82F6, #2563EB) border-box;
+}
+
+.subscription-card-current {
+    transform: scale(1.02);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
+}
+
+.subscription-card-alternate {
+    opacity: 0.95;
 }
 
 .subscription-header {
@@ -277,6 +329,7 @@ export default {
 
 .subscription-features {
     padding: 2rem;
+    flex-grow: 1;
 }
 
 .feature-item {
@@ -288,25 +341,11 @@ export default {
     animation-fill-mode: both;
 }
 
-.feature-item:nth-child(1) {
-    animation-delay: 0.1s;
-}
-
-.feature-item:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.feature-item:nth-child(3) {
-    animation-delay: 0.3s;
-}
-
-.feature-item:nth-child(4) {
-    animation-delay: 0.4s;
-}
-
-.feature-item:nth-child(5) {
-    animation-delay: 0.5s;
-}
+.feature-item:nth-child(1) { animation-delay: 0.1s; }
+.feature-item:nth-child(2) { animation-delay: 0.2s; }
+.feature-item:nth-child(3) { animation-delay: 0.3s; }
+.feature-item:nth-child(4) { animation-delay: 0.4s; }
+.feature-item:nth-child(5) { animation-delay: 0.5s; }
 
 .feature-icon {
     color: #3B82F6;
@@ -471,23 +510,24 @@ export default {
     .subscription-container {
         padding: 1rem;
     }
-
+    
     .page-title {
         font-size: 2rem;
     }
-
+    
     .plan-title {
         font-size: 1.75rem;
     }
-
+    
     .price {
         font-size: 2.5rem;
     }
-
-    .subscription-card {
-        margin: 1rem;
+    
+    .subscription-cards-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
     }
-
+    
     .feature-icon {
         min-width: 2rem;
         height: 2rem;
