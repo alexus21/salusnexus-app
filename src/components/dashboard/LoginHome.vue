@@ -145,7 +145,7 @@
                     <p>Acceda rápidamente a todas las funciones de Salus Nexus</p>
                     
                     <div class="quick-actions-grid">
-                        <div class="quick-action-card" @click="goToProfile">
+                        <div class="quick-action-card">
                             <div class="quick-action-icon">
                                 <i class="fas fa-user-md"></i>
                             </div>
@@ -153,7 +153,7 @@
                             <p>Gestione su información profesional</p>
                         </div>
                         
-                        <div class="quick-action-card" @click="$router.push({name: 'Agenda'})">
+                        <div class="quick-action-card">
                             <div class="quick-action-icon">
                                 <i class="fas fa-calendar-check"></i>
                             </div>
@@ -161,7 +161,7 @@
                             <p>Administre su calendario de citas</p>
                         </div>
                         
-                        <div class="quick-action-card" @click="$router.push({name: 'Patients'})">
+                        <div class="quick-action-card">
                             <div class="quick-action-icon">
                                 <i class="fas fa-user-friends"></i>
                             </div>
@@ -169,7 +169,7 @@
                             <p>Administre sus pacientes</p>
                         </div>
                         
-                        <div class="quick-action-card" @click="goToClinic">
+                        <div class="quick-action-card">
                             <div class="quick-action-icon">
                                 <i class="fas fa-clinic-medical"></i>
                             </div>
@@ -177,7 +177,7 @@
                             <p>Gestione la información de su consultorio</p>
                         </div>
                         
-                        <div class="quick-action-card" @click="$router.push({name: 'Reviews'})">
+                        <div class="quick-action-card">
                             <div class="quick-action-icon">
                                 <i class="fas fa-star"></i>
                             </div>
@@ -185,7 +185,7 @@
                             <p>Vea las opiniones de sus pacientes</p>
                         </div>
                         
-                        <div class="quick-action-card" @click="goToDashboard">
+                        <div class="quick-action-card">
                             <div class="quick-action-icon dashboard-icon">
                                 <i class="fas fa-th-large"></i>
                             </div>
@@ -872,7 +872,7 @@ export default {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
     text-align: center;
-    cursor: pointer;
+    cursor: default;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -880,8 +880,7 @@ export default {
 }
 
 .quick-action-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .quick-action-icon {
