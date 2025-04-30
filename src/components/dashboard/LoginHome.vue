@@ -49,6 +49,11 @@
                         </div>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                             <li v-if="isVerified">
+                                <a class="dropdown-item" href="#" @click.prevent="goToDashboard">
+                                    <i class="fas fa-th-large"></i> Dashboard
+                                </a>
+                            </li>
+                            <li v-if="isVerified">
                                 <a class="dropdown-item" href="#" @click.prevent="goToProfile">
                                     <i class="fas fa-user-circle"></i> Ir al perfil
                                 </a>
@@ -86,7 +91,7 @@
 
             <!-- Nuevas tarjetas de características -->
             <div class="features-cards">
-                <div class="feature-card">
+                <div class="feature-card" @click="isVerified ? goToDashboard() : null" :class="{ 'clickable': isVerified }">
                     <div class="feature-icon">
                         <i class="far fa-eye"></i>
                     </div>
@@ -94,7 +99,7 @@
                     <p>Publique su perfil y sea encontrado por nuevos pacientes interesados en su especialidad.</p>
                 </div>
                 
-                <div class="feature-card">
+                <div class="feature-card" @click="isVerified ? goToClinic() : null" :class="{ 'clickable': isVerified }">
                     <div class="feature-icon">
                         <i class="far fa-calendar-alt"></i>
                     </div>
@@ -102,7 +107,7 @@
                     <p>Organice su agenda y gestione pacientes eficientemente con nuestras herramientas avanzadas.</p>
                 </div>
                 
-                <div class="feature-card">
+                <div class="feature-card" @click="isVerified ? $router.push({name: 'Patients'}) : null" :class="{ 'clickable': isVerified }">
                     <div class="feature-icon">
                         <i class="fas fa-user-friends"></i>
                     </div>
@@ -111,23 +116,84 @@
                 </div>
             </div>
 
-            <!-- Sección de casi listo para conectar -->
-            <div class="ready-connect-section">
-                <div class="ready-connect-content">
-                    <h2>¡Casi Listo para Conectar!</h2>
-                    <p>Complete la verificación de su cuenta para activar todas las funcionalidades y comenzar a conectar con pacientes en Salus Nexus.</p>
-                    <button class="verify-account-btn" @click="$router.push({name: 'VerifyProfessionalAccount'})">
-                        Iniciar Verificación
-                    </button>
+            <!-- Sección para cuentas no verificadas -->
+            <div v-if="!isVerified">
+                <!-- Sección de casi listo para conectar -->
+                <div class="ready-connect-section">
+                    <div class="ready-connect-content">
+                        <h2>¡Casi Listo para Conectar!</h2>
+                        <p>Complete la verificación de su cuenta para activar todas las funcionalidades y comenzar a conectar con pacientes en Salus Nexus.</p>
+                        <button class="verify-account-btn" @click="$router.push({name: 'VerifyProfessionalAccount'})">
+                            Iniciar Verificación
+                        </button>
+                    </div>
+                    <div class="ready-connect-image">
+                        <img src="/home-login.png" alt="Verificación de cuenta">
+                    </div>
                 </div>
-                <div class="ready-connect-image">
-                    <img src="/home-login.png" alt="Verificación de cuenta">
+
+                <!-- Sección de verificación de cuenta -->
+                <div class="verification-info-section">
+                    <p>La verificación es un proceso rápido que garantiza la seguridad de todos los usuarios de nuestra plataforma. Si tiene alguna pregunta, <a href="#" class="support-link">contacte a nuestro equipo de soporte</a>.</p>
                 </div>
             </div>
 
-            <!-- Sección de verificación de cuenta -->
-            <div class="verification-info-section">
-                <p>La verificación es un proceso rápido que garantiza la seguridad de todos los usuarios de nuestra plataforma. Si tiene alguna pregunta, <a href="#" class="support-link">contacte a nuestro equipo de soporte</a>.</p>
+            <!-- Sección para cuentas verificadas -->
+            <div v-if="isVerified" class="verified-account-section">
+                <div class="dashboard-overview">
+                    <h2>Su Panel Principal</h2>
+                    <p>Acceda rápidamente a todas las funciones de Salus Nexus</p>
+                    
+                    <div class="quick-actions-grid">
+                        <div class="quick-action-card" @click="goToProfile">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <h3>Mi Perfil</h3>
+                            <p>Gestione su información profesional</p>
+                        </div>
+                        
+                        <div class="quick-action-card" @click="$router.push({name: 'Agenda'})">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <h3>Agenda</h3>
+                            <p>Administre su calendario de citas</p>
+                        </div>
+                        
+                        <div class="quick-action-card" @click="$router.push({name: 'Patients'})">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-user-friends"></i>
+                            </div>
+                            <h3>Pacientes</h3>
+                            <p>Administre sus pacientes</p>
+                        </div>
+                        
+                        <div class="quick-action-card" @click="goToClinic">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-clinic-medical"></i>
+                            </div>
+                            <h3>Mi Clínica</h3>
+                            <p>Gestione la información de su consultorio</p>
+                        </div>
+                        
+                        <div class="quick-action-card" @click="$router.push({name: 'Reviews'})">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <h3>Reseñas</h3>
+                            <p>Vea las opiniones de sus pacientes</p>
+                        </div>
+                        
+                        <div class="quick-action-card" @click="goToDashboard">
+                            <div class="quick-action-icon dashboard-icon">
+                                <i class="fas fa-th-large"></i>
+                            </div>
+                            <h3>Dashboard Completo</h3>
+                            <p>Acceda a todas las funcionalidades</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -541,6 +607,27 @@ export default {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
+.feature-card.clickable {
+    cursor: pointer;
+    position: relative;
+}
+
+.feature-card.clickable:after {
+    content: "Haga clic para acceder";
+    position: absolute;
+    bottom: 15px;
+    left: 0;
+    right: 0;
+    font-size: 12px;
+    color: #3b82f6;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.feature-card.clickable:hover:after {
+    opacity: 1;
+}
+
 .feature-icon {
     width: 70px;
     height: 70px;
@@ -746,6 +833,94 @@ export default {
     color: #3b82f6;
 }
 
+/* Sección de cuenta verificada */
+.verified-account-section {
+    max-width: 1600px;
+    margin: 0 auto 60px;
+}
+
+.dashboard-overview {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.dashboard-overview h2 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 10px;
+}
+
+.dashboard-overview p {
+    color: #64748b;
+    font-size: 18px;
+    margin-bottom: 40px;
+}
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin: 0 auto;
+    max-width: 1400px;
+}
+
+.quick-action-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 30px 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    text-align: center;
+    cursor: pointer;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.quick-action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.quick-action-icon {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background-color: #f0f5ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.quick-action-icon i {
+    font-size: 25px;
+    color: #3b82f6;
+}
+
+.dashboard-icon {
+    background-color: #ebf8ff;
+}
+
+.dashboard-icon i {
+    color: #0ea5e9;
+}
+
+.quick-action-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 10px;
+}
+
+.quick-action-card p {
+    color: #64748b;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
 /* Media queries para responsividad */
 @media (max-width: 1400px) {
     .features-cards {
@@ -761,6 +936,17 @@ export default {
     .verification-info-section {
         margin-left: 4%;
         margin-right: 4%;
+    }
+    
+    .quick-actions-grid {
+        grid-template-columns: repeat(3, 1fr);
+        padding: 0 4%;
+    }
+}
+
+@media (max-width: 1200px) {
+    .quick-actions-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -819,6 +1005,11 @@ export default {
         margin-left: 5%;
         margin-right: 5%;
     }
+    
+    .quick-actions-grid {
+        grid-template-columns: 1fr;
+        padding: 0 5%;
+    }
 }
 
 @media (max-width: 640px) {
@@ -840,6 +1031,14 @@ export default {
     
     .feature-card {
         padding: 25px 20px;
+    }
+    
+    .dashboard-overview h2 {
+        font-size: 24px;
+    }
+    
+    .dashboard-overview p {
+        font-size: 16px;
     }
 }
 </style> 
