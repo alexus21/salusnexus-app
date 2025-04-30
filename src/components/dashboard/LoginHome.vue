@@ -18,15 +18,15 @@
                 </div>
 
                 <div class="header-right">
-                    <div class="search-box">
-                        <input type="text" placeholder="Buscar..."/>
-                        <i class="fas fa-search search-icon"></i>
-                    </div>
+<!--                    <div class="search-box">-->
+<!--                        <input type="text" placeholder="Buscar..."/>-->
+<!--                        <i class="fas fa-search search-icon"></i>-->
+<!--                    </div>-->
 
-                    <div class="notifications">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge"></span>
-                    </div>
+<!--                    <div class="notifications">-->
+<!--                        <i class="fas fa-bell"></i>-->
+<!--                        <span class="notification-badge"></span>-->
+<!--                    </div>-->
 
                     <div class="user-profile dropdown">
                         <template v-if="isVerified">
@@ -86,7 +86,7 @@
             </div>
 
             <div class="stats-cards">
-                <div class="stat-card">
+<!--                <div class="stat-card">
                     <div class="stat-content">
                         <h3>Pacientes Potenciales</h3>
                         <div class="stat-value">28</div>
@@ -94,9 +94,9 @@
                     <div class="stat-icon user-icon">
                         <i class="fas fa-user"></i>
                     </div>
-                </div>
+                </div>-->
 
-                <div class="stat-card">
+<!--                <div class="stat-card">
                     <div class="stat-content">
                         <h3>En tu área (5km)</h3>
                         <div class="stat-value">12</div>
@@ -104,7 +104,7 @@
                     <div class="stat-icon location-icon">
                         <i class="fas fa-map-marker-alt"></i>
                     </div>
-                </div>
+                </div>-->
 
                 <div class="stat-card">
                     <div class="stat-content">
@@ -193,7 +193,7 @@
                 </div>
             </div>
 
-            <div class="analytics-section">
+<!--            <div class="analytics-section">
                 <div class="analytics-section-header">
                     <h2>Análisis de Pacientes Potenciales</h2>
                     <div class="view-all-link">
@@ -231,7 +231,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>-->
         </div>
     </div>
 </template>
