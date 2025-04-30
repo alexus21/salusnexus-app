@@ -5,118 +5,139 @@
         <div class="decorative-element decorative-element-2"></div>
         <div class="decorative-element decorative-element-3"></div>
 
-        <!-- Period Toggle -->
-        <div class="period-toggle">
-            <button
-                @click="showMonthly"
-                :class="['toggle-option', { active: !yearly }]"
-            >
-                Mensual
-            </button>
-            <button
-                @click="showYearly"
-                :class="['toggle-option', { active: yearly }]"
-            >
-                Anual
-                <span class="saving-badge" v-if="yearly">Ahorre 15%</span>
+        <!-- Loading indicator -->
+        <div v-if="loading" class="loading-container">
+            <div class="spinner"></div>
+            <p>Cargando planes de suscripción...</p>
+        </div>
+
+        <!-- Error message -->
+        <div v-else-if="error" class="error-container">
+            <p>{{ error }}</p>
+            <button class="btn-action btn-action-primary" @click="fetchSubscriptionPlans">
+                Intentar nuevamente
             </button>
         </div>
 
-        <!-- Plan Cards -->
-        <div class="plans-container">
-            <!-- Basic Plan (Monthly) -->
-            <div class="subscription-plan-card" v-if="!yearly">
-                <div class="plan-header">
-                    <span class="plan-badge">FREE</span>
-                </div>
-                <p class="plan-name">Plan básico inicial</p>
-                <div class="plan-pricing">
-                    <span class="plan-price">$0</span>
-                    <span class="plan-period">/ Por miembro</span>
-                </div>
-                <hr class="plan-divider">
-                <ul class="features-list">
-                    <SubscriptionFeatureItem
-                        v-for="(feature, index) in basicPlanFeatures"
-                        :key="`basic-${index}`"
-                        :feature-text="feature"
-                    />
-                </ul>
-                <button class="btn-action btn-action-dark mt-auto" @click="startFreePlan">
-                    Comenzar gratis
+        <div v-else>
+            <!-- Period Toggle -->
+            <div class="period-toggle">
+                <button
+                    @click="showMonthly"
+                    :class="['toggle-option', { active: !yearly }]"
+                >
+                    Mensual
                 </button>
-                <p class="plan-footer-text">No se requiere tarjeta de débito/crédito</p>
+                <button
+                    @click="showYearly"
+                    :class="['toggle-option', { active: yearly }]"
+                >
+                    Anual
+                    <span class="saving-badge" v-if="yearly">Ahorre {{ yearlyDiscount }}%</span>
+                    <span class="saving-badge saving-badge-promo" v-else>Ahorre {{ yearlyDiscount }}%</span>
+                </button>
             </div>
 
-            <!-- Advanced Plan (Monthly) -->
-            <div class="subscription-plan-card recommended" v-if="!yearly">
-                <div class="plan-header">
-                    <span class="plan-badge">ADVANCED</span>
-                    <span class="recommended-badge">RECOMENDADO</span>
+            <!-- Plan Cards -->
+            <div class="plans-container">
+                <!-- Basic Plan -->
+                <div class="subscription-plan-card" v-if="!yearly">
+                    <div class="plan-header">
+                        <span class="plan-badge">FREE</span>
+                    </div>
+                    <p class="plan-name">Plan básico inicial</p>
+                    <div class="plan-pricing">
+                        <span class="plan-price">$0</span>
+                        <span class="plan-period">/ Por miembro</span>
+                    </div>
+                    <hr class="plan-divider">
+                    <ul class="features-list">
+                        <SubscriptionFeatureItem
+                            v-for="(feature, index) in basicPlanFeatures"
+                            :key="`basic-${index}`"
+                            :feature-text="feature"
+                        />
+                    </ul>
+                    <button class="btn-action btn-action-dark mt-auto" @click="startFreePlan">
+                        Comenzar gratis
+                    </button>
+                    <p class="plan-footer-text">No se requiere tarjeta de débito/crédito</p>
                 </div>
-                <p class="plan-name">Plan profesional</p>
-                <div class="plan-pricing">
-                    <span class="plan-price">$5.99</span>
-                    <span class="plan-period">/ Por miembro</span>
+
+                <!-- Advanced Plan (Monthly) -->
+                <div class="subscription-plan-card recommended" v-if="!yearly">
+                    <div class="plan-header">
+                        <span class="plan-badge">ADVANCED</span>
+                        <span class="recommended-badge">RECOMENDADO</span>
+                    </div>
+                    <p class="plan-name">Plan profesional</p>
+                    <div class="plan-pricing">
+                        <span class="plan-price">${{ monthlyPrice }}</span>
+                        <span class="plan-period">/ Por miembro</span>
+                    </div>
+                    <hr class="plan-divider">
+                    <ul class="features-list">
+                        <SubscriptionFeatureItem
+                            v-for="(feature, index) in advancedPlanFeatures"
+                            :key="`advanced-monthly-${index}`"
+                            :feature-text="feature"
+                        />
+                    </ul>
+                    <button class="btn-action btn-action-primary mt-auto" @click="startProPlan">
+                        Comenzar prueba gratuita de 14 días
+                    </button>
+                    <p class="plan-footer-text">Se requiere tarjeta de débito/crédito</p>
                 </div>
-                <hr class="plan-divider">
-                <ul class="features-list">
-                    <SubscriptionFeatureItem
-                        v-for="(feature, index) in advancedPlanFeatures"
-                        :key="`advanced-monthly-${index}`"
-                        :feature-text="feature"
-                    />
-                </ul>
-                <button class="btn-action btn-action-primary mt-auto" @click="startProPlan">
-                    Comenzar prueba gratuita de 14 días
-                </button>
-                <p class="plan-footer-text">Se requiere tarjeta de débito/crédito</p>
             </div>
 
-            <!-- Advanced Plan (Yearly) -->
-             <div class="subscription-plan-card recommended" v-if="yearly">
-                <div class="plan-header">
-                    <span class="plan-badge">ADVANCED</span>
-                     <span class="recommended-badge">RECOMENDADO</span>
+            <!-- Plan Cards (Yearly) -->
+            <div class="plans-container yearly-container" v-if="yearly">
+                <!-- Advanced Plan (Yearly) -->
+                <div class="subscription-plan-card recommended yearly-card">
+                    <div class="plan-header">
+                        <span class="plan-badge">ADVANCED</span>
+                        <span class="recommended-badge">RECOMENDADO</span>
+                    </div>
+                    <p class="plan-name">Plan profesional</p>
+                    <div class="plan-pricing">
+                        <span class="plan-price">${{ yearlyPrice }}</span>
+                        <span class="plan-period">/ Por miembro</span>
+                    </div>
+                    <hr class="plan-divider">
+                    <ul class="features-list">
+                        <SubscriptionFeatureItem
+                            v-for="(feature, index) in advancedPlanFeatures"
+                            :key="`advanced-yearly-${index}`"
+                            :feature-text="feature"
+                        />
+                    </ul>
+                    <button class="btn-action btn-action-primary mt-auto" @click="startYearlyPlan">
+                        Comenzar prueba gratuita de 14 días
+                    </button>
+                    <p class="plan-footer-text">Se requiere tarjeta de débito/crédito</p>
                 </div>
-                 <p class="plan-name">Plan profesional</p>
-                 <div class="plan-pricing">
-                    <span class="plan-price">$60.99</span>
-                    <span class="plan-period">/ Por miembro</span>
-                </div>
-                <hr class="plan-divider">
-                <ul class="features-list">
-                    <SubscriptionFeatureItem
-                        v-for="(feature, index) in advancedPlanFeatures"
-                        :key="`advanced-yearly-${index}`"
-                        :feature-text="feature"
-                    />
-                </ul>
-                <button class="btn-action btn-action-primary mt-auto" @click="startYearlyPlan">
-                    Comenzar prueba gratuita de 14 días
-                </button>
-                 <p class="plan-footer-text">Se requiere tarjeta de débito/crédito</p>
             </div>
-        </div>
 
-        <!-- Payment Methods -->
-        <div class="payment-methods-section">
-            <p class="payment-methods-title">Métodos de pago</p>
-            <div class="payment-icons">
-                <img src="/visa.png" alt="Visa" class="payment-icon">
-                <img src="/mastercard.png" alt="Mastercard" class="payment-icon">
-                <img src="/maestro.png" alt="Maestro" class="payment-icon">
-                <img src="/paypal.png" alt="Paypal" class="payment-icon">
-                <img src="/diners.png" alt="Diners Club" class="payment-icon">
-                <img src="/amex.png" alt="American Express" class="payment-icon">
+            <!-- Payment Methods -->
+            <div class="payment-methods-section">
+                <p class="payment-methods-title">Métodos de pago</p>
+                <div class="payment-icons">
+                    <img src="/visa.png" alt="Visa" class="payment-icon">
+                    <img src="/mastercard.png" alt="Mastercard" class="payment-icon">
+                    <img src="/maestro.png" alt="Maestro" class="payment-icon">
+                    <img src="/paypal.png" alt="Paypal" class="payment-icon">
+                    <img src="/diners.png" alt="Diners Club" class="payment-icon">
+                    <img src="/amex.png" alt="American Express" class="payment-icon">
+                </div>
+                <p class="payment-methods-footer">Aceptamos Visa, American Express, Mastercard y PayPal</p>
             </div>
-            <p class="payment-methods-footer">Aceptamos Visa, American Express, Mastercard y PayPal</p>
         </div>
     </div>
 </template>
 
 <script>
 import SubscriptionFeatureItem from '@/components/subscriptionplan/SubscriptionFeatureItem.vue';
+import axios from 'axios';
 
 export default {
     name: 'PatientSubscriptionPlansComponent',
@@ -125,27 +146,60 @@ export default {
     },
     data() {
         return {
-            basicPlanFeatures: [
-                'Creación de perfil básico',
-                'Acceso completo al directorio de profesionales',
-                'Publicar reseñas y calificar establecimientos',
-                'Agendar citas',
-                'Solicitar servicios a domicilio'
-            ],
-            advancedPlanFeatures: [
-                'Todas las ventajas del plan básico',
-                'Acceso a reseñas públicas de otros pacientes',
-                'Historial de citas',
-                'Soporte prioritario para la gestión de citas',
-                'Consejos de salud personalizados según perfil',
-                'Detalles de medicamentos recetados',
-                'Notificaciones de citas futuras',
-                'Recordatorios personalizados para ti'
-            ],
+            basicPlanFeatures: [],
+            advancedPlanFeatures: [],
             yearly: false,
+            loading: true,
+            error: null,
+            monthlyPrice: 5.99,
+            yearlyDiscount: 15 // Porcentaje de descuento
         }
     },
+    computed: {
+        yearlyPrice() {
+            // Calcular precio anual con descuento 
+            const discountedMonthly = this.monthlyPrice * (1 - this.yearlyDiscount / 100);
+            return (discountedMonthly * 12).toFixed(2);
+        }
+    },
+    created() {
+        this.fetchSubscriptionPlans();
+    },
     methods: {
+        fetchSubscriptionPlans() {
+            this.loading = true;
+            this.error = null;
+            
+            axios.get(`${process.env.VUE_APP_API_URL}/subscription-plans`)
+                .then(response => {
+                    const plans = response.data;
+                    
+                    // Find basic plan (profesional_gratis)
+                    const basicPlan = plans.find(plan => plan.subscription_type === 'profesional_gratis');
+                    if (basicPlan && basicPlan.features) {
+                        this.basicPlanFeatures = basicPlan.features.map(item => item.feature);
+                    }
+                    
+                    // Find advanced plan (profesional_avanzado)
+                    const advancedPlan = plans.find(plan => plan.subscription_type === 'profesional_avanzado');
+                    if (advancedPlan && advancedPlan.features) {
+                        this.advancedPlanFeatures = advancedPlan.features.map(item => item.feature);
+                        if (advancedPlan.price_monthly) {
+                            this.monthlyPrice = parseFloat(advancedPlan.price_monthly);
+                        }
+                        if (advancedPlan.discount_percent) {
+                            this.yearlyDiscount = parseFloat(advancedPlan.discount_percent);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching subscription plans:', error);
+                    this.error = 'Failed to load subscription plans';
+                })
+                .finally(() => {
+                    this.loading = false;
+                });
+        },
         startFreePlan() {
             localStorage.setItem('selected_plan', 'gratis');
             localStorage.setItem('periodo', 'mensual');
@@ -191,6 +245,49 @@ export default {
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     position: relative; /* Needed for absolute positioning of decorative elements */
     overflow: hidden; /* Prevent decorative elements from overflowing */
+}
+
+/* Loading Styles */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 100px 0;
+    z-index: 1;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(13, 110, 253, 0.2);
+    border-top: 5px solid #0d6efd;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Error Styles */
+.error-container {
+    background-color: #FEF2F2;
+    border: 1px solid #F87171;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 40px 0;
+    text-align: center;
+    max-width: 500px;
+    z-index: 1;
+}
+
+.error-container p {
+    color: #B91C1C;
+    margin-bottom: 15px;
+    font-weight: 500;
 }
 
 /* Decorative Elements*/
@@ -266,16 +363,22 @@ export default {
     border-radius: 10px;
 }
 
+.saving-badge-promo {
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
 /* Plans Container */
 .plans-container {
     display: flex;
     justify-content: center;
     gap: 30px;
     width: 100%;
-    max-width: 900px; /* Limit overall width */
+    max-width: 1200px; /* Increased max-width for better side-by-side display */
     flex-wrap: wrap; /* Allow wrapping on smaller screens */
     position: relative; /* Ensure cards are above decorative elements */
     z-index: 1;
+    flex-direction: row; /* Explicitly set to row to ensure side-by-side display */
 }
 
 /* Subscription Card Styling */
@@ -283,14 +386,16 @@ export default {
     background-color: white;
     border-radius: 16px;
     padding: 30px;
-    width: 100%; /* Full width on mobile */
-    max-width: 400px; /* Max width per card */
+    width: calc(50% - 30px); /* Set width to 50% minus gap for side-by-side display */
+    max-width: 450px; /* Increased max width per card */
+    min-width: 300px; /* Min width to ensure proper display */
     display: flex;
     flex-direction: column;
     box-shadow: 0 10px 30px rgba(0,0,0,0.07);
     border: 1px solid #E5E7EB; /* Subtle border */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative; /* Needed for recommended badge positioning */
+    margin-bottom: 20px; /* Add margin bottom for spacing when stacked */
 }
 
 .subscription-plan-card:hover {
@@ -457,8 +562,33 @@ export default {
     color: #6B7280;
 }
 
+/* Invisible Plan Card */
+.invisible {
+    visibility: hidden;
+    opacity: 0;
+}
+
+/* Yearly Plan Specific Styles */
+.yearly-container {
+    justify-content: center;
+}
+
+.yearly-card {
+    max-width: 500px; /* Wider card for yearly plan */
+    width: 80%; /* Use percentage to make it responsive */
+}
 
 /* Responsive Adjustments */
+@media (max-width: 992px) {
+    .plans-container {
+        gap: 20px;
+    }
+    
+    .subscription-plan-card {
+        width: calc(50% - 20px); /* Adjust width for medium screens */
+    }
+}
+
 @media (max-width: 768px) {
     .plans-container {
         flex-direction: column; /* Stack cards vertically */
@@ -467,12 +597,22 @@ export default {
     }
 
     .subscription-plan-card {
+        width: 100%; /* Full width on mobile */
         max-width: 90%; /* Allow slightly wider cards on mobile */
     }
 
-     .period-toggle {
-         /* Make toggle slightly smaller if needed */
-     }
+    .yearly-card {
+        width: 90%; /* Slightly wider on mobile */
+        max-width: 90%;
+    }
+
+    .invisible {
+        display: none; /* Hide placeholder on mobile */
+    }
+
+    .period-toggle {
+        /* Make toggle slightly smaller if needed */
+    }
 
     .toggle-option {
         padding: 7px 15px;
@@ -484,7 +624,7 @@ export default {
         padding: 2px 6px;
     }
 
-     .plan-price {
+    .plan-price {
         font-size: 36px;
     }
 }
