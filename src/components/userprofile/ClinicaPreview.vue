@@ -3,21 +3,29 @@
         <!-- Preview Banner -->
         <div class="bg-blue-600 p-4 flex justify-between items-center">
             <div class="flex items-center">
-                <div class="text-white mr-2">
-                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"
-                              stroke-width="2"/>
-                        <path
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                            stroke-linecap="round" stroke-linejoin="round"
-                            stroke-width="2"/>
+                <router-link to="/home" class="text-white flex items-center mr-4">
+                    <svg class="h-7 w-7 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
                     </svg>
-                </div>
-                <div class="text-white">
-                    <div class="font-semibold">Vista previa de tu consultorio</div>
-                    <div class="text-sm">Esto es una vista previa de cómo los pacientes verán la información de tu
-                        consultorio en la plataforma
+                    <span class="font-bold text-lg">Salus Nexus</span>
+                </router-link>
+                <div class="flex items-center">
+                    <div class="text-white mr-2">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"
+                                  stroke-width="2"/>
+                            <path
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="text-white">
+                        <div class="font-semibold">Vista previa de tu consultorio</div>
+                        <div class="text-sm">Esto es una vista previa de cómo los pacientes verán la información de tu
+                            consultorio en la plataforma
+                        </div>
                     </div>
                 </div>
             </div>
@@ -44,7 +52,7 @@
             <!-- Clinic Header -->
             <div class="flex justify-between items-center mb-4">
                 <h1 class="text-2xl font-bold text-gray-800">Mi Clínica</h1>
-                <button class="bg-blue-600 text-white rounded-md px-4 py-2 flex items-center">
+                <!-- <button class="bg-blue-600 text-white rounded-md px-4 py-2 flex items-center">
                     <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                          xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -53,7 +61,7 @@
                             stroke-width="2"/>
                     </svg>
                     Editar Perfil
-                </button>
+                </button> -->
             </div>
 
             <div class="flex flex-col md:flex-row gap-6">
@@ -325,7 +333,7 @@
                     </div>
 
                     <!-- Stats Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="bg-white rounded-lg shadow-md p-6">
                             <div class="flex items-center text-blue-600 mb-4">
                                 <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor"
@@ -370,7 +378,7 @@
                                 Ver agenda completa
                             </button>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -477,7 +485,14 @@ export default {
             this.$router.push('/edit-clinic');
         },
         goToEditClinicPreview() {
-            this.$router.push({name: 'EditClinic'});
+            // this.$router.push({name: 'EditClinic'});
+            swal.fire({
+                icon: 'info',
+                title: 'Próximamente',
+                text: 'Esta funcionalidad estará disponible en futuras actualizaciones. Estamos trabajando para mejorar su experiencia.',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#3b82f6' // Color azul que coincide con el estilo de la aplicación
+            });
         }
     }
 }
