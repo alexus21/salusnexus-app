@@ -52,7 +52,7 @@ export default {
                 { name: 'Horario', label: 'Mi horario', href: '/horario', icon: 'fas fa-clock' },
                 { name: 'Agenda', label: 'Agenda', href: '/agenda', icon: 'fas fa-calendar-alt' },
                 { name: 'Pacientes', label: 'Pacientes', href: '/pacientes', icon: 'fas fa-users' },
-                { name: 'Citas', label: 'Citas', href: '#', icon: 'fas fa-clipboard-list' },
+                // { name: 'Citas', label: 'Citas', href: '#', icon: 'fas fa-clipboard-list' },
                 { name: 'Estadisticas', label: 'Estadísticas', href: '#', icon: 'fas fa-chart-line' },
                 { name: 'Resenas', label: 'Reseñas', href: '#', icon: 'fas fa-star' },
                 { name: 'Mensajes', label: 'Mensajes', href: '#', icon: 'fas fa-comments' },
@@ -60,7 +60,7 @@ export default {
                 { name: 'Suscripcion', label: 'Suscripción', href: '#', icon: 'fas fa-rocket' },
             ],
             footerItems: [
-                { name: 'Configuracion', label: 'Configuración', href: '#', icon: 'fas fa-cog' },
+                // { name: 'Configuracion', label: 'Configuración', href: '#', icon: 'fas fa-cog' },
                 { name: 'Logout', label: 'Cerrar Sesión', href: '#', icon: 'fas fa-sign-out-alt' },
             ],
         };
