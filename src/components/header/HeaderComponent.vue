@@ -109,7 +109,7 @@ export default {
     name: 'HeaderComponent',
     methods: {
         handleRegisterClick() {
-            this.$router.push({name: 'Register'});
+            this.$router.push({name: 'ProfessionalSubscriptionPlans'});
         },
         handleLoginClick() {
             this.$router.push({name: 'Login'});
