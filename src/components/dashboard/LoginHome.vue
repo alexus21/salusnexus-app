@@ -77,161 +77,58 @@
             </div>
         </div>
 
-        <!-- Contenido principal -->
+        <!-- Contenido principal - Nueva interfaz -->
         <div class="dashboard-content">
             <div class="dashboard-header">
                 <h1 class="welcome-title">¡Bienvenido/a, Dr. {{user && user.first_name && user.last_name ? (partialName + '!') : 'Cargando...'}}</h1>
-                <p class="welcome-subtitle">Aquí tienes pacientes potenciales cercanos a tu ubicación que coinciden con
-                    tu especialidad en Cardiología</p>
+                <p class="welcome-subtitle">Aquí tienes pacientes potenciales cercanos a tu ubicación que coinciden con tu especialidad en Cardiología</p>
             </div>
 
-            <div class="stats-cards">
-<!--                <div class="stat-card">
-                    <div class="stat-content">
-                        <h3>Pacientes Potenciales</h3>
-                        <div class="stat-value">28</div>
-                    </div>
-                    <div class="stat-icon user-icon">
-                        <i class="fas fa-user"></i>
-                    </div>
-                </div>-->
-
-<!--                <div class="stat-card">
-                    <div class="stat-content">
-                        <h3>En tu área (5km)</h3>
-                        <div class="stat-value">12</div>
-                    </div>
-                    <div class="stat-icon location-icon">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-                </div>-->
-
-                <div class="stat-card">
-                    <div class="stat-content">
-                        <h3>Visitas a tu Perfil</h3>
-                        <div class="stat-value">45</div>
-                    </div>
-                    <div class="stat-icon view-icon">
+            <!-- Nuevas tarjetas de características -->
+            <div class="features-cards">
+                <div class="feature-card">
+                    <div class="feature-icon">
                         <i class="far fa-eye"></i>
                     </div>
+                    <h3>Visibilidad Profesional</h3>
+                    <p>Publique su perfil y sea encontrado por nuevos pacientes interesados en su especialidad.</p>
                 </div>
-
-                <div class="stat-card">
-                    <div class="stat-content">
-                        <h3>Coincidencia</h3>
-                        <div class="stat-value">78%</div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="far fa-calendar-alt"></i>
                     </div>
-                    <div class="stat-icon match-icon">
-                        <i class="fas fa-percentage"></i>
-                    </div>
+                    <h3>Gestión de Citas</h3>
+                    <p>Organice su agenda y gestione pacientes eficientemente con nuestras herramientas avanzadas.</p>
                 </div>
-            </div>
-
-            <div class="dashboard-actions">
-                <button class="dashboard-btn" @click="goToDashboard">
-                    <i class="fas fa-th-large"></i> Ir al Dashboard Completo
-                </button>
-            </div>
-
-            <div class="potential-patients-section">
-                <div class="section-header">
-                    <h2>Pacientes Potenciales</h2>
-                    <div class="filter-buttons">
-                        <button
-                            class="filter-btn"
-                            :class="{ active: activeFilter === 'nearby' }"
-                            @click="setActiveFilter('nearby')"
-                        >
-                            Cercanos a ti
-                        </button>
-                        <!-- <button
-                            class="filter-btn"
-                            :class="{ active: activeFilter === 'all' }"
-                            @click="setActiveFilter('all')"
-                        >
-                            Todos los coincidentes
-                        </button> -->
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-friends"></i>
                     </div>
-                </div>
-
-                <div v-if="showEmptyState" class="empty-state">
-                    <div class="empty-icon">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <h3>Amplía tu radio de búsqueda</h3>
-                    <p>Hay 16 pacientes potenciales adicionales fuera de tu radio de 5km</p>
-                    <button class="view-all-btn" @click="loadAllPatients">Ver Todos los Pacientes</button>
-                </div>
-
-                <div v-else class="patients-grid">
-                    <div v-for="patient in patients" :key="patient.id" class="patient-card">
-                        <div class="patient-avatar">
-                            <img :src="patient.avatar || 'https://via.placeholder.com/50'" alt="Avatar"/>
-                        </div>
-                        <div class="patient-info">
-                            <h3 class="patient-name">{{ patient.name }}</h3>
-                            <p class="patient-age">{{ patient.age }} años</p>
-                            <div class="patient-symptoms">
-                                <i class="fas fa-file-medical"></i> {{ patient.symptoms }}
-                            </div>
-                            <div class="patient-specialty">
-                                <i class="fas fa-heartbeat"></i> {{ patient.specialty }}
-                            </div>
-                            <div class="patient-location">
-                                <i class="fas fa-map-marker-alt"></i> {{ patient.location }}
-                                <span class="distance">A {{ patient.distance }} km de tu consultorio</span>
-                            </div>
-                        </div>
-                        <div class="patient-actions">
-                            <button class="view-profile-btn">Ver Perfil</button>
-                            <button class="contact-btn">Contactar</button>
-                        </div>
-                        <div v-if="patient.status" class="patient-status" :class="patient.statusClass">
-                            {{ patient.status }}
-                        </div>
-                    </div>
+                    <h3>Conexión con Pacientes</h3>
+                    <p>Acceda a pacientes potenciales buscando su especialidad y expanda su práctica médica.</p>
                 </div>
             </div>
 
-<!--            <div class="analytics-section">
-                <div class="analytics-section-header">
-                    <h2>Análisis de Pacientes Potenciales</h2>
-                    <div class="view-all-link">
-                        <a href="#">Ver Completo <i class="fas fa-chevron-right"></i></a>
-                    </div>
+            <!-- Sección de casi listo para conectar -->
+            <div class="ready-connect-section">
+                <div class="ready-connect-content">
+                    <h2>¡Casi Listo para Conectar!</h2>
+                    <p>Complete la verificación de su cuenta para activar todas las funcionalidades y comenzar a conectar con pacientes en Salus Nexus.</p>
+                    <button class="verify-account-btn" @click="$router.push({name: 'VerifyProfessionalAccount'})">
+                        Iniciar Verificación
+                    </button>
                 </div>
-
-                <div class="analytics-cards-container">
-                    <div class="analytics-cards">
-                        <div class="analytics-card">
-                            <h3>Distribución por Problema</h3>
-                            <div class="analytics-content">
-                                <div class="analytics-value">42%</div>
-                                <div class="analytics-label">Arritmias</div>
-                            </div>
-                            <p class="analytics-description">El problema más común entre pacientes potenciales</p>
-                        </div>
-
-                        <div class="analytics-card">
-                            <h3>Rango de Edad</h3>
-                            <div class="analytics-content">
-                                <div class="analytics-value">45-65</div>
-                                <div class="analytics-label">años</div>
-                            </div>
-                            <p class="analytics-description">Grupo de edad predominante en tu área</p>
-                        </div>
-
-                        <div class="analytics-card">
-                            <h3>Tasa de Respuesta</h3>
-                            <div class="analytics-content">
-                                <div class="analytics-value">78%</div>
-                                <div class="analytics-trend">+12%</div>
-                            </div>
-                            <p class="analytics-description">Pacientes que responden a tu primer contacto</p>
-                        </div>
-                    </div>
+                <div class="ready-connect-image">
+                    <img src="/home-login.png" alt="Verificación de cuenta">
                 </div>
-            </div>-->
+            </div>
+
+            <!-- Sección de verificación de cuenta -->
+            <div class="verification-info-section">
+                <p>La verificación es un proceso rápido que garantiza la seguridad de todos los usuarios de nuestra plataforma. Si tiene alguna pregunta, <a href="#" class="support-link">contacte a nuestro equipo de soporte</a>.</p>
+            </div>
         </div>
     </div>
 </template>
@@ -584,615 +481,186 @@ export default {
     cursor: pointer;
 }
 
-/* Estilos del contenido */
+/* Estilos del contenido principal */
 .dashboard-content {
-    max-width: 100%;
-    padding: 40px 50px;
+    width: 100%;
+    padding: 40px 5%;
     margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .dashboard-header {
-    margin-bottom: 40px;
+    margin-bottom: 60px;
+    text-align: center;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .welcome-title {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: bold;
     color: #1f2937;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .welcome-subtitle {
     color: #64748b;
     font-size: 18px;
+    max-width: 700px;
+    margin: 0 auto;
 }
 
-.stats-cards {
+/* Estilos para las tarjetas de características */
+.features-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 25px;
-    margin-bottom: 40px;
-}
-
-.stat-card {
-    background: white;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    display: flex;
-    justify-content: space-between;
-    border: 1px solid #f1f5f9;
-}
-
-.stat-content h3 {
-    font-size: 15px;
-    color: #64748b;
-    margin-bottom: 12px;
-}
-
-.stat-value {
-    font-size: 32px;
-    font-weight: bold;
-    color: #1f2937;
-}
-
-.stat-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    color: white;
-    font-size: 22px;
-}
-
-.user-icon {
-    background-color: #e6f0ff;
-    color: #3b82f6;
-}
-
-.location-icon {
-    background-color: #e6f5ff;
-    color: #0ea5e9;
-}
-
-.view-icon {
-    background-color: #f0f0ff;
-    color: #6366f1;
-}
-
-.match-icon {
-    background-color: #e6ffef;
-    color: #10b981;
-}
-
-.dashboard-actions {
-    margin-bottom: 40px;
-}
-
-.dashboard-btn {
-    padding: 12px 24px;
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 16px;
-    transition: all 0.2s;
-}
-
-.dashboard-btn:hover {
-    background-color: #2563eb;
-    transform: translateY(-2px);
-}
-
-.dashboard-btn i {
-    font-size: 18px;
-}
-
-.potential-patients-section {
-    margin-bottom: 40px;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-}
-
-.section-header h2 {
-    font-size: 22px;
-    font-weight: bold;
-    color: #1f2937;
-}
-
-.filter-buttons {
-    display: flex;
-    gap: 12px;
-}
-
-.filter-btn {
-    padding: 9px 18px;
-    border: 1px solid #e5e7eb;
-    border-radius: 22px;
-    background-color: transparent;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 15px;
-    color: #64748b;
-}
-
-.filter-btn:hover {
-    border-color: #3b82f6;
-    color: #3b82f6;
-}
-
-.filter-btn.active {
-    background-color: #3b82f6;
-    color: white;
-    border-color: #3b82f6;
-}
-
-.empty-state {
-    background-color: white;
-    border-radius: 10px;
-    padding: 40px;
-    text-align: center;
-    border: 1px solid #f1f5f9;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.empty-icon {
-    width: 65px;
-    height: 65px;
-    background-color: #e6f0ff;
-    color: #3b82f6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    margin: 0 auto 25px;
-    font-size: 28px;
-}
-
-.empty-state h3 {
-    font-size: 20px;
-    margin-bottom: 12px;
-    color: #1f2937;
-}
-
-.empty-state p {
-    color: #64748b;
-    margin-bottom: 25px;
-    font-size: 16px;
-}
-
-.view-all-btn {
-    padding: 12px 24px;
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 16px;
-}
-
-.view-all-btn:hover {
-    background-color: #2563eb;
-}
-
-.patients-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 30px;
+    margin-bottom: 60px;
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 2%;
 }
 
-.patient-card {
-    background-color: white;
-    border-radius: 12px;
-    border: 1px solid #f1f5f9;
-    padding: 25px;
-    display: grid;
-    grid-template-columns: 70px 1fr;
-    grid-template-areas:
-    "avatar info"
-    "actions actions";
-    gap: 20px;
-    position: relative;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.patient-avatar {
-    grid-area: avatar;
-}
-
-.patient-avatar img {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.patient-info {
-    grid-area: info;
-}
-
-.patient-name {
-    font-size: 18px;
-    font-weight: bold;
-    color: #1f2937;
-    margin-bottom: 6px;
-}
-
-.patient-age {
-    font-size: 15px;
-    color: #64748b;
-    margin-bottom: 10px;
-}
-
-.patient-symptoms,
-.patient-specialty,
-.patient-location {
-    font-size: 15px;
-    color: #4b5563;
-    margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.patient-symptoms i,
-.patient-specialty i,
-.patient-location i {
-    font-size: 16px;
-}
-
-.distance {
-    font-size: 13px;
-    color: #64748b;
-    margin-left: 12px;
-}
-
-.patient-actions {
-    grid-area: actions;
-    display: flex;
-    gap: 12px;
-    margin-top: 15px;
-}
-
-.view-profile-btn,
-.contact-btn {
-    flex: 1;
-    padding: 12px;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    font-size: 15px;
-    transition: all 0.2s;
-}
-
-.view-profile-btn {
-    background-color: transparent;
-    border: 1px solid #3b82f6;
-    color: #3b82f6;
-}
-
-.view-profile-btn:hover {
-    background-color: rgba(59, 130, 246, 0.05);
-}
-
-.contact-btn {
-    background-color: #3b82f6;
-    border: none;
-    color: white;
-}
-
-.contact-btn:hover {
-    background-color: #2563eb;
-}
-
-.patient-status {
-    position: absolute;
-    top: 25px;
-    right: 25px;
-    font-size: 13px;
-    padding: 6px 12px;
-    border-radius: 22px;
-}
-
-.status-new {
-    background-color: #e6ffef;
-    color: #10b981;
-}
-
-.status-visited {
-    background-color: #fff6e6;
-    color: #f59e0b;
-}
-
-.status-interacted {
-    background-color: #e6f0ff;
-    color: #3b82f6;
-}
-
-.analytics-section {
-    position: relative;
-    margin-top: 40px;
-}
-
-.analytics-section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.analytics-section-header h2 {
-    font-size: 22px;
-    font-weight: bold;
-    color: #1f2937;
-}
-
-.view-all-link {
-    position: absolute;
-    top: 0;
-    right: 0;
-}
-
-.view-all-link a {
-    color: #3b82f6;
-    text-decoration: none;
-    font-size: 15px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
-}
-
-.view-all-link a:hover {
-    color: #2563eb;
-}
-
-.analytics-cards-container {
+.feature-card {
     background-color: #ffffff;
     border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    border: 1px solid #f1f5f9;
-}
-
-.analytics-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px;
-}
-
-.analytics-card {
-    background-color: #f5f8ff;
-    border-radius: 10px;
-    padding: 25px;
-}
-
-.analytics-card h3 {
-    font-size: 15px;
-    color: #64748b;
-    margin-bottom: 18px;
-    font-weight: 500;
-}
-
-.analytics-content {
+    padding: 35px 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-bottom: 10px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
 }
 
-.analytics-value {
-    font-size: 30px;
-    font-weight: bold;
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #f0f5ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.feature-icon i {
+    font-size: 28px;
+    color: #3b82f6;
+}
+
+.feature-card h3 {
+    font-size: 20px;
+    font-weight: 600;
     color: #1f2937;
-    line-height: 1;
+    margin-bottom: 15px;
 }
 
-.analytics-label {
-    font-size: 15px;
+.feature-card p {
     color: #64748b;
-    line-height: 1.5;
+    font-size: 16px;
+    line-height: 1.6;
 }
 
-.analytics-trend {
-    color: #10b981;
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 1.5;
-}
-
-.analytics-description {
-    font-size: 14px;
-    color: #64748b;
-    line-height: 1.4;
-}
-
-/* Media queries para responsividad */
-@media (max-width: 1024px) {
-    .dashboard-content {
-        padding: 30px 25px;
-    }
-
-    .stats-cards {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .analytics-cards {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .header-content {
-        padding: 0 15px;
-    }
-
-    .main-nav {
-        display: none;
-    }
-
-    .logo-text {
-        font-size: 16px;
-    }
-
-    .search-box input {
-        width: 150px;
-    }
-
-    .patients-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-
-    .filter-buttons {
-        width: 100%;
-    }
-
-    .filter-btn {
-        flex: 1;
-        text-align: center;
-    }
-
-    .analytics-cards {
-        grid-template-columns: 1fr;
-    }
-
-    .analytics-cards-container {
-        padding: 15px;
-    }
-
-    .analytics-section-header {
-        margin-bottom: 15px;
-    }
-
-    .analytics-section-header h2 {
-        font-size: 18px;
-    }
-
-    .view-all-link {
-        position: static;
-        margin-top: 5px;
-    }
-}
-
-@media (max-width: 640px) {
-    .stats-cards {
-        grid-template-columns: 1fr;
-    }
-
-    .search-box {
-        display: none;
-    }
-
-    .patient-card {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-      "avatar"
-      "info"
-      "actions";
-    }
-
-    .patient-avatar {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 15px;
-    }
-
-    .patient-avatar img {
-        width: 70px;
-        height: 70px;
-    }
-
-    .patient-status {
-        position: static;
-        margin-top: 10px;
-        display: inline-block;
-    }
-
-    .view-all-link {
-        text-align: left;
-    }
-
-    .welcome-title {
-        font-size: 20px;
-    }
-
-    .welcome-subtitle {
-        font-size: 14px;
-    }
-}
-
-/* Soporte para dispositivos pequeños */
-@media (max-width: 480px) {
-    .header-content {
-        padding: 0 10px;
-    }
-
-    .patient-actions {
-        flex-direction: column;
-    }
-
-    .dashboard-btn {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .view-all-btn {
-        width: 100%;
-    }
-}
-
-/* Personalización del dropdown de Bootstrap */
-.dropdown-menu {
-    padding: 8px 0;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e5e7eb;
-    min-width: 180px;
-}
-
-.dropdown-item {
+/* Sección de casi listo para conectar */
+.ready-connect-section {
+    background-color: #3b82f6;
+    border-radius: 16px;
+    padding: 50px 60px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
-    font-size: 14px;
-    color: #374151;
+    margin-bottom: 50px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.dropdown-item i {
-    width: 16px;
-    text-align: center;
-    color: #6b7280;
+.ready-connect-content {
+    flex: 1;
+    padding-right: 50px;
 }
 
-.dropdown-item:hover {
-    background-color: #f3f4f6;
-    color: #1f2937;
+.ready-connect-content h2 {
+    color: white;
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 20px;
 }
 
-.dropdown-item:hover i {
+.ready-connect-content p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.verify-account-btn {
+    background-color: white;
     color: #3b82f6;
+    font-weight: 600;
+    padding: 14px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.verify-account-btn:hover {
+    background-color: #f8fafc;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.ready-connect-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ready-connect-image img {
+    max-width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: contain;
+}
+
+/* Sección de información de verificación */
+.verification-info-section {
+    background-color: #f0f5ff;
+    border-radius: 12px;
+    padding: 25px 30px;
+    text-align: center;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.verification-info-section p {
+    color: #4b5563;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.support-link {
+    color: #3b82f6;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.support-link:hover {
+    text-decoration: underline;
 }
 
 /* Estilos para el banner de verificación */
@@ -1243,5 +711,135 @@ export default {
     font-weight: bold;
     cursor: pointer;
     font-size: 16px;
+}
+
+/* Personalización del dropdown de Bootstrap */
+.dropdown-menu {
+    padding: 8px 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    min-width: 180px;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #374151;
+}
+
+.dropdown-item i {
+    width: 16px;
+    text-align: center;
+    color: #6b7280;
+}
+
+.dropdown-item:hover {
+    background-color: #f3f4f6;
+    color: #1f2937;
+}
+
+.dropdown-item:hover i {
+    color: #3b82f6;
+}
+
+/* Media queries para responsividad */
+@media (max-width: 1400px) {
+    .features-cards {
+        padding: 0 4%;
+    }
+    
+    .ready-connect-section {
+        margin-left: 4%;
+        margin-right: 4%;
+        padding: 40px 50px;
+    }
+    
+    .verification-info-section {
+        margin-left: 4%;
+        margin-right: 4%;
+    }
+}
+
+@media (max-width: 1024px) {
+    .dashboard-content {
+        padding: 30px 4%;
+    }
+    
+    .features-cards {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0 3%;
+    }
+    
+    .ready-connect-section {
+        padding: 35px 40px;
+    }
+    
+    .ready-connect-content h2 {
+        font-size: 28px;
+    }
+    
+    .ready-connect-content p {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        padding: 0 15px;
+    }
+    
+    .dashboard-content {
+        padding: 20px 3%;
+    }
+    
+    .features-cards {
+        grid-template-columns: 1fr;
+        padding: 0 5%;
+        gap: 20px;
+    }
+    
+    .ready-connect-section {
+        flex-direction: column;
+        padding: 30px;
+        margin-left: 5%;
+        margin-right: 5%;
+    }
+    
+    .ready-connect-content {
+        padding-right: 0;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .verification-info-section {
+        margin-left: 5%;
+        margin-right: 5%;
+    }
+}
+
+@media (max-width: 640px) {
+    .welcome-title {
+        font-size: 24px;
+    }
+    
+    .welcome-subtitle {
+        font-size: 16px;
+    }
+    
+    .ready-connect-content h2 {
+        font-size: 22px;
+    }
+    
+    .ready-connect-section {
+        padding: 25px;
+    }
+    
+    .feature-card {
+        padding: 25px 20px;
+    }
 }
 </style> 
