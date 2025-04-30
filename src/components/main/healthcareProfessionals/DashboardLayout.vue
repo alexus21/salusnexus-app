@@ -19,7 +19,6 @@
 
             <component :is="mainComponent" />
         </div>
-
     </div>
 </template>
 
@@ -31,6 +30,7 @@ import PatientsView from '@/components/main/healthcareProfessionals/PatientsView
 import ScheduleView from '@/components/main/healthcareProfessionals/ScheduleView.vue';
 import AgendaView from '@/components/main/healthcareProfessionals/AgendaView.vue';
 import SubscriptionView from '@/components/main/healthcareProfessionals/SubscriptionView.vue';
+import Swal from 'sweetalert2';
 
 export default {
     name: 'DashboardLayout',
@@ -47,16 +47,15 @@ export default {
         return {
             currentView: 'Inicio',
             isSidebarOpen: false, // Estado inicial cerrado en móvil
-            isMobile: false // Para detectar si es vista móvil
+            isMobile: false, // Para detectar si es vista móvil
         }
     },
     computed: {
         mainComponent() {
-            if (this.currentView === 'Resenas') {
-                return 'ReviewsView';
-            }
-            if (this.currentView === 'Pacientes') {
-                return 'PatientsView';
+            if (this.currentView === 'Resenas' || this.currentView === 'Pacientes') {
+                // Mostrar Sweet Alert para características no disponibles
+                this.showUnavailableFeature(this.currentView);
+                return 'ScheduleView'; // Cargar vista por defecto
             }
             if (this.currentView === 'Horario'){
                 return 'ScheduleView';
@@ -67,7 +66,7 @@ export default {
             if (this.currentView === 'Suscripcion'){
                 return 'SubscriptionView';
             }
-            return 'DashboardHome';
+            return 'ScheduleView';
         }
     },
     methods: {
@@ -88,6 +87,16 @@ export default {
             if (this.isMobile) {
                 this.isSidebarOpen = false;
             }
+        },
+        /* eslint-disable */ 
+        showUnavailableFeature(featureName) {
+            Swal.fire({
+                title: 'Próximamente',
+                text: 'Esta funcionalidad estará disponible en futuras actualizaciones. Estamos trabajando para mejorar su experiencia.',
+                icon: 'info',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#3085d6',
+            });
         },
         checkScreenSize() {
             const mobileBreakpoint = 768;
