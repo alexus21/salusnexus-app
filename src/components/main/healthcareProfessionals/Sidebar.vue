@@ -1,33 +1,72 @@
 <template>
     <aside :class="['sidebar', { 'is-open': isOpen }]">
-        <div class="sidebar-logo btn" @click.prevent="goToHome">Salus Nexus</div>
+        <div class="sidebar-header">
+            <div class="logo-container">
+                <div class="logo-icon">SN</div>
+                <div class="logo-text">Salus Nexus</div>
+            </div>
+            <button class="close-button" v-if="isOpen && window.innerWidth < 768" @click="$emit('close-sidebar')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="user-profile">
+            <div class="avatar">
+                <i class="fas fa-user-md"></i>
+            </div>
+            <div class="user-info">
+                <div class="user-name">Dr. Professional</div>
+                <div class="user-status">
+                    <span class="status-dot"></span>
+                    <span>Online</span>
+                </div>
+            </div>
+        </div>
+        
         <nav class="sidebar-nav">
-            <ul>
-                <li v-for="item in navigationItems" :key="item.name">
-                    <a
-                        :href="item.href"
-                        :class="{ active: activeItem === item.name }"
-                        @click.prevent="navigate(item.name)"
-                    >
-                        <i :class="item.icon"></i> {{ item.label }}
-                    </a>
-                </li>
-            </ul>
+            <div class="nav-section">
+                <div class="section-title">Menu Principal</div>
+                <ul>
+                    <li v-for="item in navigationItems" :key="item.name">
+                        <a
+                            :href="item.href"
+                            :class="['nav-item', { active: activeItem === item.name }]"
+                            @click.prevent="navigate(item.name)"
+                        >
+                            <div class="nav-icon">
+                                <i :class="item.icon"></i>
+                            </div>
+                            <span class="nav-label">{{ item.label }}</span>
+                            <span class="hover-indicator"></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </nav>
+        
         <div class="sidebar-footer">
+            <div class="section-title">Opciones</div>
             <nav class="sidebar-nav">
                 <ul>
                     <li v-for="item in footerItems" :key="item.name">
                         <a
                             :href="item.href"
-                            :class="{ active: activeItem === item.name }"
+                            :class="['nav-item', { active: activeItem === item.name }]"
                             @click.prevent="navigate(item.name)"
                         >
-                            <i :class="item.icon"></i> {{ item.label }}
+                            <div class="nav-icon">
+                                <i :class="item.icon"></i>
+                            </div>
+                            <span class="nav-label">{{ item.label }}</span>
+                            <span class="hover-indicator"></span>
                         </a>
                     </li>
                 </ul>
             </nav>
+            
+            <div class="version-info">
+                <span>v1.0.0</span>
+            </div>
         </div>
     </aside>
 </template>
@@ -38,29 +77,24 @@ export default {
     props: {
         activeItem: {
             type: String,
-            default: 'Inicio', // Item activo por defecto
+            default: 'Inicio',
         },
-        isOpen: { // Nueva prop para controlar la visibilidad
+        isOpen: {
             type: Boolean,
             default: false
         }
     },
     data() {
         return {
+            window: window,
             navigationItems: [
-                // { name: 'Inicio', label: 'Inicio', href: '#', icon: 'fas fa-house' },
                 { name: 'Horario', label: 'Mi horario', href: '/horario', icon: 'fas fa-clock' },
                 { name: 'Agenda', label: 'Agenda', href: '/agenda', icon: 'fas fa-calendar-alt' },
                 { name: 'Pacientes', label: 'Pacientes', href: '/pacientes', icon: 'fas fa-users' },
-                // { name: 'Citas', label: 'Citas', href: '#', icon: 'fas fa-clipboard-list' },
-                // { name: 'Estadisticas', label: 'Estadísticas', href: '#', icon: 'fas fa-chart-line' },
                 { name: 'Resenas', label: 'Reseñas', href: '#', icon: 'fas fa-star' },
-                // { name: 'Mensajes', label: 'Mensajes', href: '#', icon: 'fas fa-comments' },
-                // { name: 'Perfil', label: 'Mi Perfil', href: '#', icon: 'fas fa-user-edit' },
                 { name: 'Suscripcion', label: 'Suscripción', href: '#', icon: 'fas fa-rocket' },
             ],
             footerItems: [
-                // { name: 'Configuracion', label: 'Configuración', href: '#', icon: 'fas fa-cog' },
                 { name: 'Logout', label: 'Cerrar Sesión', href: '#', icon: 'fas fa-sign-out-alt' },
             ],
         };
@@ -68,19 +102,16 @@ export default {
     methods: {
         navigate(itemName) {
             console.log(`Navegando a: ${itemName}`);
-            // Si estamos en móvil y se hace clic en un enlace, podríamos querer cerrar el sidebar
             if (this.isOpen && window.innerWidth < 768) {
                 this.$emit('close-sidebar');
             }
 
-            // Emitir eventos originales
             this.$emit('update:activeItem', itemName);
             this.$emit('navigate', itemName);
 
-             // Manejo especial para Logout
-             if (itemName === 'Logout') {
+            if (itemName === 'Logout') {
                 this.Logout();
-             }
+            }
         },
         goToHome() {
             this.$router.push({ name: 'Home' });
@@ -95,42 +126,158 @@ export default {
 
 <style scoped>
 .sidebar {
-    width: 250px;
-    background-color: #FFFFFF;
-    padding: 20px 0;
+    width: 270px;
+    background: linear-gradient(135deg, #2b3990 0%, #232976 100%);
     height: 100vh;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #E5E7EB;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
     overflow-y: auto;
-    position: fixed; /* Cambiado para superponer en móvil */
+    position: fixed;
     left: 0;
     top: 0;
-    transform: translateX(-100%); /* Oculto por defecto en móvil */
-    transition: transform 0.3s ease-in-out;
-    z-index: 1000; /* Asegurar que esté por encima del contenido */
+    border-radius: 0 24px 24px 0;
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.1);
+    color: #fff;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    padding: 0;
 }
 
 .sidebar.is-open {
-    transform: translateX(0); /* Mostrar sidebar */
+    transform: translateX(0);
 }
 
 /* Estilos para pantallas más grandes */
 @media (min-width: 768px) {
     .sidebar {
-        position: static; /* Volver a posición estática en el layout */
-        transform: translateX(0); /* Siempre visible */
+        position: static;
+        transform: translateX(0);
         z-index: auto;
-        box-shadow: 2px 0 5px rgba(0,0,0,0.05); /* Sombra original */
     }
 }
 
-.sidebar-logo {
-    padding: 0 20px 20px 20px;
-    font-size: 1.5em;
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #3a8ffe 0%, #1a56db 100%);
+    border-radius: 12px;
     font-weight: bold;
-    color: #3B82F6;
+    font-size: 16px;
+    box-shadow: 0 4px 10px rgba(26, 86, 219, 0.3);
+}
+
+.logo-text {
+    font-size: 18px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #fff 0%, #e0e7ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.close-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.close-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    margin: 0 12px 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.user-profile:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.avatar {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #3a8ffe 0%, #1a56db 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.user-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.nav-section {
+    margin-bottom: 20px;
+}
+
+.section-title {
+    padding: 0 20px;
+    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .sidebar-nav ul {
@@ -139,37 +286,114 @@ export default {
     margin: 0;
 }
 
-.sidebar-nav ul li a {
+.nav-item {
     display: flex;
     align-items: center;
-    padding: 12px 20px;
-    color: #6B7280;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    padding: 12px 16px;
+    margin: 4px 12px;
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.2s ease;
     text-decoration: none;
     cursor: pointer;
-}
-.sidebar-nav ul li a i {
-    margin-right: 15px;
-    width: 20px;
-    text-align: center;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
 }
 
-.sidebar-nav ul li a:hover {
-    background-color: #F3F4F6;
-    color: #1F2937;
+.nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    margin-right: 12px;
+    transition: all 0.2s ease;
 }
 
-.sidebar-nav ul li a.active {
-    background-color: #E0E7FF;
-    color: #3B82F6;
-    font-weight: 600;
-    border-right: 3px solid #3B82F6;
-    margin-right: -1px;
+.nav-label {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.hover-indicator {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 0;
+    background: linear-gradient(90deg, #3a8ffe, #1a56db);
+    transition: width 0.2s ease;
+    border-radius: 3px;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.nav-item:hover .nav-icon {
+    background: rgba(58, 143, 254, 0.2);
+}
+
+.nav-item:hover .hover-indicator {
+    width: 100%;
+}
+
+.nav-item.active {
+    background: linear-gradient(90deg, rgba(58, 143, 254, 0.2), rgba(26, 86, 219, 0.1));
+    color: #fff;
+}
+
+.nav-item.active .nav-icon {
+    background: linear-gradient(135deg, #3a8ffe 0%, #1a56db 100%);
+    box-shadow: 0 4px 8px rgba(26, 86, 219, 0.3);
 }
 
 .sidebar-footer {
     margin-top: auto;
-    padding: 20px 20px 0 20px;
-    border-top: 1px solid #E5E7EB;
+    padding: 16px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.version-info {
+    padding: 12px 24px;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.sidebar-nav ul li {
+    animation: fadeIn 0.3s ease forwards;
+    opacity: 0;
+}
+
+.sidebar-nav ul li:nth-child(1) { animation-delay: 0.1s; }
+.sidebar-nav ul li:nth-child(2) { animation-delay: 0.2s; }
+.sidebar-nav ul li:nth-child(3) { animation-delay: 0.3s; }
+.sidebar-nav ul li:nth-child(4) { animation-delay: 0.4s; }
+.sidebar-nav ul li:nth-child(5) { animation-delay: 0.5s; }
+
+/* Media queries para responsividad */
+@media (max-width: 767px) {
+    .sidebar {
+        width: 250px;
+    }
+    
+    .nav-item {
+        padding: 10px 14px;
+    }
+    
+    .nav-icon {
+        width: 32px;
+        height: 32px;
+    }
 }
 </style>
