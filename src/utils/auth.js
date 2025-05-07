@@ -12,7 +12,8 @@ export async function validateAuth() {
             }
         });
         const data = await response.json();
-        if (data.status === 401) {
+        if (data.status === 401 || data.data.user_rol !== 'profesional') {
+            console.error('Invalid token or user role');
             localStorage.removeItem('token');
             return false;
         }
