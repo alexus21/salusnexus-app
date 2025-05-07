@@ -1,51 +1,123 @@
 <template>
     <div class="agenda-main-container">
-        <header class="agenda-header">
-            <div>
-                <h1>Solicitudes de Citas</h1>
-                <p class="subtitle">Gestiona las solicitudes de citas de tus pacientes</p>
-            </div>
-            <div class="filter-controls">
-                <div class="search-container">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" placeholder="Buscar por nombre o especialidad..." v-model="searchQuery"
-                           class="search-input"/>
+        <div class="agenda-header">
+            <div class="header-content">
+                <div class="header-icon">
+                    <i class="fas fa-calendar-check"></i>
                 </div>
-                <div class="filter-dropdown">
-                    <select v-model="statusFilter" class="filter-select">
-                        <option value="all">Todos los estados</option>
-                        <option value="pendiente_confirmacion">Pendientes</option>
-                        <option value="programada">Aprobadas</option>
-                        <option value="cancelada_paciente">Canceladas</option>
-                        <option value="cancelada_profesional">Rechazadas</option>
-                        <option value="rescheduled">Reprogramadas</option>
-                    </select>
+                <div>
+                    <h1>Solicitudes de Citas</h1>
+                    <p class="subtitle">Gestiona las solicitudes de citas de tus pacientes</p>
                 </div>
             </div>
-        </header>
+        </div>
 
-        <section class="card-container" v-if="!isLoading && filteredAppointments.length > 0">
-            <AppointmentCard
-                    v-for="appointment in filteredAppointments"
-                    :key="appointment.id"
-                    :appointment="appointment"
-                    @approve="approveAppointment(appointment)"
-                    @reschedule="openRescheduleModal(appointment)"
-                    @reject="rejectAppointment(appointment)"
-            />
-        </section>
-
-        <section class="empty-state" v-else-if="!isLoading">
-            <div class="empty-illustration">
-                <i class="fas fa-calendar-times empty-icon"></i>
+        <!-- New modern filter section -->
+        <div class="filter-section">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input 
+                    type="text" 
+                    placeholder="Buscar por nombre o especialidad..." 
+                    v-model="searchQuery"
+                    class="search-input"
+                />
+                <button class="clear-search" v-if="searchQuery" @click="searchQuery = ''">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <h3>No hay solicitudes de citas</h3>
-            <p>No se encontraron solicitudes de citas que coincidan con los filtros seleccionados.</p>
-        </section>
+            
+            <div class="filter-tabs-container">
+                <div class="filter-tabs">
+                    <button 
+                        class="filter-tab" 
+                        :class="{ 'active': statusFilter === 'all' }"
+                        @click="statusFilter = 'all'"
+                    >
+                        <div class="tab-icon"><i class="fas fa-th-list"></i></div>
+                        <span>Todos</span>
+                        <div class="tab-count">{{ getCountByStatus('all') }}</div>
+                    </button>
+                    
+                    <button 
+                        class="filter-tab" 
+                        :class="{ 'active': statusFilter === 'pendiente_confirmacion' }"
+                        @click="statusFilter = 'pendiente_confirmacion'"
+                    >
+                        <div class="tab-icon pending"><i class="fas fa-clock"></i></div>
+                        <span>Pendientes</span>
+                        <div class="tab-count">{{ getCountByStatus('pendiente_confirmacion') }}</div>
+                    </button>
+                    
+                    <button 
+                        class="filter-tab" 
+                        :class="{ 'active': statusFilter === 'programada' }"
+                        @click="statusFilter = 'programada'"
+                    >
+                        <div class="tab-icon approved"><i class="fas fa-check-circle"></i></div>
+                        <span>Aprobadas</span>
+                        <div class="tab-count">{{ getCountByStatus('programada') }}</div>
+                    </button>
+                    
+                    <button 
+                        class="filter-tab" 
+                        :class="{ 'active': statusFilter === 'cancelada_paciente' }"
+                        @click="statusFilter = 'cancelada_paciente'"
+                    >
+                        <div class="tab-icon canceled"><i class="fas fa-ban"></i></div>
+                        <span>Canceladas</span>
+                        <div class="tab-count">{{ getCountByStatus('cancelada_paciente') }}</div>
+                    </button>
+                    
+                    <button 
+                        class="filter-tab" 
+                        :class="{ 'active': statusFilter === 'cancelada_profesional' }"
+                        @click="statusFilter = 'cancelada_profesional'"
+                    >
+                        <div class="tab-icon rejected"><i class="fas fa-times-circle"></i></div>
+                        <span>Rechazadas</span>
+                        <div class="tab-count">{{ getCountByStatus('cancelada_profesional') }}</div>
+                    </button>
+                    
+                    <button 
+                        class="filter-tab" 
+                        :class="{ 'active': statusFilter === 'rescheduled' }"
+                        @click="statusFilter = 'rescheduled'"
+                    >
+                        <div class="tab-icon rescheduled"><i class="fas fa-calendar-alt"></i></div>
+                        <span>Reprogramadas</span>
+                        <div class="tab-count">{{ getCountByStatus('rescheduled') }}</div>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-        <section v-else class="loading-state">
+        <div class="loader-container" v-if="isLoading">
+            <div class="loader"></div>
             <p>Cargando citas...</p>
-        </section>
+        </div>
+
+        <div v-else>
+            <section class="card-container" v-if="filteredAppointments.length > 0">
+                <AppointmentCard
+                        v-for="appointment in filteredAppointments"
+                        :key="appointment.id"
+                        :appointment="appointment"
+                        @approve="approveAppointment(appointment)"
+                        @reschedule="openRescheduleModal(appointment)"
+                        @reject="rejectAppointment(appointment)"
+                />
+            </section>
+
+            <section class="empty-state" v-else>
+                <div class="empty-illustration">
+                    <i class="fas fa-calendar-times empty-icon"></i>
+                </div>
+                <h3>No hay solicitudes de citas</h3>
+                <p>No se encontraron solicitudes de citas que coincidan con los filtros seleccionados.</p>
+                <button class="reset-filters-btn" @click="resetFilters">Reiniciar filtros</button>
+            </section>
+        </div>
 
         <!-- Modal para reprogramar cita -->
         <div class="modal-overlay" v-if="showRescheduleModal" @click="closeRescheduleModal">
@@ -56,9 +128,12 @@
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
+                
                 <div class="modal-body">
                     <div class="patient-info">
-                        <img :src="selectedAppointment.avatar" alt="Avatar del paciente" class="patient-avatar">
+                        <div class="patient-avatar-container">
+                            <img :src="selectedAppointment.avatar" alt="Avatar del paciente" class="patient-avatar">
+                        </div>
                         <div>
                             <h4>{{ selectedAppointment.patientName }}</h4>
                             <p>{{ selectedAppointment.serviceType }}</p>
@@ -68,18 +143,30 @@
                     <div class="reschedule-form">
                         <div class="form-group">
                             <label>Nueva fecha</label>
-                            <input type="date" v-model="rescheduleDate" class="form-control">
+                            <div class="input-icon-wrapper">
+                                <i class="fas fa-calendar input-icon"></i>
+                                <input type="date" v-model="rescheduleDate" class="form-control">
+                            </div>
                         </div>
+                        
                         <div class="form-group">
                             <label>Motivo del cambio</label>
-                            <textarea v-model="rescheduleReason" class="form-control" rows="3"
-                                      placeholder="Explica brevemente el motivo del cambio..."></textarea>
+                            <div class="input-icon-wrapper textarea-wrapper">
+                                <i class="fas fa-comment-alt input-icon"></i>
+                                <textarea v-model="rescheduleReason" class="form-control" rows="3"
+                                        placeholder="Explica brevemente el motivo del cambio..."></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
+                
                 <div class="modal-footer">
-                    <button class="cancel-button" @click="closeRescheduleModal">Cancelar</button>
-                    <button class="confirm-button" @click="confirmReschedule(selectedAppointment)">Confirmar cambio</button>
+                    <button class="cancel-button" @click="closeRescheduleModal">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button class="confirm-button" @click="confirmReschedule()">
+                        <i class="fas fa-check"></i> Confirmar cambio
+                    </button>
                 </div>
             </div>
         </div>
@@ -199,19 +286,17 @@ export default {
             });
         },
 
-        openRescheduleModal(apmnt) {
-            const appointment = this.appointments.find(appt => appt.id === apmnt.id);
-            if (appointment) {
-                this.selectedAppointment = appointment;
-                this.rescheduleDate = appointment.preferredDate;
-                this.rescheduleTime = appointment.preferredTime;
-                this.rescheduleReason = '';
-                this.showRescheduleModal = true;
-            }
+        openRescheduleModal(appointment) {
+            this.selectedAppointment = {...appointment};
+            this.rescheduleDate = appointment.preferredDate;
+            this.rescheduleTime = appointment.preferredTime;
+            this.rescheduleReason = '';
+            this.showRescheduleModal = true;
         },
 
         closeRescheduleModal() {
             this.showRescheduleModal = false;
+            this.selectedAppointment = {};
         },
 
         confirmReschedule() {
@@ -409,7 +494,7 @@ export default {
                     id: item.appointment_id,
                     patientName: item.first_name + ' ' + item.last_name || 'Paciente sin nombre',
                     patientAge: this.getAge(item.date_of_birth) || 'N/A',
-                    avatar: API_IMAGES_URL + '/' + item.profile_photo_path,
+                    avatar: `${API_IMAGES_URL}/${item.profile_photo_path}`,
                     serviceType: item.service_type || item.serviceType || 'Consulta general',
                     requestDate: item.created_at || item.requestDate || new Date().toISOString().split('T')[0],
                     preferredDate: item.appointment_date || item.preferredDate || new Date().toISOString().split('T')[0],
@@ -431,6 +516,8 @@ export default {
         },
 
         getAge(dateString) {
+            if (!dateString) return 'N/A';
+            
             let today = new Date();
             let birthDate = new Date(dateString);
             let age = today.getFullYear() - birthDate.getFullYear();
@@ -452,113 +539,21 @@ export default {
                 errorMessage = error.message;
             }
 
-
             console.error(`${defaultMessage}: ${errorMessage}`);
-
-            /* 
-            Swal.fire({
-                title: 'Error',
-                text: errorMessage,
-                icon: 'error',
-                confirmButtonText: 'Entendido'
-            });
-            */
-        },
-
-        async getPaginatedAppointments(page = 1, limit = 10, filters = {}) {
-            try {
-                this.isLoading = true;
-                const token = localStorage.getItem('token');
-
-                if (!token) {
-                    console.error('No se encontró token de autenticación');
-                    return;
-                }
-
-                // Construir query params para filtros
-                const queryParams = new URLSearchParams({
-                    page: page.toString(),
-                    limit: limit.toString(),
-                    ...this.constructFilterParams(filters)
-                }).toString();
-
-                const API_URL = process.env.VUE_APP_API_URL || 'https://api.example.com';
-                const response = await fetch(`${API_URL}/appointments?${queryParams}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Error al obtener citas: ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                // Actualizar estado con la respuesta paginada
-                this.appointments = this.transformApiResponse(data);
-
-                // Si la API devuelve metadatos de paginación, actualizarlos
-                if (data.meta) {
-                    this.pagination = {
-                        total: data.meta.total || 0,
-                        currentPage: data.meta.current_page || page,
-                        lastPage: data.meta.last_page || 1,
-                        perPage: data.meta.per_page || limit
-                    };
-                }
-
-            } catch (error) {
-                this.handleApiError(error, 'Error al cargar las citas');
-            } finally {
-                this.isLoading = false;
-            }
-        },
-
-        constructFilterParams(filters) {
-            // Construye los parámetros de filtro para la API
-            const params = {};
-
-            if (filters.status && filters.status !== 'all') {
-                params.status = filters.status;
-            }
-
-            if (filters.search) {
-                params.search = filters.search;
-            }
-
-            if (filters.dateFrom) {
-                params.date_from = filters.dateFrom;
-            }
-
-            if (filters.dateTo) {
-                params.date_to = filters.dateTo;
-            }
-
-            return params;
-        },
-
-        applyFilters() {
-            // Crear objeto de filtros basado en estado actual
-            const filters = {
-                status: this.statusFilter,
-                search: this.searchQuery,
-                // Puedes agregar más filtros aquí según se necesite
-            };
-
-            // Llamar a la API con los filtros aplicados
-            this.getPaginatedAppointments(1, 10, filters);
         },
 
         resetFilters() {
             this.statusFilter = 'all';
             this.searchQuery = '';
-            // Reiniciar otros filtros si existen
-
             // Recargar citas sin filtros
             this.fetchAppointments();
+        },
+
+        getCountByStatus(status) {
+            if (status === 'all') {
+                return this.appointments.length;
+            }
+            return this.appointments.filter(appt => appt.status === status).length;
         }
     },
 };
@@ -566,12 +561,17 @@ export default {
 
 <style scoped>
 .agenda-main-container {
-    max-width: 1200px;
-    width: 100%;
+    width: 85%;
     margin: 0 auto;
     padding: 30px;
-    background-color: #f4f8ff;
+    background-color: #f8fafc;
     min-height: 100vh;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .agenda-header {
@@ -583,53 +583,242 @@ export default {
     gap: 20px;
 }
 
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background: #3b82f6;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.3rem;
+}
+
 .agenda-header h1 {
-    font-size: 1.8em;
+    font-size: 1.8rem;
     font-weight: 700;
-    color: #1F2937;
+    color: #1e293b;
     margin: 0;
     margin-bottom: 5px;
 }
 
 .subtitle {
-    color: #6B7280;
+    color: #64748b;
     margin: 0;
+    font-size: 1rem;
 }
 
-.filter-controls {
-    display: flex;
-    gap: 15px;
-    align-items: center;
+.filter-section {
+    margin-bottom: 30px;
+    animation: fadeIn 0.6s ease-out;
 }
 
 .search-container {
     position: relative;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 500px;
 }
 
 .search-icon {
     position: absolute;
-    left: 12px;
+    left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: #6B7280;
+    color: #64748b;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+
+.search-input:focus + .search-icon {
+    color: #3b82f6;
 }
 
 .search-input {
-    padding: 10px 15px 10px 38px;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    width: 300px;
-    font-size: 0.95em;
+    padding: 15px 40px;
+    width: 100%;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
     background-color: white;
 }
 
-.filter-select {
-    padding: 10px 15px;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
+.search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.2);
+}
+
+.clear-search {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #f1f5f9;
+    border: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 0.7rem;
+    transition: all 0.2s ease;
+}
+
+.clear-search:hover {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.filter-tabs-container {
+    position: relative;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+.filter-tabs-container::-webkit-scrollbar {
+    height: 5px;
+}
+
+.filter-tabs-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+.filter-tabs-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 10px;
+    padding: 5px 0;
+    min-width: min-content;
+}
+
+.filter-tab {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
     background-color: white;
-    font-size: 0.95em;
-    min-width: 180px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    color: #64748b;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+}
+
+.filter-tab:hover {
+    background-color: #f8fafc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.filter-tab.active {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #1e293b;
+    font-weight: 600;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.tab-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #f1f5f9;
+    border-radius: 8px;
+    color: #64748b;
+    transition: all 0.3s ease;
+}
+
+.filter-tab.active .tab-icon {
+    color: white;
+}
+
+.filter-tab.active .tab-icon.pending {
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+}
+
+.filter-tab.active .tab-icon.approved {
+    background: linear-gradient(135deg, #10b981, #34d399);
+}
+
+.filter-tab.active .tab-icon.canceled {
+    background: linear-gradient(135deg, #ef4444, #f87171);
+}
+
+.filter-tab.active .tab-icon.rejected {
+    background: linear-gradient(135deg, #e11d48, #fb7185);
+}
+
+.filter-tab.active .tab-icon.rescheduled {
+    background: linear-gradient(135deg, #6366f1, #818cf8);
+}
+
+.tab-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 20px;
+    padding: 0 6px;
+    transition: all 0.3s ease;
+}
+
+.filter-tab.active .tab-count {
+    background-color: white;
+    color: #1e293b;
+}
+
+.loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 0;
+    color: #64748b;
+}
+
+.loader {
+    border: 4px solid #f3f4f6;
+    border-radius: 50%;
+    border-top: 4px solid #3b82f6;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .card-container {
@@ -645,15 +834,16 @@ export default {
     justify-content: center;
     padding: 60px 20px;
     background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     text-align: center;
+    margin-top: 30px;
 }
 
 .empty-illustration {
     width: 120px;
     height: 120px;
-    background-color: #EBF5FF;
+    background-color: #eef2ff;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -663,18 +853,35 @@ export default {
 
 .empty-icon {
     font-size: 50px;
-    color: #3B82F6;
+    color: #6366f1;
 }
 
 .empty-state h3 {
-    font-size: 1.3em;
-    color: #1F2937;
+    font-size: 1.3rem;
+    color: #1e293b;
     margin-bottom: 10px;
 }
 
 .empty-state p {
-    color: #6B7280;
+    color: #64748b;
     max-width: 80%;
+    margin-bottom: 20px;
+}
+
+.reset-filters-btn {
+    background-color: #eef2ff;
+    color: #6366f1;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.reset-filters-btn:hover {
+    background-color: #6366f1;
+    color: white;
 }
 
 /* Modal styles */
@@ -689,38 +896,57 @@ export default {
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    animation: fadeIn 0.2s ease;
 }
 
 .modal-container {
     background-color: white;
-    border-radius: 12px;
+    border-radius: 16px;
     width: 90%;
     max-width: 500px;
     max-height: 90vh;
     overflow-y: auto;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
-    border-bottom: 1px solid #E5E7EB;
+    padding: 20px;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .modal-header h3 {
     margin: 0;
-    font-size: 1.3em;
-    color: #1F2937;
+    font-size: 1.3rem;
+    color: #1e293b;
 }
 
 .close-button {
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 1.2em;
-    color: #6B7280;
+    font-size: 1.2rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.close-button:hover {
+    background-color: #f1f5f9;
+    color: #1e293b;
 }
 
 .modal-body {
@@ -733,100 +959,171 @@ export default {
     gap: 15px;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 1px solid #E5E7EB;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.patient-avatar-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #f1f5f9;
 }
 
 .patient-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 }
 
 .patient-info h4 {
     margin: 0 0 5px 0;
-    color: #1F2937;
+    color: #1e293b;
+    font-weight: 600;
 }
 
 .patient-info p {
     margin: 0;
-    color: #6B7280;
+    color: #64748b;
+    font-size: 0.9rem;
 }
 
 .reschedule-form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 20px;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 8px;
 }
 
 .form-group label {
-    font-size: 0.95em;
-    color: #4B5563;
+    font-size: 0.9rem;
+    color: #334155;
+    font-weight: 500;
+}
+
+.input-icon-wrapper {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+}
+
+.textarea-wrapper .input-icon {
+    top: 20px;
+    transform: none;
 }
 
 .form-control {
-    padding: 10px;
-    border: 1px solid #E5E7EB;
-    border-radius: 6px;
-    font-size: 0.95em;
+    padding: 12px 12px 12px 40px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 .modal-footer {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
-    padding: 15px 20px;
-    border-top: 1px solid #E5E7EB;
+    gap: 12px;
+    padding: 20px;
+    border-top: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+    border-radius: 0 0 16px 16px;
 }
 
 .cancel-button {
-    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
     background-color: white;
-    border: 1px solid #E5E7EB;
-    border-radius: 6px;
-    color: #4B5563;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #475569;
     font-weight: 500;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cancel-button:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
 }
 
 .confirm-button {
-    padding: 8px 16px;
-    background-color: #3B82F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: #3b82f6;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     color: white;
     font-weight: 500;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.confirm-button:hover {
+    background-color: #2563eb;
 }
 
 /* Responsive styles */
 @media (max-width: 768px) {
+    .agenda-main-container {
+        width: 95%;
+        padding: 20px 15px;
+    }
+    
     .agenda-header {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .filter-controls {
-        flex-direction: column;
-        width: 100%;
+    .filter-section {
+        overflow-x: hidden;
     }
-
-    .search-input {
-        width: 100%;
+    
+    .search-container {
+        max-width: none;
     }
-
-    .filter-select {
-        width: 100%;
+    
+    .filter-tabs {
+        padding-bottom: 10px;
     }
-
-    .card-container {
-        grid-template-columns: 1fr;
+    
+    .filter-tab {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .tab-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 0.8rem;
+    }
+    
+    .modal-container {
+        width: 95%;
     }
 }
 </style> 
