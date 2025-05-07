@@ -1,23 +1,37 @@
 <template>
     <div class="review-card">
-        <div class="review-profile">
-            <img :src="review.avatar" alt="Foto de perfil" class="avatar"/>
-            <div class="profile-info">
-                <span class="author-name">{{ review.name }}</span>
-                <span class="badge-age">{{ review.age }} años</span>
+        <div class="review-header">
+            <div class="reviewer-info">
+                <div class="avatar-container">
+                    <img :src="profileImageUrl" :alt="review.patient_first_name" class="reviewer-avatar" @error="handleImageError">
+                </div>
+                <div class="name-date">
+                    <div class="reviewer-name">{{ review.patient_first_name }} {{ review.patient_last_name }}</div>
+                    <div class="review-date">{{ formatDate(review.review_datetime) }}</div>
+                </div>
+            </div>
+            <div class="rating">
+                <div class="stars">
+                    <span v-for="n in 5" :key="n" class="star" :class="{ filled: n <= review.rating }">★</span>
+                </div>
+                <span class="rating-value">{{ review.rating }}</span>
             </div>
         </div>
-        <div class="review-content">
-            <div class="review-rating">
-                <span v-for="n in 5" :key="n" class="star" :class="{ filled: n <= review.rating }">★</span>
-            </div>
-            <div class="review-bubble">
-                <i class="fas fa-quote-left quote-icon"></i>
-                <span class="review-comment">{{ review.comment }}</span>
-            </div>
-            <div class="review-date">
-                {{ review.date }}
-            </div>
+        
+        <div class="review-body">
+            <p class="review-comment">{{ review.comment || 'No se dejó ningún comentario.' }}</p>
+        </div>
+        
+        <div class="review-footer" v-if="review.professional_response">
+            <div class="response-tag">Tu respuesta:</div>
+            <p class="response-text">{{ review.professional_response }}</p>
+            <div class="response-date">{{ formatDate(review.response_datetime) }}</div>
+        </div>
+        
+        <div class="review-actions" v-else>
+            <button class="action-button" @click="openResponseDialog">
+                <i class="fas fa-reply"></i> Responder
+            </button>
         </div>
     </div>
 </template>
@@ -30,176 +44,209 @@ export default {
             type: Object,
             required: true
         }
+    },
+    data() {
+        return {
+            fallbackImage: 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png'
+        };
+    },
+    computed: {
+        profileImageUrl() {
+            return this.review.profile_photo_path 
+                ? `${process.env.VUE_APP_API_URL_IMAGE}/${this.review.profile_photo_path}`
+                : this.fallbackImage;
+        }
+    },
+    methods: {
+        formatDate(dateString) {
+            if (!dateString) return 'Fecha no disponible';
+            
+            const options = { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            
+            return new Date(dateString).toLocaleDateString('es-ES', options);
+        },
+        
+        handleImageError(e) {
+            e.target.src = this.fallbackImage;
+        },
+        
+        openResponseDialog() {
+            this.$emit('respond', this.review);
+        }
     }
-}
+};
 </script>
 
 <style scoped>
 .review-card {
-    display: flex;
-    align-items: flex-start;
-    background: #fff;
+    background-color: white;
     border-radius: 16px;
-    box-shadow: 0 2px 10px 0 rgba(30, 34, 90, 0.06);
-    padding: 22px 28px;
-    margin-bottom: 18px;
-    transition: box-shadow 0.2s;
-    gap: 32px;
-    min-height: 120px;
-    width: 100%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    transition: all 0.3s ease;
+    border: 1px solid #f1f5f9;
+    animation: fadeIn 0.5s ease-out;
 }
 
 .review-card:hover {
-    box-shadow: 0 4px 18px 0 rgba(30, 34, 90, 0.10);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-.review-profile {
+.review-header {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    min-width: 110px;
-    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
-.avatar {
-    width: 60px;
-    height: 60px;
+.reviewer-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.avatar-container {
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
+    overflow: hidden;
+    background: #f1f5f9;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.reviewer-avatar {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border: 2.5px solid #e6e9f4;
-    margin-bottom: 2px;
-    background: #f4f8ff;
 }
 
-.profile-info {
+.name-date {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 2px;
+    gap: 4px;
 }
 
-.author-name {
-    color: #23255d;
-    font-weight: 700;
-    font-size: 1.08em;
-    margin-bottom: 0.5px;
-    text-align: center;
-}
-
-.badge-age {
-    background: #eaf2fb;
-    color: #4a5a88;
-    font-size: 0.92em;
-    border-radius: 8px;
-    padding: 2px 10px;
-    margin-top: 2px;
-    font-weight: 500;
-    display: inline-block;
-}
-
-.review-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    position: relative;
-}
-
-.review-rating {
-    position: absolute;
-    top: 0;
-    right: 0;
-    font-size: 1.18em;
-    color: #ffc107;
+.reviewer-name {
     font-weight: 600;
-    letter-spacing: 1px;
-}
-
-.star {
-    color: #e6e9f4;
-    font-size: 1.25em;
-    margin-left: 1px;
-}
-
-.star.filled {
-    color: #ffc107;
-}
-
-.review-bubble {
-    background: #f4f8ff;
-    border-radius: 14px;
-    padding: 18px 24px 18px 38px;
-    font-size: 1.08em;
-    color: #23255d;
-    font-weight: 500;
-    box-shadow: 0 1px 4px 0 rgba(30, 34, 90, 0.04);
-    position: relative;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-}
-
-.quote-icon {
-    position: absolute;
-    left: 14px;
-    top: 18px;
-    color: #b3c2e6;
-    font-size: 1.1em;
-    opacity: 0.7;
-}
-
-.review-comment {
-    display: inline-block;
-    word-break: break-word;
+    font-size: 1.1rem;
+    color: #1e293b;
 }
 
 .review-date {
-    color: #a3aac2;
-    font-size: 0.97em;
-    text-align: right;
-    margin-top: 8px;
-    margin-right: 8px;
+    font-size: 0.8rem;
+    color: #64748b;
 }
 
-@media (max-width: 700px) {
-    .review-card {
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stars {
+    display: flex;
+    font-size: 1.2rem;
+}
+
+.star {
+    color: #e2e8f0;
+    margin-right: 2px;
+}
+
+.star.filled {
+    color: #fbbf24;
+}
+
+.rating-value {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #1e293b;
+}
+
+.review-body {
+    margin-bottom: 18px;
+}
+
+.review-comment {
+    color: #334155;
+    line-height: 1.6;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.review-footer {
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.response-tag {
+    font-weight: 600;
+    color: #3b82f6;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.response-text {
+    color: #334155;
+    margin: 0 0 8px 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.response-date {
+    font-size: 0.8rem;
+    color: #64748b;
+    text-align: right;
+}
+
+.review-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #eff6ff;
+    color: #3b82f6;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-button:hover {
+    background-color: #3b82f6;
+    color: white;
+    transform: translateY(-2px);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+    .review-header {
         flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-        padding: 16px 8px;
-    }
-
-    .review-profile {
-        flex-direction: row;
-        align-items: center;
-        min-width: 0;
-        gap: 12px;
-        margin-bottom: 0;
-    }
-
-    .profile-info {
         align-items: flex-start;
     }
-
-    .review-content {
-        gap: 5px;
-    }
-
-    .review-bubble {
-        padding: 12px 12px 12px 32px;
-        font-size: 1em;
-    }
-
-    .quote-icon {
-        left: 8px;
-        top: 12px;
-        font-size: 1em;
-    }
-
-    .review-rating {
-        position: static;
-        margin-bottom: 6px;
-        text-align: left;
+    
+    .rating {
+        align-self: flex-end;
     }
 }
 </style>

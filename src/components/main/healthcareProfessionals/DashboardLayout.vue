@@ -52,10 +52,12 @@ export default {
     },
     computed: {
         mainComponent() {
-            if (this.currentView === 'Resenas' || this.currentView === 'Pacientes') {
-                // Mostrar Sweet Alert para características no disponibles
-                this.showUnavailableFeature(this.currentView);
-                return 'ScheduleView'; // Cargar vista por defecto
+            if (this.currentView === 'Resenas') {
+                // Show ReviewsView component instead of Sweet Alert
+                return 'ReviewsView';
+            }
+            if (this.currentView === 'Pacientes') {
+                return 'PatientsView';
             }
             if (this.currentView === 'Horario'){
                 return 'ScheduleView';
