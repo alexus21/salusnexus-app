@@ -1,32 +1,83 @@
 <template>
     <div class="schedule-container">
-        <h2><i class="fas fa-clock"></i> Horarios de atención</h2>
-        <form @submit.prevent>
-            <div v-for="day in days" :key="day.name" class="schedule-row">
-                <div class="day-label">{{ day.label }}</div>
-                <input
-                    v-model="schedule[day.name].from"
-                    :disabled="!schedule[day.name].open"
-                    class="time-input"
-                    type="time"
-                />
-                <span class="a-label">a</span>
-                <input
-                    v-model="schedule[day.name].to"
-                    :disabled="!schedule[day.name].open"
-                    class="time-input"
-                    type="time"
-                />
-                <label class="switch">
-                    <input v-model="schedule[day.name].open" type="checkbox"/>
-                    <span class="slider round"></span>
-                </label>
-                <span :class="{ closed: !schedule[day.name].open }" class="status-label">
-                    {{ schedule[day.name].open ? 'Abierto' : 'Cerrado' }}
-                </span>
+        <div class="schedule-header">
+            <div class="header-icon">
+                <i class="fas fa-clock"></i>
             </div>
-            <button class="save-btn" type="button" @click="saveSchedule">Guardar horario</button>
-        </form>
+            <div class="header-content">
+                <h2>Horarios de atención</h2>
+                <p>Configure sus horarios de atención para cada día de la semana</p>
+            </div>
+        </div>
+
+        <div class="schedule-card">
+            <div class="week-days">
+                <div v-for="day in days" :key="day.name" 
+                    :class="['day-card', {'day-active': schedule[day.name].open}]">
+                    <div class="day-icon">
+                        <i :class="getDayIcon(day.name)"></i>
+                    </div>
+                    <div class="day-name">{{ day.label }}</div>
+                </div>
+            </div>
+
+            <div class="schedule-rows">
+                <div v-for="day in days" :key="day.name" 
+                    :class="['schedule-row', {'inactive-day': !schedule[day.name].open}]">
+                    <div class="day-info">
+                        <div class="day-label">{{ day.label }}</div>
+                    </div>
+                    
+                    <div class="time-slot">
+                        <div class="time-control">
+                            <i class="fas fa-sun"></i>
+                            <input
+                                v-model="schedule[day.name].from"
+                                :disabled="!schedule[day.name].open"
+                                class="time-input"
+                                type="time"
+                            />
+                        </div>
+                        
+                        <div class="time-divider">a</div>
+                        
+                        <div class="time-control">
+                            <i class="fas fa-moon"></i>
+                            <input
+                                v-model="schedule[day.name].to"
+                                :disabled="!schedule[day.name].open"
+                                class="time-input"
+                                type="time"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div class="day-toggle">
+                        <label class="switch">
+                            <input v-model="schedule[day.name].open" type="checkbox"/>
+                            <span class="slider"></span>
+                        </label>
+                        <div class="status-indicator">
+                            {{ schedule[day.name].open ? 'Abierto' : 'Cerrado' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <p>Horarios optimizados mejoran su visibilidad en búsquedas</p>
+            </div>
+
+            <div class="action-bar">
+                <button class="save-button" @click="saveSchedule">
+                    <i class="fas fa-save"></i>
+                    <span>Guardar horario</span>
+                </button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -43,7 +94,7 @@ export default {
     data() {
         return {
             days: [
-                {name: 'lunes', label: 'lunes'},
+                {name: 'lunes', label: 'Lunes'},
                 {name: 'martes', label: 'Martes'},
                 {name: 'miercoles', label: 'Miércoles'},
                 {name: 'jueves', label: 'Jueves'},
@@ -77,7 +128,25 @@ export default {
         }
     },
     methods: {
+        getDayIcon(day) {
+            const icons = {
+                lunes: 'fas fa-briefcase',
+                martes: 'fas fa-calendar-alt',
+                miercoles: 'fas fa-clipboard-list',
+                jueves: 'fas fa-chart-line',
+                viernes: 'fas fa-user-friends',
+                sabado: 'fas fa-umbrella-beach',
+                domingo: 'fas fa-coffee'
+            };
+            return icons[day] || 'fas fa-calendar';
+        },
         async saveSchedule() {
+            const saveBtn = document.querySelector('.save-button');
+            if (saveBtn) {
+                saveBtn.classList.add('loading');
+                saveBtn.disabled = true;
+            }
+
             const clinic = JSON.parse(localStorage.getItem('clinics'));
 
             // Create a new schedule object instead of overwriting `this.schedule`
@@ -142,29 +211,61 @@ export default {
 
                 const data = await response.json();
 
+                if (saveBtn) {
+                    saveBtn.classList.remove('loading');
+                    saveBtn.disabled = false;
+                }
+
                 if(!data.status){
                     swal.fire({
                         icon: 'error',
                         title: 'Error',
                         text: data.message,
-                        confirmButtonText: 'Aceptar'
+                        confirmButtonText: 'Aceptar',
+                        customClass: {
+                            popup: 'modern-swal',
+                            confirmButton: 'modern-swal-button'
+                        }
                     });
                     return;
                 }
 
+                // Mostrar animación de éxito en todas las filas
+                const scheduleRows = document.querySelectorAll('.schedule-row');
+                scheduleRows.forEach(row => {
+                    row.classList.add('success-flash');
+                    setTimeout(() => {
+                        row.classList.remove('success-flash');
+                    }, 1000);
+                });
+
                 swal.fire({
                     icon: 'success',
-                    title: 'Horarios guardado',
-                    text: 'Los horarios se ha guardado correctamente.',
-                    confirmButtonText: 'Aceptar'
+                    title: 'Horarios guardados',
+                    text: 'Los horarios se han guardado correctamente.',
+                    confirmButtonText: 'Aceptar',
+                    customClass: {
+                        popup: 'modern-swal',
+                        confirmButton: 'modern-swal-button'
+                    }
                 });
             } catch (error) {
                 console.error('Error al guardar el horario:', error);
+                
+                if (saveBtn) {
+                    saveBtn.classList.remove('loading');
+                    saveBtn.disabled = false;
+                }
+                
                 swal.fire({
                     icon: 'error',
                     title: 'Error',
                     text: 'No se pudo guardar el horario. Intente nuevamente.',
-                    confirmButtonText: 'Aceptar'
+                    confirmButtonText: 'Aceptar',
+                    customClass: {
+                        popup: 'modern-swal',
+                        confirmButton: 'modern-swal-button'
+                    }
                 });
             }
         },
@@ -242,59 +343,252 @@ export default {
 </script>
 
 <style scoped>
+/* Estilos generales */
 .schedule-container {
-    background: #fff;
-    border-radius: 10px;
-    padding: 24px 32px;
-    max-width: 800px;
-    margin: 32px auto;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    padding: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+        Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cabecera */
+.schedule-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #0a7cff, #1a56db);
+    border-radius: 20px;
+    box-shadow: 0 10px 15px rgba(26, 86, 219, 0.2);
+    color: white;
+    font-size: 1.5rem;
+    animation: pulse 3s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 10px 15px rgba(26, 86, 219, 0.2); }
+    50% { box-shadow: 0 10px 25px rgba(26, 86, 219, 0.4); }
+    100% { box-shadow: 0 10px 15px rgba(26, 86, 219, 0.2); }
+}
+
+.header-content h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin: 0 0 0.5rem 0;
+}
+
+.header-content p {
+    color: #4a5568;
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+/* Tarjeta principal */
+.schedule-card {
+    background-color: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.schedule-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(to right, #0a7cff, #1a56db);
+    border-radius: 6px 6px 0 0;
+}
+
+/* Sección de días de la semana */
+.week-days {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.week-days::-webkit-scrollbar {
+    display: none;
+}
+
+.day-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 0.5rem;
+    width: 90px;
+    min-width: 80px;
+    border-radius: 16px;
+    background-color: #f7fafc;
+    transition: all 0.3s ease;
+}
+
+.day-card:hover {
+    transform: translateY(-5px);
+}
+
+.day-active {
+    background-color: rgba(10, 124, 255, 0.1);
+    border: 1px solid rgba(10, 124, 255, 0.2);
+}
+
+.day-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #0a7cff, #1a56db);
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.day-name {
+    font-weight: 500;
+    color: #4a5568;
+    font-size: 0.9rem;
+}
+
+/* Filas de horario */
+.schedule-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
 }
 
 .schedule-row {
     display: flex;
     align-items: center;
-    margin-bottom: 16px;
+    justify-content: space-between;
+    padding: 1.25rem;
+    background-color: #fafbff;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    animation: slideIn 0.3s ease-out forwards;
+    opacity: 0;
+    transform: translateX(-10px);
+}
+
+@keyframes slideIn {
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.schedule-row:nth-child(1) { animation-delay: 0.05s; }
+.schedule-row:nth-child(2) { animation-delay: 0.1s; }
+.schedule-row:nth-child(3) { animation-delay: 0.15s; }
+.schedule-row:nth-child(4) { animation-delay: 0.2s; }
+.schedule-row:nth-child(5) { animation-delay: 0.25s; }
+.schedule-row:nth-child(6) { animation-delay: 0.3s; }
+.schedule-row:nth-child(7) { animation-delay: 0.35s; }
+
+.schedule-row:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transform: translateX(5px);
+}
+
+.inactive-day {
+    opacity: 0.7;
+    background-color: #f8f9fa;
+}
+
+.day-info {
+    min-width: 100px;
 }
 
 .day-label {
-    width: 110px;
-    font-weight: 500;
-}
-
-.time-input {
-    width: 110px;
-    margin: 0 8px;
-    padding: 4px 8px;
-    border-radius: 4px;
-    border: 1px solid #d1d5db;
+    font-weight: 600;
+    color: #2d3748;
     font-size: 1rem;
 }
 
-.a-label {
-    margin: 0 8px;
-    color: #666;
+/* Control de tiempo */
+.time-slot {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
-.status-label {
-    margin-left: 16px;
-    font-weight: bold;
+.time-control {
+    position: relative;
+}
+
+.time-control i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
     color: #0a7cff;
-    min-width: 60px;
-    text-align: left;
+    font-size: 0.9rem;
+    z-index: 2;
 }
 
-.status-label.closed {
-    color: #aaa;
-    text-decoration: line-through;
+.time-input {
+    padding: 0.75rem 0.75rem 0.75rem 2.25rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    color: #2d3748;
+    width: 130px;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+.time-input:focus {
+    outline: none;
+    border-color: #0a7cff;
+    box-shadow: 0 0 0 3px rgba(10, 124, 255, 0.2);
+}
+
+.time-input:disabled {
+    background-color: #edf2f7;
+    cursor: not-allowed;
+}
+
+.time-divider {
+    font-weight: 500;
+    color: #718096;
+}
+
+/* Toggle de disponibilidad */
+.day-toggle {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 .switch {
-    margin-left: 16px;
     position: relative;
     display: inline-block;
-    width: 38px;
-    height: 22px;
+    width: 52px;
+    height: 26px;
 }
 
 .switch input {
@@ -310,45 +604,258 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
+    background-color: #cbd5e0;
     transition: .4s;
-    border-radius: 22px;
+    border-radius: 26px;
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 16px;
-    width: 16px;
+    height: 20px;
+    width: 20px;
     left: 3px;
     bottom: 3px;
     background-color: white;
     transition: .4s;
     border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 input:checked + .slider {
     background-color: #0a7cff;
 }
 
+input:focus + .slider {
+    box-shadow: 0 0 1px #0a7cff;
+}
+
 input:checked + .slider:before {
-    transform: translateX(16px);
+    transform: translateX(26px);
 }
 
-.save-btn {
-    margin-top: 24px;
-    padding: 8px 28px;
-    background: #0a7cff;
-    color: #fff;
+.status-indicator {
+    font-weight: 600;
+    font-size: 0.9rem;
+    min-width: 80px;
+    padding: 0.35rem 0.75rem;
+    text-align: center;
+    border-radius: 12px;
+    background-color: #edf2f7;
+    color: #718096;
+    transition: all 0.3s ease;
+}
+
+input:checked ~ .status-indicator {
+    background-color: rgba(10, 124, 255, 0.15);
+    color: #0a7cff;
+}
+
+/* Caja de información */
+.info-box {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.25rem;
+    background-color: #fffdf0;
+    border-radius: 16px;
+    border-left: 4px solid #f6ad55;
+}
+
+.info-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: #feebc8;
+    border-radius: 12px;
+    color: #dd6b20;
+    font-size: 1.1rem;
+}
+
+.info-box p {
+    margin: 0;
+    color: #744210;
+    font-weight: 500;
+}
+
+/* Barra de acción */
+.action-bar {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.save-button {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #0a7cff, #1a56db);
+    color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 12px;
     font-size: 1rem;
-    font-weight: bold;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(10, 124, 255, 0.3);
+    position: relative;
+    overflow: hidden;
 }
 
-.save-btn:hover {
-    background: #075bb5;
+.save-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(10, 124, 255, 0.4);
+}
+
+.save-button:active {
+    transform: translateY(0);
+}
+
+.save-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.7s ease;
+}
+
+.save-button:hover::before {
+    left: 100%;
+}
+
+.save-button.loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.save-button.loading::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: calc(50% - 10px);
+    right: 15px;
+    border: 2px solid transparent;
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Animación de guardado exitoso */
+.success-flash {
+    animation: flash 1s ease;
+}
+
+@keyframes flash {
+    0% { background-color: #fafbff; }
+    30% { background-color: rgba(16, 185, 129, 0.1); }
+    100% { background-color: #fafbff; }
+}
+
+/* Estilos para SweetAlert2 */
+:global(.modern-swal) {
+    border-radius: 20px !important;
+    padding: 2rem !important;
+}
+
+:global(.modern-swal-button) {
+    background: linear-gradient(135deg, #0a7cff, #1a56db) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 10px rgba(10, 124, 255, 0.3) !important;
+    padding: 0.75rem 1.5rem !important;
+    font-weight: 600 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .schedule-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .day-info {
+        margin-bottom: 0.5rem;
+    }
+    
+    .time-slot {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .day-toggle {
+        width: 100%;
+        justify-content: flex-end;
+        margin-top: 0.5rem;
+    }
+    
+    .week-days {
+        overflow-x: auto;
+        justify-content: flex-start;
+        gap: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    .header-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.25rem;
+    }
+    
+    .header-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    .header-content p {
+        font-size: 0.95rem;
+    }
+    
+    .action-bar {
+        justify-content: center;
+    }
+    
+    .save-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .time-slot {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .time-divider {
+        display: none;
+    }
+    
+    .time-control {
+        width: 100%;
+    }
+    
+    .time-input {
+        width: 100%;
+    }
+    
+    .schedule-card {
+        padding: 1.25rem;
+    }
+    
+    .day-card {
+        min-width: 70px;
+    }
 }
 </style>
