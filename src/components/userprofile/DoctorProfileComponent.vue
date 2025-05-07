@@ -1,5 +1,10 @@
 <template>
     <div class="doctor-profile-page">
+        <!-- CDN para fuentes e iconos adicionales -->
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+        
         <!-- Agregar el componente AppHeader -->
         <app-header ref="appHeader"></app-header>
         
@@ -28,13 +33,13 @@
                         <li :class="{ active: activeTab === 'horarios' }" @click="activeTab = 'horarios'">
                             <i class="fas fa-clock"></i> Horarios
                         </li>
+                        <li :class="{ active: activeTab === 'notificaciones' }" @click="activeTab = 'notificaciones'">
+                            <i class="fas fa-bell"></i> Notificaciones
+                        </li>
                         <li :class="{ active: activeTab === 'seguridad' }" @click="activeTab = 'seguridad'">
                             <i class="fas fa-shield-alt"></i> Seguridad
                         </li>
-                        <li>
-                            <i class="fas fa-bell"></i> Notificaciones
-                        </li>
-                        <li>
+                        <li :class="{ active: activeTab === 'configuracion' }" @click="activeTab = 'configuracion'">
                             <i class="fas fa-cog"></i> Configuración
                         </li>
                     </ul>
@@ -192,7 +197,201 @@
                         </div>
                     </div>
 
-                    <!-- Pestaña Seguridad -->
+                    <!-- Nueva Pestaña Notificaciones -->
+                    <div v-else-if="activeTab === 'notificaciones'" class="content-section" key="notificaciones">
+                        <div class="content-header">
+                            <span class="notification-badge">Centro de notificaciones</span>
+                            <h3>
+                                <i class="fas fa-bell"></i>
+                                Notificaciones
+                            </h3>
+                            <p class="subtitle">Gestiona todas tus preferencias de notificaciones</p>
+                        </div>
+                        
+                        <div class="notifications-container">
+                            <!-- Banner informativo -->
+                            <div class="notification-banner">
+                                <i class="fas fa-bell"></i>
+                                <span>Configura cómo deseas recibir notificaciones y mantente informado de todo lo importante</span>
+                            </div>
+                            
+                            <!-- Sección de preferencias de notificaciones generales -->
+                            <div class="notification-section">
+                                <div class="notification-section-header">
+                                    <div class="icon-container blue">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="header-text">
+                                        <h4>Preferencias de notificaciones generales</h4>
+                                        <p>Define cómo quieres recibir las notificaciones de la plataforma</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="notification-options">
+                                    <div class="notification-option">
+                                        <div class="option-info">
+                                            <i class="fas fa-envelope"></i>
+                                            <div>
+                                                <h5>Correo electrónico</h5>
+                                                <p>Recibe notificaciones en tu bandeja de entrada</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" v-model="notifications.email">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="notification-option">
+                                        <div class="option-info">
+                                            <i class="fas fa-mobile-alt"></i>
+                                            <div>
+                                                <h5>SMS</h5>
+                                                <p>Recibe mensajes de texto a tu teléfono</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" v-model="notifications.sms">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="notification-option">
+                                        <div class="option-info">
+                                            <i class="fas fa-desktop"></i>
+                                            <div>
+                                                <h5>Notificaciones push</h5>
+                                                <p>Recibe alertas en tu navegador</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" v-model="notifications.push">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Sección de notificaciones de seguridad (movida desde la sección de seguridad) -->
+                            <div class="notification-section">
+                                <div class="notification-section-header">
+                                    <div class="icon-container green">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <div class="header-text">
+                                        <h4>Notificaciones de seguridad</h4>
+                                        <p>Recibe alertas sobre actividades sospechosas</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" v-model="securityNotificationsEnabled">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="notification-features">
+                                    <div class="notification-feature" :class="{ 'disabled': !securityNotificationsEnabled }">
+                                        <i class="fas fa-desktop"></i>
+                                        <span>Recibe notificaciones cuando se detecte un inicio de sesión desde un dispositivo desconocido</span>
+                                    </div>
+                                    <div class="notification-feature" :class="{ 'disabled': !securityNotificationsEnabled }">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>Alertas de ubicaciones inusuales para inicios de sesión</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Sección de notificaciones de pacientes -->
+                            <div class="notification-section">
+                                <div class="notification-section-header">
+                                    <div class="icon-container purple">
+                                        <i class="fas fa-user-injured"></i>
+                                    </div>
+                                    <div class="header-text">
+                                        <h4>Notificaciones de pacientes</h4>
+                                        <p>Recibe alertas sobre la actividad de tus pacientes</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" v-model="notifications.patients">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="notification-features">
+                                    <div class="notification-feature" :class="{ 'disabled': !notifications.patients }">
+                                        <i class="fas fa-calendar-check"></i>
+                                        <span>Nuevas citas programadas</span>
+                                    </div>
+                                    <div class="notification-feature" :class="{ 'disabled': !notifications.patients }">
+                                        <i class="fas fa-calendar-times"></i>
+                                        <span>Cancelaciones de citas</span>
+                                    </div>
+                                    <div class="notification-feature" :class="{ 'disabled': !notifications.patients }">
+                                        <i class="fas fa-star"></i>
+                                        <span>Nuevas reseñas de pacientes</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Sección de recordatorios -->
+                            <div class="notification-section">
+                                <div class="notification-section-header">
+                                    <div class="icon-container orange">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="header-text">
+                                        <h4>Recordatorios</h4>
+                                        <p>Configura recordatorios para estar al día</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" v-model="notifications.reminders">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="notification-options">
+                                    <div class="notification-option">
+                                        <div class="option-info">
+                                            <i class="fas fa-calendar-day"></i>
+                                            <div>
+                                                <h5>Recordatorio diario</h5>
+                                                <p>Recibe un resumen de tu agenda del día</p>
+                                            </div>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" v-model="notifications.dailyReminder" :disabled="!notifications.reminders">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="notification-option">
+                                        <div class="option-info">
+                                            <i class="fas fa-stopwatch"></i>
+                                            <div>
+                                                <h5>Recordatorio de citas</h5>
+                                                <p>Recibe alertas antes de tus citas</p>
+                                            </div>
+                                        </div>
+                                        <div class="select-wrapper" :class="{ 'disabled': !notifications.reminders }">
+                                            <select v-model="notifications.appointmentReminder" :disabled="!notifications.reminders">
+                                                <option value="15">15 minutos antes</option>
+                                                <option value="30">30 minutos antes</option>
+                                                <option value="60">1 hora antes</option>
+                                                <option value="120">2 horas antes</option>
+                                                <option value="1440">1 día antes</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="save-notification-settings" @click="saveNotificationSettings">
+                                <i class="fas fa-save"></i>
+                                Guardar preferencias
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Pestaña Seguridad (modificada) -->
                     <div v-else-if="activeTab === 'seguridad'" class="content-section" key="seguridad">
                         <div class="content-header">
                             <span class="security-badge">Protección de cuenta</span>
@@ -303,34 +502,6 @@
                                 </div>
                             </div>
                             
-                            <!-- Sección notificaciones de seguridad -->
-                            <div class="security-section">
-                                <div class="security-section-header two-factor">
-                                    <div class="icon-container green">
-                                        <i class="fas fa-bell"></i>
-                                    </div>
-                                    <div class="header-text">
-                                        <h4>Notificaciones de seguridad</h4>
-                                        <p>Recibe alertas sobre actividades sospechosas</p>
-                                    </div>
-                                    <label class="toggle-switch">
-                                        <input type="checkbox" v-model="securityNotificationsEnabled">
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
-                                
-                                <div class="security-features">
-                                    <div class="security-feature" :class="{ 'disabled': !securityNotificationsEnabled }">
-                                        <i class="fas fa-desktop"></i>
-                                        <span>Recibe notificaciones cuando se detecte un inicio de sesión desde un dispositivo desconocido</span>
-                                    </div>
-                                    <div class="security-feature" :class="{ 'disabled': !securityNotificationsEnabled }">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        <span>Alertas de ubicaciones inusuales para inicios de sesión</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
                             <!-- Zona de peligro -->
                             <div class="danger-zone">
                                 <div class="danger-header">
@@ -346,6 +517,55 @@
                                         <i class="fas fa-trash-alt"></i>
                                         Eliminar mi cuenta
                                     </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pestaña Configuración -->
+                    <div v-else-if="activeTab === 'configuracion'" class="content-section" key="configuracion">
+                        <div class="content-header">
+                            <h3>
+                                <i class="fas fa-cog"></i>
+                                Configuración
+                            </h3>
+                            <p class="subtitle">Administra las preferencias generales de tu cuenta</p>
+                        </div>
+                        
+                        <div class="config-container">
+                            <!-- Contenido de configuración -->
+                            <div class="config-section">
+                                <h4>Configuración general</h4>
+                                <p>Personaliza la plataforma según tus preferencias</p>
+                                
+                                <div class="config-option">
+                                    <div class="option-left">
+                                        <i class="fas fa-language"></i>
+                                        <div>
+                                            <h5>Idioma</h5>
+                                            <p>Selecciona el idioma de la plataforma</p>
+                                        </div>
+                                    </div>
+                                    <select v-model="config.language" class="config-select">
+                                        <option value="es">Español</option>
+                                        <option value="en">English</option>
+                                        <option value="pt">Português</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="config-option">
+                                    <div class="option-left">
+                                        <i class="fas fa-palette"></i>
+                                        <div>
+                                            <h5>Tema</h5>
+                                            <p>Elige tu tema preferido</p>
+                                        </div>
+                                    </div>
+                                    <select v-model="config.theme" class="config-select">
+                                        <option value="light">Claro</option>
+                                        <option value="dark">Oscuro</option>
+                                        <option value="system">Sistema</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -444,14 +664,39 @@ export default {
             securityNotificationsEnabled: true,
             showDeleteModal: false,
             deleteConfirmText: '',
+            notifications: {
+                email: true,
+                sms: false,
+                push: true,
+                patients: true,
+                reminders: true,
+                dailyReminder: true,
+                appointmentReminder: 30
+            },
+            config: {
+                language: 'es',
+                theme: 'light'
+            },
+            isPageTransitioning: false
         }
     },
     async mounted() {
         await this.fetchUserProfile().then(() => {
             this.showAlertIsNotVerified();
         });
+        
+        document.body.classList.add('profile-page-active');
+        
+        window.addEventListener('resize', this.handleResize);
+    },
+    beforeUnmount() {
+        document.body.classList.remove('profile-page-active');
+        window.removeEventListener('resize', this.handleResize);
     },
     methods: {
+        handleResize() {
+            console.log('Window resized');
+        },
         editSchedule(index) {
             console.log(`Editando horario para ${this.weekDays[index].dayName}`);
             // Aquí se implementaría la lógica para editar el horario seleccionado
@@ -507,6 +752,14 @@ export default {
         },
         handleEditClick() {
             this.readonly = !this.readonly;
+            
+            const formControls = document.querySelectorAll('.form-control');
+            formControls.forEach(input => {
+                input.classList.add('input-transition');
+                setTimeout(() => {
+                    input.classList.remove('input-transition');
+                }, 500);
+            });
         },
         async fetchUpdate(){
             try {
@@ -559,13 +812,27 @@ export default {
         showDeleteAccountModal() {
             this.showDeleteModal = true;
             this.deleteConfirmText = '';
+            
+            setTimeout(() => {
+                const modal = document.querySelector('.delete-account-modal');
+                if (modal) {
+                    modal.classList.add('modal-active');
+                }
+            }, 10);
         },
         closeDeleteModal() {
-            this.showDeleteModal = false;
+            const modal = document.querySelector('.delete-account-modal');
+            if (modal) {
+                modal.classList.remove('modal-active');
+                setTimeout(() => {
+                    this.showDeleteModal = false;
+                }, 300);
+            } else {
+                this.showDeleteModal = false;
+            }
         },
         confirmDeleteAccount() {
             if (this.deleteConfirmText === 'ELIMINAR') {
-                // Aquí iría la lógica para eliminar la cuenta
                 swal.fire({
                     icon: 'success',
                     title: 'Cuenta eliminada',
@@ -573,7 +840,6 @@ export default {
                     confirmButtonText: 'Aceptar',
                     confirmButtonColor: '#3b82f6',
                 }).then(() => {
-                    // Redirigir al usuario a la página de inicio o login
                     this.handleLogout();
                 });
                 this.closeDeleteModal();
@@ -582,7 +848,19 @@ export default {
         handleLogout() {
             this.$refs.appHeader.logout();
         },
-    },
+        saveNotificationSettings() {
+            swal.fire({
+                icon: 'success',
+                title: 'Configuración guardada',
+                text: 'Tus preferencias de notificaciones han sido actualizadas.',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#3b82f6',
+                showClass: {
+                    popup: 'animate__animated animate__fadeInUp'
+                }
+            });
+        }
+    }
 }
 </script>
 
@@ -1045,10 +1323,10 @@ export default {
   transform: translateY(0);
 }
 
-/* Estilos para la sección de seguridad */
-.security-badge {
+/* Estilos para la sección de notificaciones */
+.notification-badge {
     display: inline-block;
-    background-color: #2563eb;
+    background-color: #3b82f6;
     color: white;
     font-size: 0.8rem;
     padding: 4px 10px;
@@ -1057,13 +1335,14 @@ export default {
     font-weight: 500;
     float: left;
     margin-right: 15px;
+    animation: pulse 2s infinite;
 }
 
-.security-container {
+.notifications-container {
     padding: 25px;
 }
 
-.security-banner {
+.notification-banner {
     display: flex;
     align-items: center;
     background-color: white;
@@ -1073,31 +1352,39 @@ export default {
     margin-bottom: 25px;
     border-top: 4px solid #3b82f6;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
 }
 
-.security-banner i {
+.notification-banner:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.notification-banner i {
     font-size: 1.5rem;
     margin-right: 15px;
     color: #3b82f6;
 }
 
-.security-section {
+.notification-section {
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     margin-bottom: 25px;
     overflow: hidden;
+    transition: all 0.3s ease;
 }
 
-.security-section-header {
+.notification-section:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.notification-section-header {
     display: flex;
     align-items: center;
     padding: 20px;
     border-bottom: 1px solid #e9ecef;
-}
-
-.security-section-header.two-factor {
-    border-bottom: none;
 }
 
 .icon-container {
@@ -1109,10 +1396,20 @@ export default {
     justify-content: center;
     background-color: #ebf5ff;
     margin-right: 15px;
+    transition: all 0.3s ease;
 }
 
 .icon-container i {
     font-size: 1.3rem;
+    color: #3b82f6;
+    transition: all 0.3s ease;
+}
+
+.icon-container.blue {
+    background-color: #ebf5ff;
+}
+
+.icon-container.blue i {
     color: #3b82f6;
 }
 
@@ -1132,6 +1429,18 @@ export default {
     color: #10b981;
 }
 
+.icon-container.orange {
+    background-color: #fff7ed;
+}
+
+.icon-container.orange i {
+    color: #f59e0b;
+}
+
+.notification-section:hover .icon-container {
+    transform: scale(1.05);
+}
+
 .header-text {
     flex-grow: 1;
 }
@@ -1149,50 +1458,46 @@ export default {
     margin: 0;
 }
 
-.security-section-content {
-    padding: 20px;
+.notification-options {
+    padding: 15px 20px;
 }
 
-.password-group {
-    margin-bottom: 15px;
-    max-width: 500px;
-}
-
-.password-input-container {
-    position: relative;
-}
-
-.password-toggle {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: #64748b;
-    cursor: pointer;
-}
-
-.update-password-btn {
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 20px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.notification-option {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
 }
 
-.update-password-btn i {
-    margin-right: 8px;
+.notification-option:last-child {
+    border-bottom: none;
 }
 
-.update-password-btn:hover {
-    background-color: #2563eb;
+.option-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.option-info i {
+    font-size: 1.2rem;
+    color: #64748b;
+    min-width: 24px;
+    text-align: center;
+}
+
+.option-info h5 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2d3748;
+    margin: 0 0 3px 0;
+}
+
+.option-info p {
+    font-size: 0.85rem;
+    color: #718096;
+    margin: 0;
 }
 
 .toggle-switch {
@@ -1230,6 +1535,7 @@ export default {
     background-color: white;
     transition: .4s;
     border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 input:checked + .toggle-slider {
@@ -1240,6 +1546,234 @@ input:checked + .toggle-slider:before {
     transform: translateX(22px);
 }
 
+.notification-features {
+    padding: 15px 20px;
+}
+
+.notification-feature {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.notification-feature:hover {
+    background-color: #f8fafc;
+}
+
+.notification-feature:last-child {
+    margin-bottom: 0;
+}
+
+.notification-feature i {
+    color: #3b82f6;
+    font-size: 1rem;
+    margin-right: 12px;
+    width: 20px;
+    text-align: center;
+}
+
+.notification-feature span {
+    color: #4b5563;
+    font-size: 0.9rem;
+}
+
+/* Estilo para elementos deshabilitados */
+.notification-feature.disabled,
+.security-feature.disabled {
+    opacity: 0.5;
+    filter: grayscale(0.5);
+}
+
+.select-wrapper {
+    position: relative;
+    min-width: 150px;
+}
+
+.select-wrapper select {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    padding: 8px 30px 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background-color: white;
+    font-size: 0.9rem;
+    color: #2d3748;
+    cursor: pointer;
+}
+
+.select-wrapper:after {
+    content: '\f107';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    pointer-events: none;
+}
+
+.select-wrapper.disabled {
+    opacity: 0.5;
+}
+
+.save-notification-settings {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(59, 130, 246, 0.3);
+}
+
+.save-notification-settings i {
+    margin-right: 8px;
+}
+
+.save-notification-settings:hover {
+    background-color: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+}
+
+.save-notification-settings:active {
+    transform: translateY(0);
+}
+
+/* Estilos para la sección de seguridad */
+.security-badge {
+    display: inline-block;
+    background-color: #2563eb;
+    color: white;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    font-weight: 500;
+    float: left;
+    margin-right: 15px;
+}
+
+.security-container {
+    padding: 25px;
+}
+
+.security-banner {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    color: #4b5563;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border-top: 4px solid #3b82f6;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.security-banner:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.security-banner i {
+    font-size: 1.5rem;
+    margin-right: 15px;
+    color: #3b82f6;
+}
+
+.security-section {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.security-section:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.security-section-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.security-section-header.two-factor {
+    border-bottom: none;
+}
+
+.security-section-content {
+    padding: 20px;
+}
+
+.password-group {
+    margin-bottom: 15px;
+    max-width: 500px;
+}
+
+.password-input-container {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.password-toggle:hover {
+    color: #3b82f6;
+}
+
+.update-password-btn {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(59, 130, 246, 0.3);
+}
+
+.update-password-btn i {
+    margin-right: 8px;
+}
+
+.update-password-btn:hover {
+    background-color: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+}
+
 .security-features {
     padding: 15px 20px;
 }
@@ -1248,6 +1782,13 @@ input:checked + .toggle-slider:before {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.security-feature:hover {
+    background-color: #f8fafc;
 }
 
 .security-feature:last-child {
@@ -1273,6 +1814,11 @@ input:checked + .toggle-slider:before {
     overflow: hidden;
     margin-top: 30px;
     border-top: 4px solid #ef4444;
+    transition: all 0.3s ease;
+}
+
+.danger-zone:hover {
+    box-shadow: 0 5px 15px rgba(239, 68, 68, 0.1);
 }
 
 .danger-header {
@@ -1320,6 +1866,7 @@ input:checked + .toggle-slider:before {
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
+    box-shadow: 0 2px 5px rgba(239, 68, 68, 0.3);
 }
 
 .delete-account-btn i {
@@ -1328,144 +1875,254 @@ input:checked + .toggle-slider:before {
 
 .delete-account-btn:hover {
     background-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4);
 }
 
-/* Estilo para elementos deshabilitados */
-.security-feature.disabled {
-    opacity: 0.5;
-    filter: grayscale(0.5);
+.delete-account-btn:active {
+    transform: translateY(0);
 }
 
-/* Estilos para el modal */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000; /* Mayor que el z-index del header (100) */
+/* Estilos para la sección de configuración */
+.config-container {
+    padding: 25px;
 }
 
-.delete-account-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1001; /* Mayor que el overlay */
-    width: 90%;
-    max-width: 500px;
-}
-
-.modal-content {
+.config-section {
     background-color: white;
     border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-.modal-header {
-    position: relative;
     padding: 20px;
-    background-color: #fef2f2;
-    display: flex;
-    align-items: center;
-}
-
-.modal-icon {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 12px;
-}
-
-.modal-icon i {
-    color: #ef4444;
-    font-size: 24px;
-}
-
-.modal-header h3 {
-    margin: 0;
-    color: #b91c1c;
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.close-button {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 18px;
-    color: #6b7280;
-    cursor: pointer;
-}
-
-.modal-body {
-    padding: 20px;
-}
-
-.modal-text {
-    margin-bottom: 20px;
-    color: #4b5563;
-    font-size: 0.95rem;
-    line-height: 1.5;
-}
-
-.confirmation-input p {
-    margin-bottom: 10px;
-    font-weight: 500;
-    color: #4b5563;
-}
-
-.delete-confirm {
-    padding: 12px 15px;
-    text-align: center;
-    font-weight: 600;
-    letter-spacing: 1px;
-}
-
-.modal-footer {
-    padding: 15px 20px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    border-top: 1px solid #e5e7eb;
-}
-
-.cancel-btn, .confirm-delete-btn {
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
     transition: all 0.3s ease;
 }
 
-.cancel-btn {
-    background-color: #f3f4f6;
-    color: #4b5563;
-    border: 1px solid #e5e7eb;
+.config-section:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
 }
 
-.cancel-btn:hover {
-    background-color: #e5e7eb;
+.config-section h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 5px;
 }
 
-.confirm-delete-btn {
-    background-color: #ef4444;
-    color: white;
-    border: none;
+.config-section p {
+    color: #718096;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
 }
 
-.confirm-delete-btn:hover {
-    background-color: #dc2626;
+.config-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #f1f5f9;
 }
 
-.confirm-delete-btn:disabled {
-    background-color: #fca5a5;
+.config-option:last-child {
+    border-bottom: none;
+}
+
+.option-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.option-left i {
+    font-size: 1.2rem;
+    color: #3b82f6;
+    min-width: 24px;
+    text-align: center;
+}
+
+.option-left h5 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2d3748;
+    margin: 0 0 3px 0;
+}
+
+.option-left p {
+    font-size: 0.85rem;
+    color: #718096;
+    margin: 0;
+}
+
+.config-select {
+    padding: 8px 30px 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background-color: white;
+    font-size: 0.9rem;
+    color: #2d3748;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M8 11.5l-5-5 1.5-1.5L8 8.5 11.5 5 13 6.5l-5 5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    transition: all 0.3s ease;
+}
+
+.config-select:focus {
+    border-color: #3b82f6;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Formulario */
+.form-grid {
+    padding: 25px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.form-group {
+    flex: 1;
+    min-width: 300px;
+}
+
+.form-group.full-width {
+    flex-basis: 100%;
+    max-width: 100%;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-bottom: 6px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.input-with-icon {
+    position: relative;
+}
+
+.icon-prefix {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    transition: all 0.3s ease;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px 12px 40px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #1e293b;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-control:focus + .icon-prefix {
+    color: #3b82f6;
+}
+
+.form-control[readonly] {
+    background-color: #f8fafc;
     cursor: not-allowed;
+}
+
+/* Responsive design adicional */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .form-group {
+        flex: auto;
+        min-width: 100%;
+    }
+    
+    .notification-section-header,
+    .security-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .notification-section-header .toggle-switch,
+    .security-section-header .toggle-switch {
+        align-self: flex-end;
+        margin-top: -30px;
+    }
+    
+    .config-option {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .config-select {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .notifications-container, 
+    .security-container,
+    .config-container {
+        padding: 15px;
+    }
+    
+    .notification-banner, 
+    .security-banner {
+        padding: 15px;
+    }
+    
+    .notification-section-header,
+    .security-section-header {
+        padding: 15px;
+    }
+    
+    .notification-options,
+    .notification-features,
+    .security-features {
+        padding: 10px 15px;
+    }
+    
+    .option-info, 
+    .option-left {
+        gap: 10px;
+    }
+    
+    .icon-container {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .icon-container i {
+        font-size: 1.1rem;
+    }
+    
+    .header-text h4 {
+        font-size: 1rem;
+    }
+    
+    .header-text p {
+        font-size: 0.8rem;
+    }
 }
 </style> 
