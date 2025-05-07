@@ -33,9 +33,9 @@
                         <li :class="{ active: activeTab === 'horarios' }" @click="activeTab = 'horarios'">
                             <i class="fas fa-clock"></i> Horarios
                         </li>
-                        <li :class="{ active: activeTab === 'notificaciones' }" @click="activeTab = 'notificaciones'">
+<!--                        <li :class="{ active: activeTab === 'notificaciones' }" @click="activeTab = 'notificaciones'">
                             <i class="fas fa-bell"></i> Notificaciones
-                        </li>
+                        </li>-->
                         <li :class="{ active: activeTab === 'seguridad' }" @click="activeTab = 'seguridad'">
                             <i class="fas fa-shield-alt"></i> Seguridad
                         </li>

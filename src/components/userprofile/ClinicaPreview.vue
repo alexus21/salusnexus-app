@@ -96,7 +96,7 @@
                             </svg>
                             {{ myClinic.years_of_experience }} años de experiencia
                         </div>
-                        <div class="flex justify-center items-center my-2">
+<!--                        <div class="flex justify-center items-center my-2">
                             <div class="flex">
                                 <svg v-for="i in 5" :key="i" class="h-5 w-5 text-yellow-400"
                                      fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -106,7 +106,7 @@
                             </div>
                             <span class="ml-1 font-semibold">4.8</span>
                             <span class="ml-1 text-gray-500 text-sm">(125 opiniones)</span>
-                        </div>
+                        </div>-->
                         <div class="flex justify-center items-center text-sm text-gray-600 my-2">
                             <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                  xmlns="http://www.w3.org/2000/svg">
@@ -245,7 +245,7 @@
                                                         stroke-linejoin="round"
                                                         stroke-width="2"/>
                                                 </svg>
-                                                <span>d{{ myClinic.email }}</span>
+                                                <span>{{ myClinic.email }}</span>
                                             </div>
                                         </div>
                                     </div>

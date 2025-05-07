@@ -23,6 +23,10 @@
                     <span class="status-dot"></span>
                     <span>Online</span>
                 </div>
+                <div class="subscription-badge" :class="{ 'premium': isPremiumUser }">
+                    <i :class="isPremiumUser ? 'fas fa-crown' : 'fas fa-user'"></i>
+                    <span>{{ isPremiumUser ? 'Premium' : 'Gratis' }}</span>
+                </div>
             </div>
         </div>
         
@@ -30,16 +34,19 @@
             <div class="nav-section">
                 <div class="section-title">MENU PRINCIPAL</div>
                 <ul>
-                    <li v-for="item in navigationItems" :key="item.name">
+                    <li v-for="item in filteredNavigationItems" :key="item.name">
                         <a
                             :href="item.href"
                             :class="['nav-item', { active: activeItem === item.name }]"
-                            @click.prevent="navigate(item.name)"
+                            @click.prevent="item.requiresPremium && !isPremiumUser ? showPremiumFeatureAlert(item.label) : navigate(item.name)"
                         >
                             <div class="nav-icon">
                                 <i :class="item.icon"></i>
                             </div>
                             <span class="nav-label">{{ item.label }}</span>
+                            <span class="premium-badge" v-if="item.requiresPremium && !isPremiumUser">
+                                <i class="fas fa-crown"></i>
+                            </span>
                             <span class="hover-indicator"></span>
                         </a>
                     </li>
@@ -75,6 +82,8 @@
 </template>
 
 <script>
+import Swal from 'sweetalert2';
+
 export default {
     name: 'AppSidebar',
     props: {
@@ -91,11 +100,11 @@ export default {
         return {
             window: window,
             navigationItems: [
-                { name: 'Horario', label: 'Mi horario', href: '/horario', icon: 'fas fa-clock' },
-                { name: 'Agenda', label: 'Agenda', href: '/agenda', icon: 'fas fa-calendar-alt' },
-                { name: 'Pacientes', label: 'Pacientes', href: '/pacientes', icon: 'fas fa-users' },
-                { name: 'Resenas', label: 'Reseñas', href: '#', icon: 'fas fa-star' },
-                { name: 'Suscripcion', label: 'Suscripción', href: '#', icon: 'fas fa-rocket' },
+                { name: 'Horario', label: 'Mi horario', href: '/horario', icon: 'fas fa-clock', requiresPremium: false },
+                { name: 'Agenda', label: 'Agenda', href: '/agenda', icon: 'fas fa-calendar-alt', requiresPremium: true },
+                { name: 'Pacientes', label: 'Pacientes', href: '/pacientes', icon: 'fas fa-users', requiresPremium: true },
+                { name: 'Resenas', label: 'Reseñas', href: '#', icon: 'fas fa-star', requiresPremium: true },
+                { name: 'Suscripcion', label: 'Suscripción', href: '#', icon: 'fas fa-rocket', requiresPremium: false },
             ],
             footerItems: [
                 { name: 'Logout', label: 'Cerrar Sesión', href: '#', icon: 'fas fa-sign-out-alt' },
@@ -104,7 +113,8 @@ export default {
                 first_name: '',
                 last_name: '',
                 gender: '',
-                profile_photo_path: ''
+                profile_photo_path: '',
+                subscription_type: 'profesional_gratis'
             }
         };
     },
@@ -115,6 +125,13 @@ export default {
         profileImageUrl() {
             if (!this.userData.profile_photo_path) return '';
             return `${process.env.VUE_APP_API_URL_IMAGE}/${this.userData.profile_photo_path}`;
+        },
+        isPremiumUser() {
+            return this.userData.subscription_type === 'profesional_avanzado';
+        },
+        filteredNavigationItems() {
+            // Always show all items but mark premium ones
+            return this.navigationItems;
         }
     },
     methods: {
@@ -131,6 +148,25 @@ export default {
                 this.Logout();
             }
         },
+        showPremiumFeatureAlert(featureName) {
+            Swal.fire({
+                title: 'Característica Premium',
+                html: `<div style="text-align: center; padding: 10px;">
+                    <div style="font-size: 2rem; color: #f59e0b; margin-bottom: 15px;"><i class="fas fa-crown"></i></div>
+                    <p><strong>${featureName}</strong> está disponible solo para profesionales con suscripción Premium.</p>
+                    <p>Actualiza tu suscripción para acceder a todas las funcionalidades.</p>
+                </div>`,
+                confirmButtonText: 'Ver planes',
+                showCancelButton: true,
+                cancelButtonText: 'Cerrar',
+                confirmButtonColor: '#f59e0b'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Navigate to subscription page
+                    this.navigate('Suscripcion');
+                }
+            });
+        },
         goToHome() {
             this.$router.push({ name: 'Home' });
         },
@@ -146,7 +182,8 @@ export default {
                         first_name: userData.first_name || '',
                         last_name: userData.last_name || '',
                         gender: userData.gender || 'masculino',
-                        profile_photo_path: userData.profile_photo_path || ''
+                        profile_photo_path: userData.profile_photo_path || '',
+                        subscription_type: userData.subscription_type || 'profesional_gratis'
                     };
                 }
             } catch (error) {
@@ -179,6 +216,41 @@ export default {
     z-index: 1000;
     padding: 0;
 }
+
+/* Subscription badge styles */
+.subscription-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-top: 5px;
+    gap: 4px;
+}
+
+.subscription-badge.premium {
+    background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+}
+
+/* Premium feature badge */
+.premium-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-left: 8px;
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+}
+
+/* SweetAlert custom styles - moved to script section */
 
 .sidebar.is-open {
     transform: translateX(0);

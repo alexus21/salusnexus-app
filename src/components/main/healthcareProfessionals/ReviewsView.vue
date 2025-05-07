@@ -450,11 +450,11 @@ export default {
 
 <style scoped>
 .reviews-main-container {
-    width: 85%;
+    width: 100%;
     margin: 0 auto;
-    padding: 30px;
+    padding: 30px 0;
     background-color: #f8fafc;
-    min-height: 100vh;
+    min-height: calc(100vh - 65px); /* Adjusting for header height */
     animation: fadeIn 0.4s ease-out;
 }
 

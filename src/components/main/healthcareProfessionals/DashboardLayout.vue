@@ -12,18 +12,24 @@
 
         <!-- Contenido Principal -->
         <div class="main-container">
-             <!-- Botón Hamburger (siempre renderizado, visibilidad controlada por CSS) -->
+            <!-- AppHeader integrado con hideInDashboard=true -->
+            <AppHeader :hide-dashboard-option="true" class="dashboard-header" />
+            
+            <!-- Botón Hamburger (siempre renderizado, visibilidad controlada por CSS) -->
             <button class="hamburger-button" @click="toggleSidebar">
                 <i class="fas fa-bars"></i>
             </button>
 
-            <component :is="mainComponent" />
+            <div class="component-container">
+                <component :is="mainComponent" />
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 import AppSidebar from '@/components/main/healthcareProfessionals/Sidebar.vue';
+import AppHeader from '@/components/partials/AppHeader.vue';
 import DashboardHome from '@/components/main/healthcareProfessionals/DashboardHome.vue';
 import ReviewsView from '@/components/main/healthcareProfessionals/ReviewsView.vue';
 import PatientsView from '@/components/main/healthcareProfessionals/PatientsView.vue';
@@ -36,6 +42,7 @@ export default {
     name: 'DashboardLayout',
     components: {
         AppSidebar,
+        AppHeader,
         DashboardHome,
         ReviewsView,
         PatientsView,
@@ -151,11 +158,23 @@ export default {
     width: calc(100% - 210px); /* Adjust for the sidebar width */
     margin-left: auto;
     background-color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+}
+
+.component-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 20px;
+}
+
+.dashboard-header {
+    z-index: 900;
 }
 
 .hamburger-button {
     display: none; /* Oculto por defecto */
-    position: absolute;
+    position: fixed; /* Cambiado a fixed para mantener posición al hacer scroll */
     top: 15px;
     left: 15px; /* Posición fija en la esquina superior izquierda */
     z-index: 1100; /* Encima del sidebar cuando está abierto */
@@ -184,7 +203,6 @@ export default {
 @media (max-width: 767px) {
     .hamburger-button {
         display: block; /* Mostrar botón en móvil */
-        /* Ya no se necesita ajustar 'left' aquí */
     }
 
     /* Ocultar el botón hamburguesa si el sidebar está abierto en móvil */
@@ -198,17 +216,21 @@ export default {
     }
 
     .main-container {
-        padding-top: 60px; /* Espacio para el botón hamburger fijo */
         width: 100%; /* Full width on mobile */
+    }
+
+    /* Ajusta el margen del header para dejar espacio al botón hamburger */
+    .dashboard-header .header-content {
+        padding-left: 50px !important;
+    }
+
+    .component-container {
+        padding: 0 10px;
     }
 }
 
 /* Estilos para pantallas más grandes (tablets/escritorio) */
 @media (min-width: 768px) {
     /* El botón permanece oculto por su estilo por defecto */
-
-     .main-container {
-       padding-top: 0; /* Quitar padding superior en pantallas grandes */
-    }
 }
 </style>

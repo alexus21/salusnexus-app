@@ -30,7 +30,7 @@
                         {{ getUserInitials() }}
                     </div>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                        <li v-if="isVerified">
+                        <li v-if="isVerified && !hideDashboardOption">
                             <a class="dropdown-item" href="#" @click.prevent="goToDashboard">
                                 <i class="fas fa-th-large"></i> Dashboard
                             </a>
@@ -63,6 +63,12 @@ const API_URL = process.env.VUE_APP_API_URL;
 
 export default {
     name: 'AppHeader',
+    props: {
+        hideDashboardOption: {
+            type: Boolean,
+            default: false
+        }
+    },
     data() {
         return {
             user: null,
@@ -157,6 +163,17 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+/* Responsive styles */
+@media (max-width: 767px) {
+    .header-content {
+        padding: 0 15px;
+    }
+    
+    .logo-text {
+        font-size: 18px;
+    }
 }
 
 .header-left {
