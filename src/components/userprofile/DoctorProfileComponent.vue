@@ -1,399 +1,405 @@
 <template>
-    <div class="profile-main-container">
-        <!-- Sidebar izquierdo con foto de perfil y navegación -->
-        <div class="profile-sidebar">
-            <div class="profile-user">
-                <div class="profile-avatar-wrapper" @click="navigateToHome" title="Ir a inicio">
-                    <img :src="profile_photo" alt="Foto de perfil" class="profile-avatar">
+    <div class="doctor-profile-page">
+        <!-- Agregar el componente AppHeader -->
+        <app-header ref="appHeader"></app-header>
+        
+        <div class="profile-main-container">
+            <!-- Sidebar izquierdo con foto de perfil y navegación -->
+            <div class="profile-sidebar">
+                <div class="profile-user">
+                    <div class="profile-avatar-wrapper" @click="navigateToHome" title="Ir a inicio">
+                        <img :src="profile_photo" alt="Foto de perfil" class="profile-avatar">
+                    </div>
+                    <h2 class="user-name">{{ user.first_name + ' ' + user.last_name }}</h2>
+                    <p class="user-email">{{ user.email }}</p>
+                    <button class="edit-profile-btn" @click="handleEditClick">
+                        <i class="fas fa-pencil-alt"></i> {{ readonly ? 'Editar perfil' : 'Cancelar' }}
+                    </button>
+                    <button class="update-profile-btn" @click="fetchUpdate" v-if="!readonly">
+                        <i class="fas fa-save"></i> Actualizar
+                    </button>
                 </div>
-                <h2 class="user-name">{{ user.first_name + ' ' + user.last_name }}</h2>
-                <p class="user-email">{{ user.email }}</p>
-                <button class="edit-profile-btn" @click="handleEditClick">
-                    <i class="fas fa-pencil-alt"></i> {{ readonly ? 'Editar perfil' : 'Cancelar' }}
-                </button>
-                <button class="update-profile-btn" @click="fetchUpdate" v-if="!readonly">
-                    <i class="fas fa-save"></i> Actualizar
-                </button>
+                
+                <div class="sidebar-nav">
+                    <ul>
+                        <li :class="{ active: activeTab === 'personal' }" @click="activeTab = 'personal'">
+                            <i class="fas fa-user"></i> Mi Perfil
+                        </li>
+                        <li :class="{ active: activeTab === 'horarios' }" @click="activeTab = 'horarios'">
+                            <i class="fas fa-clock"></i> Horarios
+                        </li>
+                        <li :class="{ active: activeTab === 'seguridad' }" @click="activeTab = 'seguridad'">
+                            <i class="fas fa-shield-alt"></i> Seguridad
+                        </li>
+                        <li>
+                            <i class="fas fa-bell"></i> Notificaciones
+                        </li>
+                        <li>
+                            <i class="fas fa-cog"></i> Configuración
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-footer">
+                    <button class="logout-btn" @click="handleLogout">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                    </button>
+                </div>
             </div>
-            
-            <div class="sidebar-nav">
-                <ul>
-                    <li :class="{ active: activeTab === 'personal' }" @click="activeTab = 'personal'">
-                        <i class="fas fa-user"></i> Mi Perfil
-                    </li>
-                    <li :class="{ active: activeTab === 'horarios' }" @click="activeTab = 'horarios'">
-                        <i class="fas fa-clock"></i> Horarios
-                    </li>
-                    <li :class="{ active: activeTab === 'seguridad' }" @click="activeTab = 'seguridad'">
-                        <i class="fas fa-shield-alt"></i> Seguridad
-                    </li>
-                    <li>
-                        <i class="fas fa-bell"></i> Notificaciones
-                    </li>
-                    <li>
-                        <i class="fas fa-cog"></i> Configuración
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="sidebar-footer">
-                <button class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i> Cerrar sesión
-                </button>
+
+            <!-- Contenido principal -->
+            <div class="profile-content">
+                <transition name="fade" mode="out-in">
+                    <!-- Pestaña Información Personal -->
+                    <div v-if="activeTab === 'personal'" class="content-section" key="personal">
+                        <div class="content-header">
+                            <h3>
+                                <i class="fas fa-id-card"></i>
+                                Información Personal
+                            </h3>
+                            <p class="subtitle">Gestiona tu información personal</p>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <!-- Nombre y apellido -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="firstname">NOMBRE</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-user icon-prefix"></i>
+                                        <input 
+                                            type="text" 
+                                            id="firstname" 
+                                            v-model="user.first_name" 
+                                            :readonly="readonly" 
+                                            class="form-control"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastname">APELLIDO</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-user icon-prefix"></i>
+                                        <input 
+                                            type="text" 
+                                            id="lastname" 
+                                            v-model="user.last_name" 
+                                            :readonly="readonly" 
+                                            class="form-control"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Email y teléfono -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="email">CORREO ELECTRÓNICO</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-envelope icon-prefix"></i>
+                                        <input 
+                                            type="email" 
+                                            id="email" 
+                                            v-model="user.email" 
+                                            readonly 
+                                            class="form-control"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">TELÉFONO</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-phone-alt icon-prefix"></i>
+                                        <input 
+                                            type="tel" 
+                                            id="phone" 
+                                            v-model="user.phone" 
+                                            :readonly="readonly" 
+                                            class="form-control"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Identificación y fecha de nacimiento -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="dui">DUI (DOCUMENTO ÚNICO DE IDENTIDAD)</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-id-card icon-prefix"></i>
+                                        <input 
+                                            type="text" 
+                                            id="dui" 
+                                            v-model="user.dui" 
+                                            readonly 
+                                            class="form-control"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dob">FECHA DE NACIMIENTO</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-calendar-alt icon-prefix"></i>
+                                        <input 
+                                            type="date" 
+                                            id="dob" 
+                                            v-model="user.date_of_birth" 
+                                            :readonly="readonly" 
+                                            class="form-control"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Dirección -->
+                            <div class="form-row">
+                                <div class="form-group full-width">
+                                    <label for="address">DIRECCIÓN</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-map-marker-alt icon-prefix"></i>
+                                        <input 
+                                            type="text" 
+                                            id="address" 
+                                            v-model="user.home_address" 
+                                            :readonly="readonly" 
+                                            class="form-control"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pestaña Horarios -->
+                    <div v-else-if="activeTab === 'horarios'" class="content-section" key="horarios">
+                        <div class="content-header">
+                            <h3>
+                                <i class="fas fa-clock"></i>
+                                Horarios
+                            </h3>
+                            <p class="subtitle">Administra tus horarios de atención</p>
+                        </div>
+                        
+                        <div class="schedule-container">
+                            <schedule-day-card
+                                v-for="(day, index) in weekDays"
+                                :key="day.dayName"
+                                :day-name="day.dayName"
+                                :schedule-text="day.scheduleText"
+                                :is-active="day.isActive"
+                                @edit="editSchedule(index)"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Pestaña Seguridad -->
+                    <div v-else-if="activeTab === 'seguridad'" class="content-section" key="seguridad">
+                        <div class="content-header">
+                            <span class="security-badge">Protección de cuenta</span>
+                            <h3>
+                                <i class="fas fa-shield-alt"></i>
+                                Seguridad
+                            </h3>
+                            <p class="subtitle">Configura opciones de seguridad</p>
+                        </div>
+                        
+                        <div class="security-container">
+                            <!-- Banner informativo -->
+                            <div class="security-banner">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Administra la seguridad de tu cuenta y protege tu información personal</span>
+                            </div>
+                            
+                            <!-- Sección cambiar contraseña -->
+                            <div class="security-section">
+                                <div class="security-section-header">
+                                    <div class="icon-container">
+                                        <i class="fas fa-lock"></i>
+                                    </div>
+                                    <div class="header-text">
+                                        <h4>Cambiar contraseña</h4>
+                                        <p>Actualiza tu contraseña periódicamente para mayor seguridad</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="security-section-content">
+                                    <div class="form-group password-group">
+                                        <label for="current-password">Contraseña actual</label>
+                                        <div class="password-input-container">
+                                            <input 
+                                                type="password" 
+                                                id="current-password" 
+                                                v-model="passwords.current"
+                                                class="form-control"
+                                            />
+                                            <button type="button" class="password-toggle">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group password-group">
+                                        <label for="new-password">Nueva contraseña</label>
+                                        <div class="password-input-container">
+                                            <input 
+                                                type="password" 
+                                                id="new-password" 
+                                                v-model="passwords.new"
+                                                class="form-control"
+                                            />
+                                            <button type="button" class="password-toggle">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group password-group">
+                                        <label for="confirm-password">Confirmar nueva contraseña</label>
+                                        <div class="password-input-container">
+                                            <input 
+                                                type="password" 
+                                                id="confirm-password" 
+                                                v-model="passwords.confirm"
+                                                class="form-control"
+                                            />
+                                            <button type="button" class="password-toggle">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="button" class="update-password-btn">
+                                        <i class="fas fa-key"></i>
+                                        Actualizar contraseña
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Sección autenticación de dos factores -->
+                            <div class="security-section">
+                                <div class="security-section-header two-factor">
+                                    <div class="icon-container purple">
+                                        <i class="fas fa-mobile-alt"></i>
+                                    </div>
+                                    <div class="header-text">
+                                        <h4>Autenticación de dos factores</h4>
+                                        <p>Añade una capa adicional de seguridad a tu cuenta</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" v-model="twoFactorEnabled">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="security-features">
+                                    <div class="security-feature" :class="{ 'disabled': !twoFactorEnabled }">
+                                        <i class="fas fa-comment-alt"></i>
+                                        <span>Recibe un código de verificación en tu teléfono cada vez que inicies sesión</span>
+                                    </div>
+                                    <div class="security-feature" :class="{ 'disabled': !twoFactorEnabled }">
+                                        <i class="fas fa-lock"></i>
+                                        <span>Protege tu cuenta incluso si tu contraseña es comprometida</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Sección notificaciones de seguridad -->
+                            <div class="security-section">
+                                <div class="security-section-header two-factor">
+                                    <div class="icon-container green">
+                                        <i class="fas fa-bell"></i>
+                                    </div>
+                                    <div class="header-text">
+                                        <h4>Notificaciones de seguridad</h4>
+                                        <p>Recibe alertas sobre actividades sospechosas</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" v-model="securityNotificationsEnabled">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="security-features">
+                                    <div class="security-feature" :class="{ 'disabled': !securityNotificationsEnabled }">
+                                        <i class="fas fa-desktop"></i>
+                                        <span>Recibe notificaciones cuando se detecte un inicio de sesión desde un dispositivo desconocido</span>
+                                    </div>
+                                    <div class="security-feature" :class="{ 'disabled': !securityNotificationsEnabled }">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>Alertas de ubicaciones inusuales para inicios de sesión</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Zona de peligro -->
+                            <div class="danger-zone">
+                                <div class="danger-header">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Zona de peligro</span>
+                                </div>
+                                
+                                <div class="danger-content">
+                                    <h4>Acciones irreversibles para tu cuenta</h4>
+                                    <p>Las siguientes acciones son permanentes y no se pueden deshacer. Por favor, procede con precaución.</p>
+                                    
+                                    <button type="button" class="delete-account-btn" @click="showDeleteAccountModal">
+                                        <i class="fas fa-trash-alt"></i>
+                                        Eliminar mi cuenta
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
             </div>
         </div>
 
-        <!-- Contenido principal -->
-        <div class="profile-content">
-            <transition name="fade" mode="out-in">
-                <!-- Pestaña Información Personal -->
-                <div v-if="activeTab === 'personal'" class="content-section" key="personal">
-                    <div class="content-header">
-                        <h3>
-                            <i class="fas fa-id-card"></i>
-                            Información Personal
-                        </h3>
-                        <p class="subtitle">Gestiona tu información personal</p>
+        <!-- Añadir el modal de confirmación para eliminar cuenta -->
+        <div class="delete-account-modal" v-if="showDeleteModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-icon">
+                        <i class="fas fa-exclamation-circle"></i>
                     </div>
-                    
-                    <div class="form-grid">
-                        <!-- Nombre y apellido -->
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="firstname">NOMBRE</label>
-                                <div class="input-with-icon">
-                                    <i class="fas fa-user icon-prefix"></i>
-                                    <input 
-                                        type="text" 
-                                        id="firstname" 
-                                        v-model="user.first_name" 
-                                        :readonly="readonly" 
-                                        class="form-control"
-                                    />
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="lastname">APELLIDO</label>
-                                <div class="input-with-icon">
-                                    <i class="fas fa-user icon-prefix"></i>
-                                    <input 
-                                        type="text" 
-                                        id="lastname" 
-                                        v-model="user.last_name" 
-                                        :readonly="readonly" 
-                                        class="form-control"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Email y teléfono -->
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="email">CORREO ELECTRÓNICO</label>
-                                <div class="input-with-icon">
-                                    <i class="fas fa-envelope icon-prefix"></i>
-                                    <input 
-                                        type="email" 
-                                        id="email" 
-                                        v-model="user.email" 
-                                        readonly 
-                                        class="form-control"
-                                    />
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="phone">TELÉFONO</label>
-                                <div class="input-with-icon">
-                                    <i class="fas fa-phone-alt icon-prefix"></i>
-                                    <input 
-                                        type="tel" 
-                                        id="phone" 
-                                        v-model="user.phone" 
-                                        :readonly="readonly" 
-                                        class="form-control"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Identificación y fecha de nacimiento -->
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="dui">DUI (DOCUMENTO ÚNICO DE IDENTIDAD)</label>
-                                <div class="input-with-icon">
-                                    <i class="fas fa-id-card icon-prefix"></i>
-                                    <input 
-                                        type="text" 
-                                        id="dui" 
-                                        v-model="user.dui" 
-                                        readonly 
-                                        class="form-control"
-                                    />
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="dob">FECHA DE NACIMIENTO</label>
-                                <div class="input-with-icon">
-                                    <i class="fas fa-calendar-alt icon-prefix"></i>
-                                    <input 
-                                        type="date" 
-                                        id="dob" 
-                                        v-model="user.date_of_birth" 
-                                        :readonly="readonly" 
-                                        class="form-control"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Dirección -->
-                        <div class="form-row">
-                            <div class="form-group full-width">
-                                <label for="address">DIRECCIÓN</label>
-                                <div class="input-with-icon">
-                                    <i class="fas fa-map-marker-alt icon-prefix"></i>
-                                    <input 
-                                        type="text" 
-                                        id="address" 
-                                        v-model="user.home_address" 
-                                        :readonly="readonly" 
-                                        class="form-control"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <h3>Eliminar cuenta</h3>
+                    <button class="close-button" @click="closeDeleteModal">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                
-                <!-- Pestaña Horarios -->
-                <div v-else-if="activeTab === 'horarios'" class="content-section" key="horarios">
-                    <div class="content-header">
-                        <h3>
-                            <i class="fas fa-clock"></i>
-                            Horarios
-                        </h3>
-                        <p class="subtitle">Administra tus horarios de atención</p>
-                    </div>
-                    
-                    <div class="schedule-container">
-                        <schedule-day-card
-                            v-for="(day, index) in weekDays"
-                            :key="day.dayName"
-                            :day-name="day.dayName"
-                            :schedule-text="day.scheduleText"
-                            :is-active="day.isActive"
-                            @edit="editSchedule(index)"
+                <div class="modal-body">
+                    <p class="modal-text">¿Estás seguro de que deseas eliminar tu cuenta? Esta acción es irreversible y perderás todos tus datos.</p>
+                    <div class="confirmation-input">
+                        <p>Escribe "ELIMINAR" para confirmar:</p>
+                        <input 
+                            type="text" 
+                            v-model="deleteConfirmText" 
+                            class="form-control delete-confirm" 
+                            placeholder="ELIMINAR"
                         />
                     </div>
                 </div>
-
-                <!-- Pestaña Seguridad -->
-                <div v-else-if="activeTab === 'seguridad'" class="content-section" key="seguridad">
-                    <div class="content-header">
-                        <span class="security-badge">Protección de cuenta</span>
-                        <h3>
-                            <i class="fas fa-shield-alt"></i>
-                            Seguridad
-                        </h3>
-                        <p class="subtitle">Configura opciones de seguridad</p>
-                    </div>
-                    
-                    <div class="security-container">
-                        <!-- Banner informativo -->
-                        <div class="security-banner">
-                            <i class="fas fa-shield-alt"></i>
-                            <span>Administra la seguridad de tu cuenta y protege tu información personal</span>
-                        </div>
-                        
-                        <!-- Sección cambiar contraseña -->
-                        <div class="security-section">
-                            <div class="security-section-header">
-                                <div class="icon-container">
-                                    <i class="fas fa-lock"></i>
-                                </div>
-                                <div class="header-text">
-                                    <h4>Cambiar contraseña</h4>
-                                    <p>Actualiza tu contraseña periódicamente para mayor seguridad</p>
-                                </div>
-                            </div>
-                            
-                            <div class="security-section-content">
-                                <div class="form-group password-group">
-                                    <label for="current-password">Contraseña actual</label>
-                                    <div class="password-input-container">
-                                        <input 
-                                            type="password" 
-                                            id="current-password" 
-                                            v-model="passwords.current"
-                                            class="form-control"
-                                        />
-                                        <button type="button" class="password-toggle">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group password-group">
-                                    <label for="new-password">Nueva contraseña</label>
-                                    <div class="password-input-container">
-                                        <input 
-                                            type="password" 
-                                            id="new-password" 
-                                            v-model="passwords.new"
-                                            class="form-control"
-                                        />
-                                        <button type="button" class="password-toggle">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group password-group">
-                                    <label for="confirm-password">Confirmar nueva contraseña</label>
-                                    <div class="password-input-container">
-                                        <input 
-                                            type="password" 
-                                            id="confirm-password" 
-                                            v-model="passwords.confirm"
-                                            class="form-control"
-                                        />
-                                        <button type="button" class="password-toggle">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <button type="button" class="update-password-btn">
-                                    <i class="fas fa-key"></i>
-                                    Actualizar contraseña
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Sección autenticación de dos factores -->
-                        <div class="security-section">
-                            <div class="security-section-header two-factor">
-                                <div class="icon-container purple">
-                                    <i class="fas fa-mobile-alt"></i>
-                                </div>
-                                <div class="header-text">
-                                    <h4>Autenticación de dos factores</h4>
-                                    <p>Añade una capa adicional de seguridad a tu cuenta</p>
-                                </div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" v-model="twoFactorEnabled">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            
-                            <div class="security-features">
-                                <div class="security-feature" :class="{ 'disabled': !twoFactorEnabled }">
-                                    <i class="fas fa-comment-alt"></i>
-                                    <span>Recibe un código de verificación en tu teléfono cada vez que inicies sesión</span>
-                                </div>
-                                <div class="security-feature" :class="{ 'disabled': !twoFactorEnabled }">
-                                    <i class="fas fa-lock"></i>
-                                    <span>Protege tu cuenta incluso si tu contraseña es comprometida</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Sección notificaciones de seguridad -->
-                        <div class="security-section">
-                            <div class="security-section-header two-factor">
-                                <div class="icon-container green">
-                                    <i class="fas fa-bell"></i>
-                                </div>
-                                <div class="header-text">
-                                    <h4>Notificaciones de seguridad</h4>
-                                    <p>Recibe alertas sobre actividades sospechosas</p>
-                                </div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" v-model="securityNotificationsEnabled">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            
-                            <div class="security-features">
-                                <div class="security-feature" :class="{ 'disabled': !securityNotificationsEnabled }">
-                                    <i class="fas fa-desktop"></i>
-                                    <span>Recibe notificaciones cuando se detecte un inicio de sesión desde un dispositivo desconocido</span>
-                                </div>
-                                <div class="security-feature" :class="{ 'disabled': !securityNotificationsEnabled }">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span>Alertas de ubicaciones inusuales para inicios de sesión</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Zona de peligro -->
-                        <div class="danger-zone">
-                            <div class="danger-header">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <span>Zona de peligro</span>
-                            </div>
-                            
-                            <div class="danger-content">
-                                <h4>Acciones irreversibles para tu cuenta</h4>
-                                <p>Las siguientes acciones son permanentes y no se pueden deshacer. Por favor, procede con precaución.</p>
-                                
-                                <button type="button" class="delete-account-btn" @click="showDeleteAccountModal">
-                                    <i class="fas fa-trash-alt"></i>
-                                    Eliminar mi cuenta
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                <div class="modal-footer">
+                    <button class="cancel-btn" @click="closeDeleteModal">Cancelar</button>
+                    <button 
+                        class="confirm-delete-btn" 
+                        :disabled="deleteConfirmText !== 'ELIMINAR'"
+                        @click="confirmDeleteAccount"
+                    >
+                        Eliminar permanentemente
+                    </button>
                 </div>
-            </transition>
-        </div>
-    </div>
-
-    <!-- Añadir el modal de confirmación para eliminar cuenta -->
-    <div class="delete-account-modal" v-if="showDeleteModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-icon">
-                    <i class="fas fa-exclamation-circle"></i>
-                </div>
-                <h3>Eliminar cuenta</h3>
-                <button class="close-button" @click="closeDeleteModal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p class="modal-text">¿Estás seguro de que deseas eliminar tu cuenta? Esta acción es irreversible y perderás todos tus datos.</p>
-                <div class="confirmation-input">
-                    <p>Escribe "ELIMINAR" para confirmar:</p>
-                    <input 
-                        type="text" 
-                        v-model="deleteConfirmText" 
-                        class="form-control delete-confirm" 
-                        placeholder="ELIMINAR"
-                    />
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="cancel-btn" @click="closeDeleteModal">Cancelar</button>
-                <button 
-                    class="confirm-delete-btn" 
-                    :disabled="deleteConfirmText !== 'ELIMINAR'"
-                    @click="confirmDeleteAccount"
-                >
-                    Eliminar permanentemente
-                </button>
             </div>
         </div>
-    </div>
 
-    <!-- Añadir overlay para el modal -->
-    <div class="modal-overlay" v-if="showDeleteModal" @click="closeDeleteModal"></div>
+        <!-- Añadir overlay para el modal -->
+        <div class="modal-overlay" v-if="showDeleteModal" @click="closeDeleteModal"></div>
+    </div>
 </template>
 
 <script>
 import swal from "sweetalert2";
 import ScheduleDayCard from './ScheduleDayCard.vue';
+import AppHeader from '../partials/AppHeader.vue';
 
 const API_URL = process.env.VUE_APP_API_URL;
 const API_URL_IMAGE = process.env.VUE_APP_API_URL_IMAGE;
@@ -401,7 +407,8 @@ const API_URL_IMAGE = process.env.VUE_APP_API_URL_IMAGE;
 export default {
     name: 'DoctorProfileComponent',
     components: {
-        ScheduleDayCard
+        ScheduleDayCard,
+        AppHeader
     },
     data() {
         return {
@@ -567,12 +574,13 @@ export default {
                     confirmButtonColor: '#3b82f6',
                 }).then(() => {
                     // Redirigir al usuario a la página de inicio o login
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    this.$router.push({ name: 'Login' });
+                    this.handleLogout();
                 });
                 this.closeDeleteModal();
             }
+        },
+        handleLogout() {
+            this.$refs.appHeader.logout();
         },
     },
 }
@@ -586,11 +594,19 @@ export default {
     padding: 0;
 }
 
-.profile-main-container {
-    display: flex;
+.doctor-profile-page {
     min-height: 100vh;
     background-color: #f5f7fa;
+    display: flex;
+    flex-direction: column;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.profile-main-container {
+    display: flex;
+    flex: 1;
+    padding-top: 15px; /* Altura del header para evitar superposición */
+    min-height: calc(100vh - 65px); /* Restar la altura del header */
 }
 
 /* Sidebar izquierdo */
@@ -601,9 +617,10 @@ export default {
     flex-direction: column;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
     position: sticky;
-    top: 0;
-    height: 100vh;
+    top: 65px; /* Ajustar para que empiece después del header */
+    height: calc(100vh - 65px); /* Restar la altura del header */
     z-index: 10;
+    overflow-y: auto; /* Permitir desplazamiento si el contenido es muy largo */
 }
 
 .profile-user {
@@ -904,12 +921,15 @@ export default {
 @media (max-width: 768px) {
     .profile-main-container {
         flex-direction: column;
+        padding-top: 65px; /* Mantener el espacio para el header fijo */
     }
     
     .profile-sidebar {
         width: 100%;
         height: auto;
         position: relative;
+        top: 0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
     
     .profile-user {
@@ -930,14 +950,16 @@ export default {
         overflow-x: auto;
         white-space: nowrap;
         padding-bottom: 10px;
+        -webkit-overflow-scrolling: touch; /* Mejorar desplazamiento en iOS */
     }
     
     .sidebar-nav li {
         padding: 10px 15px;
+        flex-shrink: 0; /* Evitar que los elementos se compriman */
     }
     
     .sidebar-footer {
-        display: none;
+        display: none; /* El logout ahora está en el header */
     }
     
     .profile-content {
@@ -958,6 +980,11 @@ export default {
     .schedule-container {
         grid-template-columns: 1fr;
     }
+    
+    /* Ajustes para el modal en pantallas pequeñas */
+    .delete-account-modal {
+        width: 95%;
+    }
 }
 
 @media (max-width: 480px) {
@@ -969,8 +996,34 @@ export default {
         padding: 15px;
     }
     
+    .content-header h3 {
+        font-size: 1.2rem;
+    }
+    
     .form-grid, .schedule-container {
         padding: 15px;
+    }
+    
+    .user-name {
+        font-size: 1.1rem;
+    }
+    
+    .user-email {
+        font-size: 0.85rem;
+    }
+    
+    /* Ajustes adicionales para pantallas muy pequeñas */
+    .profile-sidebar {
+        padding-bottom: 10px;
+    }
+    
+    .sidebar-nav li {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .sidebar-nav li i {
+        font-size: 1rem;
     }
 }
 
@@ -1291,7 +1344,7 @@ input:checked + .toggle-slider:before {
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 100;
+    z-index: 1000; /* Mayor que el z-index del header (100) */
 }
 
 .delete-account-modal {
@@ -1299,7 +1352,7 @@ input:checked + .toggle-slider:before {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 101;
+    z-index: 1001; /* Mayor que el overlay */
     width: 90%;
     max-width: 500px;
 }
