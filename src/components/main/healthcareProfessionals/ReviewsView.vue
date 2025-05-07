@@ -79,22 +79,97 @@
                     </button>
                 </div>
                 
-                <div class="filter-options">
-                    <select v-model="ratingFilter" class="filter-select">
-                        <option value="all">Todas las valoraciones</option>
-                        <option value="5">5 estrellas</option>
-                        <option value="4">4 estrellas</option>
-                        <option value="3">3 estrellas</option>
-                        <option value="2">2 estrellas</option>
-                        <option value="1">1 estrella</option>
-                    </select>
+                <div class="filter-controls">
+                    <!-- Filtro de estrellas -->
+                    <div class="filter-card">
+                        <div class="filter-label">Valoración</div>
+                        <div class="rating-chips">
+                            <div 
+                                class="rating-chip" 
+                                :class="{ active: ratingFilter === 'all' }"
+                                @click="ratingFilter = 'all'"
+                            >
+                                <span>Todas</span>
+                            </div>
+                            <div 
+                                v-for="rating in [5, 4, 3, 2, 1]" 
+                                :key="rating"
+                                class="rating-chip" 
+                                :class="{ active: ratingFilter === rating.toString() }"
+                                @click="ratingFilter = rating.toString()"
+                            >
+                                <div class="star-rating">
+                                    <i v-for="star in rating" :key="star" class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     
-                    <select v-model="sortOption" class="filter-select">
-                        <option value="newest">Más recientes primero</option>
-                        <option value="oldest">Más antiguas primero</option>
-                        <option value="highest">Mayor valoración primero</option>
-                        <option value="lowest">Menor valoración primero</option>
-                    </select>
+                    <!-- Filtro de ordenamiento -->
+                    <div class="filter-card sort-filter">
+                        <div class="filter-label">Ordenar por</div>
+                        <div class="sort-options">
+                            <div 
+                                class="sort-option" 
+                                :class="{ active: sortOption === 'newest' }"
+                                @click="sortOption = 'newest'"
+                            >
+                                <i class="fas fa-clock"></i>
+                                <span>Más recientes</span>
+                            </div>
+                            <div 
+                                class="sort-option" 
+                                :class="{ active: sortOption === 'oldest' }"
+                                @click="sortOption = 'oldest'"
+                            >
+                                <i class="fas fa-history"></i>
+                                <span>Más antiguas</span>
+                            </div>
+                            <div 
+                                class="sort-option" 
+                                :class="{ active: sortOption === 'highest' }"
+                                @click="sortOption = 'highest'"
+                            >
+                                <i class="fas fa-sort-amount-up"></i>
+                                <span>Mayor valoración</span>
+                            </div>
+                            <div 
+                                class="sort-option" 
+                                :class="{ active: sortOption === 'lowest' }"
+                                @click="sortOption = 'lowest'"
+                            >
+                                <i class="fas fa-sort-amount-down"></i>
+                                <span>Menor valoración</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Resumen de filtros aplicados -->
+                <div class="active-filters" v-if="ratingFilter !== 'all' || sortOption !== 'newest'">
+                    <div class="active-filters-label">Filtros aplicados:</div>
+                    <div class="filter-tags">
+                        <div class="filter-tag" v-if="ratingFilter !== 'all'">
+                            <span v-if="ratingFilter === '1'">1 estrella</span>
+                            <span v-else>{{ ratingFilter }} estrellas</span>
+                            <button class="remove-filter" @click="ratingFilter = 'all'">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="filter-tag" v-if="sortOption !== 'newest'">
+                            <span v-if="sortOption === 'oldest'">Más antiguas primero</span>
+                            <span v-else-if="sortOption === 'highest'">Mayor valoración primero</span>
+                            <span v-else-if="sortOption === 'lowest'">Menor valoración primero</span>
+                            <button class="remove-filter" @click="sortOption = 'newest'">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button class="clear-all-filters" @click="clearAllFilters">
+                        Borrar todos los filtros
+                    </button>
                 </div>
             </div>
             
@@ -362,6 +437,12 @@ export default {
                     confirmButtonText: 'Aceptar'
                 });
             }
+        },
+        
+        clearAllFilters() {
+            this.ratingFilter = 'all';
+            this.sortOption = 'newest';
+            this.searchQuery = '';
         }
     }
 };
@@ -593,20 +674,16 @@ h1 {
     box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2);
 }
 
-/* Review Filters */
+/* Review Filters - Modern UI */
 .reviews-filter {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    gap: 16px;
-    flex-wrap: wrap;
+    margin-bottom: 30px;
+    animation: fadeIn 0.5s ease;
 }
 
 .search-container {
     position: relative;
-    flex: 1;
-    max-width: 400px;
+    max-width: 600px;
+    margin-bottom: 20px;
 }
 
 .search-icon {
@@ -620,17 +697,19 @@ h1 {
 
 .search-input {
     width: 100%;
-    padding: 12px 40px;
-    border: 2px solid #e2e8f0;
+    padding: 14px 40px;
+    border: none;
     border-radius: 12px;
     font-size: 0.95rem;
+    background-color: white;
+    color: #1e293b;
     transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .search-input:focus {
     outline: none;
-    border-color: #f59e0b;
-    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.15);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
 .clear-search {
@@ -657,26 +736,174 @@ h1 {
     color: #334155;
 }
 
-.filter-options {
+.filter-controls {
     display: flex;
-    gap: 12px;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
 }
 
-.filter-select {
-    padding: 10px 16px;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    background-color: white;
-    color: #334155;
-    font-size: 0.95rem;
+.filter-card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    min-width: 300px;
     transition: all 0.3s ease;
-    cursor: pointer;
 }
 
-.filter-select:focus {
-    outline: none;
-    border-color: #f59e0b;
-    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.15);
+.filter-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.filter-label {
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+/* Chips de valoración */
+.rating-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.rating-chip {
+    padding: 8px 14px;
+    border-radius: 50px;
+    background-color: #f8fafc;
+    color: #64748b;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rating-chip:hover {
+    background-color: #f1f5f9;
+    transform: translateY(-2px);
+}
+
+.rating-chip.active {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+}
+
+.star-rating {
+    display: flex;
+    gap: 2px;
+    color: #fbbf24;
+}
+
+/* Opciones de ordenamiento */
+.sort-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.sort-option {
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f8fafc;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.sort-option:hover {
+    background-color: #f1f5f9;
+    transform: translateY(-2px);
+}
+
+.sort-option.active {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+}
+
+/* Filtros activos */
+.active-filters {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 16px;
+    background-color: #f0f9ff;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.active-filters-label {
+    color: #0284c7;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.filter-tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background-color: white;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #334155;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.remove-filter {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f1f5f9;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 0.7rem;
+    transition: all 0.2s ease;
+}
+
+.remove-filter:hover {
+    background-color: #e2e8f0;
+    color: #334155;
+}
+
+.clear-all-filters {
+    padding: 6px 12px;
+    background-color: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #64748b;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clear-all-filters:hover {
+    background-color: #f1f5f9;
+    color: #334155;
 }
 
 /* Reviews List */
@@ -865,64 +1092,38 @@ h1 {
     box-shadow: none;
 }
 
-/* Responsive Styles */
-@media (max-width: 992px) {
-    .rating-summary {
-        flex-direction: column;
-        gap: 30px;
-    }
-    
-    .average-rating {
-        margin: 0 auto;
-    }
-    
-    .rating-bars {
-        max-width: none;
-    }
-}
-
+/* Responsive Design */
 @media (max-width: 768px) {
-    .reviews-main-container {
-        width: 95%;
-        padding: 20px 15px;
-    }
-    
-    .reviews-filter {
+    .filter-controls {
         flex-direction: column;
-        align-items: stretch;
     }
     
-    .search-container {
-        max-width: none;
+    .filter-card {
+        width: 100%;
     }
     
-    .filter-options {
-        flex-wrap: wrap;
+    .sort-options {
+        grid-template-columns: 1fr;
     }
     
-    .filter-select {
-        flex: 1;
-        min-width: 120px;
+    .active-filters {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .filter-tags {
+        width: 100%;
+    }
+    
+    .clear-all-filters {
+        align-self: flex-end;
     }
 }
 
 @media (max-width: 576px) {
-    .rating-summary {
-        padding: 16px;
-    }
-    
-    .average-rating {
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
-    }
-    
-    .rating-number {
-        font-size: 3rem;
-    }
-    
-    .modal-container {
-        width: 95%;
+    .rating-chips {
+        justify-content: center;
     }
 }
 </style>
