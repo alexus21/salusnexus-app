@@ -11,11 +11,14 @@
         </div>
         
         <div class="user-profile">
-            <div class="avatar">
+            <div class="avatar" v-if="userData.profile_photo_path">
+                <img :src="profileImageUrl" alt="Foto de perfil" />
+            </div>
+            <div class="avatar" v-else>
                 <i class="fas fa-user-md"></i>
             </div>
             <div class="user-info">
-                <div class="user-name">Dr. Professional</div>
+                <div class="user-name">{{ userTitle }} {{ userData.first_name }} {{ userData.last_name }}</div>
                 <div class="user-status">
                     <span class="status-dot"></span>
                     <span>Online</span>
@@ -25,7 +28,7 @@
         
         <nav class="sidebar-nav">
             <div class="nav-section">
-                <div class="section-title">Menu Principal</div>
+                <div class="section-title">MENU PRINCIPAL</div>
                 <ul>
                     <li v-for="item in navigationItems" :key="item.name">
                         <a
@@ -45,7 +48,7 @@
         </nav>
         
         <div class="sidebar-footer">
-            <div class="section-title">Opciones</div>
+            <div class="section-title">OPCIONES</div>
             <nav class="sidebar-nav">
                 <ul>
                     <li v-for="item in footerItems" :key="item.name">
@@ -97,7 +100,22 @@ export default {
             footerItems: [
                 { name: 'Logout', label: 'Cerrar Sesión', href: '#', icon: 'fas fa-sign-out-alt' },
             ],
+            userData: {
+                first_name: '',
+                last_name: '',
+                gender: '',
+                profile_photo_path: ''
+            }
         };
+    },
+    computed: {
+        userTitle() {
+            return this.userData.gender === 'femenino' ? 'Dra.' : 'Dr.';
+        },
+        profileImageUrl() {
+            if (!this.userData.profile_photo_path) return '';
+            return `${process.env.VUE_APP_API_URL_IMAGE}/${this.userData.profile_photo_path}`;
+        }
     },
     methods: {
         navigate(itemName) {
@@ -119,15 +137,33 @@ export default {
         Logout() {
             localStorage.removeItem('token');
             window.location.reload();
+        },
+        loadUserData() {
+            try {
+                const userData = JSON.parse(localStorage.getItem('user'));
+                if (userData) {
+                    this.userData = {
+                        first_name: userData.first_name || '',
+                        last_name: userData.last_name || '',
+                        gender: userData.gender || 'masculino',
+                        profile_photo_path: userData.profile_photo_path || ''
+                    };
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
         }
     },
+    mounted() {
+        this.loadUserData();
+    }
 };
 </script>
 
 <style scoped>
 .sidebar {
-    width: 270px;
-    background: linear-gradient(135deg, #2b3990 0%, #232976 100%);
+    width: 210px;
+    background: linear-gradient(135deg, #2d3590 0%, #212475 100%);
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -135,7 +171,7 @@ export default {
     position: fixed;
     left: 0;
     top: 0;
-    border-radius: 0 24px 24px 0;
+    border-radius: 0 0 0 0;
     box-shadow: 5px 0 20px rgba(0, 0, 0, 0.1);
     color: #fff;
     transform: translateX(-100%);
@@ -161,35 +197,32 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px;
+    padding: 16px;
 }
 
 .logo-container {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
 }
 
 .logo-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #3a8ffe 0%, #1a56db 100%);
-    border-radius: 12px;
+    width: 32px;
+    height: 32px;
+    background: #3b82f6;
+    color: white;
+    border-radius: 8px;
     font-weight: bold;
-    font-size: 16px;
-    box-shadow: 0 4px 10px rgba(26, 86, 219, 0.3);
+    font-size: 14px;
 }
 
 .logo-text {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
-    background: linear-gradient(90deg, #fff 0%, #e0e7ff 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: white;
 }
 
 .close-button {
@@ -213,28 +246,27 @@ export default {
 .user-profile {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 16px 20px;
-    margin: 0 12px 16px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    transition: all 0.2s ease;
-}
-
-.user-profile:hover {
-    background: rgba(255, 255, 255, 0.12);
+    gap: 10px;
+    padding: 12px 16px;
+    margin: 0 0 16px 0;
 }
 
 .avatar {
-    width: 42px;
-    height: 42px;
-    background: linear-gradient(135deg, #3a8ffe 0%, #1a56db 100%);
-    border-radius: 12px;
+    width: 38px;
+    height: 38px;
+    background: #3b82f6;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+    overflow: hidden;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .user-info {
@@ -253,14 +285,14 @@ export default {
 .user-status {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 12px;
+    gap: 4px;
+    font-size: 11px;
     color: rgba(255, 255, 255, 0.7);
 }
 
 .status-dot {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     background-color: #10b981;
     border-radius: 50%;
     display: inline-block;
@@ -271,13 +303,12 @@ export default {
 }
 
 .section-title {
-    padding: 0 20px;
+    padding: 0 16px;
     margin-bottom: 8px;
     color: rgba(255, 255, 255, 0.5);
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 
 .sidebar-nav ul {
@@ -289,13 +320,12 @@ export default {
 .nav-item {
     display: flex;
     align-items: center;
-    padding: 12px 16px;
-    margin: 4px 12px;
+    padding: 10px 16px;
+    margin: 2px 0;
     color: rgba(255, 255, 255, 0.8);
     transition: all 0.2s ease;
     text-decoration: none;
     cursor: pointer;
-    border-radius: 12px;
     position: relative;
     overflow: hidden;
 }
@@ -304,51 +334,51 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
     margin-right: 12px;
     transition: all 0.2s ease;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .nav-label {
     font-weight: 500;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .hover-indicator {
     position: absolute;
     left: 0;
+    top: 0;
     bottom: 0;
-    height: 3px;
-    width: 0;
-    background: linear-gradient(90deg, #3a8ffe, #1a56db);
-    transition: width 0.2s ease;
-    border-radius: 3px;
+    width: 3px;
+    height: 100%;
+    background: #3b82f6;
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
 .nav-item:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.05);
     color: #fff;
 }
 
-.nav-item:hover .nav-icon {
-    background: rgba(58, 143, 254, 0.2);
-}
-
 .nav-item:hover .hover-indicator {
-    width: 100%;
+    opacity: 1;
 }
 
 .nav-item.active {
-    background: linear-gradient(90deg, rgba(58, 143, 254, 0.2), rgba(26, 86, 219, 0.1));
+    background: rgba(59, 130, 246, 0.1);
     color: #fff;
 }
 
 .nav-item.active .nav-icon {
-    background: linear-gradient(135deg, #3a8ffe 0%, #1a56db 100%);
-    box-shadow: 0 4px 8px rgba(26, 86, 219, 0.3);
+    color: #3b82f6;
+}
+
+.nav-item.active .hover-indicator {
+    opacity: 1;
 }
 
 .sidebar-footer {
@@ -358,9 +388,9 @@ export default {
 }
 
 .version-info {
-    padding: 12px 24px;
+    padding: 12px 16px;
     text-align: center;
-    font-size: 12px;
+    font-size: 10px;
     color: rgba(255, 255, 255, 0.4);
 }
 
@@ -384,16 +414,16 @@ export default {
 /* Media queries para responsividad */
 @media (max-width: 767px) {
     .sidebar {
-        width: 250px;
+        width: 200px;
     }
     
     .nav-item {
-        padding: 10px 14px;
+        padding: 8px 12px;
     }
     
     .nav-icon {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
     }
 }
 </style>

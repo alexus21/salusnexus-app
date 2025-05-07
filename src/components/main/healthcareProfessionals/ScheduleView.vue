@@ -13,7 +13,8 @@
         <div class="schedule-card">
             <div class="week-days">
                 <div v-for="day in days" :key="day.name" 
-                    :class="['day-card', {'day-active': schedule[day.name].open}]">
+                    :class="['day-card', {'day-active': activeDay === day.name}]"
+                    @click="activeDay = day.name">
                     <div class="day-icon">
                         <i :class="getDayIcon(day.name)"></i>
                     </div>
@@ -23,7 +24,7 @@
 
             <div class="schedule-rows">
                 <div v-for="day in days" :key="day.name" 
-                    :class="['schedule-row', {'inactive-day': !schedule[day.name].open}]">
+                    :class="['schedule-row', {'hidden': activeDay !== day.name}]">
                     <div class="day-info">
                         <div class="day-label">{{ day.label }}</div>
                     </div>
@@ -93,6 +94,7 @@ export default {
     },
     data() {
         return {
+            activeDay: 'lunes',
             days: [
                 {name: 'lunes', label: 'Lunes'},
                 {name: 'martes', label: 'Martes'},
@@ -346,7 +348,7 @@ export default {
 /* Estilos generales */
 .schedule-container {
     padding: 1.5rem;
-    max-width: 1000px;
+    width: 85%;
     margin: 0 auto;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
         Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -370,20 +372,12 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #0a7cff, #1a56db);
-    border-radius: 20px;
-    box-shadow: 0 10px 15px rgba(26, 86, 219, 0.2);
+    width: 50px;
+    height: 50px;
+    background: #3b82f6;
+    border-radius: 12px;
     color: white;
-    font-size: 1.5rem;
-    animation: pulse 3s infinite;
-}
-
-@keyframes pulse {
-    0% { box-shadow: 0 10px 15px rgba(26, 86, 219, 0.2); }
-    50% { box-shadow: 0 10px 25px rgba(26, 86, 219, 0.4); }
-    100% { box-shadow: 0 10px 15px rgba(26, 86, 219, 0.2); }
+    font-size: 1.3rem;
 }
 
 .header-content h2 {
@@ -394,30 +388,19 @@ export default {
 }
 
 .header-content p {
-    color: #4a5568;
+    color: #64748b;
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 /* Tarjeta principal */
 .schedule-card {
     background-color: #ffffff;
-    border-radius: 24px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     overflow: hidden;
     padding: 1.5rem;
     position: relative;
-}
-
-.schedule-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 6px;
-    background: linear-gradient(to right, #0a7cff, #1a56db);
-    border-radius: 6px 6px 0 0;
 }
 
 /* Sección de días de la semana */
@@ -425,7 +408,8 @@ export default {
     display: flex;
     justify-content: space-between;
     margin-bottom: 2rem;
-    padding: 0 1rem;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 1rem;
     overflow-x: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -443,18 +427,22 @@ export default {
     padding: 1rem 0.5rem;
     width: 90px;
     min-width: 80px;
-    border-radius: 16px;
-    background-color: #f7fafc;
+    cursor: pointer;
     transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
 }
 
 .day-card:hover {
-    transform: translateY(-5px);
+    border-bottom-color: #e0e7ff;
 }
 
 .day-active {
-    background-color: rgba(10, 124, 255, 0.1);
-    border: 1px solid rgba(10, 124, 255, 0.2);
+    border-bottom-color: #3b82f6;
+}
+
+.day-active .day-icon {
+    background: #3b82f6;
+    color: white;
 }
 
 .day-icon {
@@ -463,16 +451,16 @@ export default {
     justify-content: center;
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, #0a7cff, #1a56db);
-    border-radius: 12px;
-    color: white;
+    background: #f1f5f9;
+    border-radius: 10px;
+    color: #64748b;
     font-size: 1rem;
     transition: all 0.3s ease;
 }
 
 .day-name {
     font-weight: 500;
-    color: #4a5568;
+    color: #64748b;
     font-size: 0.9rem;
 }
 
@@ -489,34 +477,13 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 1.25rem;
-    background-color: #fafbff;
-    border-radius: 16px;
+    background-color: #f8fafc;
+    border-radius: 12px;
     transition: all 0.3s ease;
-    animation: slideIn 0.3s ease-out forwards;
-    opacity: 0;
-    transform: translateX(-10px);
 }
 
-@keyframes slideIn {
-    to { opacity: 1; transform: translateX(0); }
-}
-
-.schedule-row:nth-child(1) { animation-delay: 0.05s; }
-.schedule-row:nth-child(2) { animation-delay: 0.1s; }
-.schedule-row:nth-child(3) { animation-delay: 0.15s; }
-.schedule-row:nth-child(4) { animation-delay: 0.2s; }
-.schedule-row:nth-child(5) { animation-delay: 0.25s; }
-.schedule-row:nth-child(6) { animation-delay: 0.3s; }
-.schedule-row:nth-child(7) { animation-delay: 0.35s; }
-
-.schedule-row:hover {
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    transform: translateX(5px);
-}
-
-.inactive-day {
-    opacity: 0.7;
-    background-color: #f8f9fa;
+.schedule-row.hidden {
+    display: none;
 }
 
 .day-info {
@@ -525,7 +492,7 @@ export default {
 
 .day-label {
     font-weight: 600;
-    color: #2d3748;
+    color: #334155;
     font-size: 1rem;
 }
 
@@ -545,7 +512,7 @@ export default {
     left: 10px;
     top: 50%;
     transform: translateY(-50%);
-    color: #0a7cff;
+    color: #64748b;
     font-size: 0.9rem;
     z-index: 2;
 }
@@ -553,28 +520,28 @@ export default {
 .time-input {
     padding: 0.75rem 0.75rem 0.75rem 2.25rem;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border-radius: 10px;
     font-size: 0.95rem;
-    color: #2d3748;
-    width: 130px;
+    color: #334155;
+    width: 120px;
     background-color: white;
     transition: all 0.3s ease;
 }
 
 .time-input:focus {
     outline: none;
-    border-color: #0a7cff;
-    box-shadow: 0 0 0 3px rgba(10, 124, 255, 0.2);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 .time-input:disabled {
-    background-color: #edf2f7;
+    background-color: #f1f5f9;
     cursor: not-allowed;
 }
 
 .time-divider {
     font-weight: 500;
-    color: #718096;
+    color: #94a3b8;
 }
 
 /* Toggle de disponibilidad */
@@ -587,8 +554,8 @@ export default {
 .switch {
     position: relative;
     display: inline-block;
-    width: 52px;
-    height: 26px;
+    width: 48px;
+    height: 24px;
 }
 
 .switch input {
@@ -606,14 +573,14 @@ export default {
     bottom: 0;
     background-color: #cbd5e0;
     transition: .4s;
-    border-radius: 26px;
+    border-radius: 24px;
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 20px;
-    width: 20px;
+    height: 18px;
+    width: 18px;
     left: 3px;
     bottom: 3px;
     background-color: white;
@@ -623,32 +590,32 @@ export default {
 }
 
 input:checked + .slider {
-    background-color: #0a7cff;
+    background-color: #3b82f6;
 }
 
 input:focus + .slider {
-    box-shadow: 0 0 1px #0a7cff;
+    box-shadow: 0 0 1px #3b82f6;
 }
 
 input:checked + .slider:before {
-    transform: translateX(26px);
+    transform: translateX(24px);
 }
 
 .status-indicator {
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     min-width: 80px;
     padding: 0.35rem 0.75rem;
     text-align: center;
-    border-radius: 12px;
-    background-color: #edf2f7;
-    color: #718096;
+    border-radius: 6px;
+    background-color: #f1f5f9;
+    color: #64748b;
     transition: all 0.3s ease;
 }
 
 input:checked ~ .status-indicator {
-    background-color: rgba(10, 124, 255, 0.15);
-    color: #0a7cff;
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
 }
 
 /* Caja de información */
@@ -685,6 +652,7 @@ input:checked ~ .status-indicator {
 .action-bar {
     display: flex;
     justify-content: flex-end;
+    margin-top: 2rem;
 }
 
 .save-button {
@@ -692,41 +660,24 @@ input:checked ~ .status-indicator {
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1.5rem;
-    background: linear-gradient(135deg, #0a7cff, #1a56db);
+    background: #3b82f6;
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 8px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(10, 124, 255, 0.3);
-    position: relative;
-    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
 }
 
 .save-button:hover {
+    background: #2563eb;
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(10, 124, 255, 0.4);
 }
 
 .save-button:active {
     transform: translateY(0);
-}
-
-.save-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.7s ease;
-}
-
-.save-button:hover::before {
-    left: 100%;
 }
 
 .save-button.loading {
@@ -758,21 +709,21 @@ input:checked ~ .status-indicator {
 }
 
 @keyframes flash {
-    0% { background-color: #fafbff; }
+    0% { background-color: #f8fafc; }
     30% { background-color: rgba(16, 185, 129, 0.1); }
-    100% { background-color: #fafbff; }
+    100% { background-color: #f8fafc; }
 }
 
 /* Estilos para SweetAlert2 */
 :global(.modern-swal) {
-    border-radius: 20px !important;
+    border-radius: 16px !important;
     padding: 2rem !important;
 }
 
 :global(.modern-swal-button) {
-    background: linear-gradient(135deg, #0a7cff, #1a56db) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 10px rgba(10, 124, 255, 0.3) !important;
+    background: #3b82f6 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3) !important;
     padding: 0.75rem 1.5rem !important;
     font-weight: 600 !important;
 }
@@ -808,9 +759,9 @@ input:checked ~ .status-indicator {
     }
     
     .header-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 1.25rem;
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
     }
     
     .header-content h2 {

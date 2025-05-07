@@ -146,6 +146,9 @@ export default {
     height: 100vh;
     overflow-y: auto;
     position: relative;
+    width: calc(100% - 210px); /* Adjust for the sidebar width */
+    margin-left: auto;
+    background-color: #f8fafc;
 }
 
 .hamburger-button {
@@ -194,6 +197,7 @@ export default {
 
     .main-container {
         padding-top: 60px; /* Espacio para el botón hamburger fijo */
+        width: 100%; /* Full width on mobile */
     }
 }
 
